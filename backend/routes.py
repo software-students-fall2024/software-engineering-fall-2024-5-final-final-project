@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint  # type: ignore
 
 routes = Blueprint("routes", __name__)
 

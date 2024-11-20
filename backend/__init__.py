@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask  # type: ignore
 from backend import routes
 
 # We'll configure MONGO URI later
