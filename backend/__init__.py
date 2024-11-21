@@ -1,7 +1,7 @@
 from flask import Flask  # type: ignore
 from backend.routes import routes
 
-# We'll configure MONGO URI later
+# We'll finish the configuration f MONGO URI later
 # MONGO_URI = ""
 
 
