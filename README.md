@@ -52,7 +52,8 @@ The Wish List Tracker App is a web-based platform designed to help users organiz
 ## Getting Started
 
 ### Prerequisites
-- [List any dependencies, tools, or technologies needed to run the project, e.g., Docker, Python, MongoDB.]
+- Python 3.9+
+- MongoDB (running locally or in Docker)
 
 ### Setup Instructions
 1. Clone the repository:
