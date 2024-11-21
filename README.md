@@ -52,7 +52,8 @@ The Wish List Tracker App is a web-based platform designed to help users organiz
 ## Getting Started
 
 ### Prerequisites
-- [List any dependencies, tools, or technologies needed to run the project, e.g., Docker, Python, MongoDB.]
+- Python 3.9+
+- MongoDB (running locally or in Docker)
 
 ### Setup Instructions
 1. Clone the repository:
@@ -61,9 +62,27 @@ The Wish List Tracker App is a web-based platform designed to help users organiz
     ```
 2. Navigate to the project directory:
     ```bash
-    cd wishlist-tracker <!-- temp, not actual name -->
+    cd 5-final-fantastic-five
     ```
-3. Follow the setup instructions for each subsystem:
+
+3. Create and activate a virtual environment:
+    ```bash
+    python -m venv venv
+    source venv/bin/activate
+    ```
+
+4. Install Dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+4. Install Dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+
+1000. Follow the setup instructions for each subsystem:
     - **Flask API:**
         ```bash
         cd api
@@ -133,3 +152,34 @@ Each subsystem includes unit tests to ensure functionality.
 - **Item Recommendations:** Suggest items based on wishlist content.
 - **Collaborative Wishlists:** Allow multiple users to contribute to a single wishlist.
 - **Price Tracking:** Notify users of price changes for wishlist items.
+
+
+## Directory Schema (Will remove eventually)
+
+5-final-fantastic-five/
+├── app/                        # Flask app (Backend + Frontend)
+│   ├── __init__.py             # App initialization
+│   ├── routes/                 # Routes (API + Web)
+│   ├── models/                 # Database schemas and logic
+│   ├── services/               # Business logic/services layer
+│   ├── templates/              # Jinja2 templates for HTML
+│   ├── static/                 # Static assets (CSS, JS)
+│   └── config.py               # Flask app configuration
+├── db/                         # MongoDB setup
+│   ├── seed.py                 # Script to seed the database
+│   ├── Dockerfile              # Dockerfile for MongoDB
+├── tests/                      # Unit and integration tests
+│   ├── test_api.py             # API route tests
+│   ├── test_web.py             # Web route tests
+│   ├── test_models.py          # Model logic tests
+├── .github/                    # GitHub Actions for CI/CD
+│   ├── workflows/
+│       ├── flask-api.yml       # CI/CD for Flask API
+│       ├── mongo.yml           # CI/CD for MongoDB
+├── docker-compose.yml          # Orchestrates Flask + MongoDB containers
+├── Dockerfile                  # Dockerfile for Flask API
+├── requirements.txt            # Python dependencies
+├── venv/                       # Python virtual environment
+├── .env                        # Environment variables
+├── .gitignore                  # Git ignore file
+└── README.md                   # Project documentation
