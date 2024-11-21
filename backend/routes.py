@@ -1,3 +1,7 @@
+"""
+This file details each Flask route
+"""
+
 from flask import Blueprint  # type: ignore
 
 routes = Blueprint("routes", __name__)

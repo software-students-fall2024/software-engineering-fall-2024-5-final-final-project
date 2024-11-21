@@ -1,3 +1,7 @@
+"""
+This file initializes the Flask app
+"""
+
 from flask import Flask  # type: ignore
 from backend.routes import routes
 
