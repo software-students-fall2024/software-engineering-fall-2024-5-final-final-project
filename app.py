@@ -105,12 +105,12 @@ def create_app():
         return render_template('createAccount.html')
     
     #Log out route
-    @app.route('/logout')
+    @app.route('/logout', methods=['POST'])
     @login_required
     def logout():
         logout_user()
         flash('You have been logged out.')
-        return redirect(url_for('home'))
+        return redirect(url_for('login'))
     
     @app.route("/")
     @login_required

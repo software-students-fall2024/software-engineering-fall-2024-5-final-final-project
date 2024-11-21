@@ -15,6 +15,18 @@ An exercise to put to practice software development teamwork, subsystem communic
 Create a .env to store key-value pairs (provided in the discord channel).
 
 ## Run the app
+Start by building
+```
+docker-compose up --build
+```
+
+Or if you have previously built and haven't made any changes, simply compose the containers
+```
+docker-compose up
+```
+
+Play the game!
+Open the web app following this link [HERE](http://127.0.0.1:5001)
 
 ## Team members
 
