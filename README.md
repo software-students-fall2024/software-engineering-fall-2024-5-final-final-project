@@ -4,7 +4,7 @@ An exercise to put to practice software development teamwork, subsystem communic
 
 ## Description
 
-Our Personal Finance Tracker is a web application meant to assist users in managing their finances. It's built with Python and Flask, offering features such as (insert features here). The application utilizes a MongoDB database to securely store user data and transaction histories. It's also containerized using Docker, making sure there's consistent deployment across differing environments. We also have unit tests included to maintain code quality and reliability.
+Our Personal Finance Tracker is a web application meant to assist users in managing their finances. It's built with Python and Flask, offering features such as (insert features here). The application utilizes a MongoDB database to securely store user data and transaction histories. It's also containerized using Docker, making sure there's consistent deployment across differing environments. We also have unit tests included to maintain code quality.
 
 ## Team members
 
