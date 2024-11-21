@@ -62,9 +62,27 @@ The Wish List Tracker App is a web-based platform designed to help users organiz
     ```
 2. Navigate to the project directory:
     ```bash
-    cd wishlist-tracker <!-- temp, not actual name -->
+    cd 5-final-fantastic-five
     ```
-3. Follow the setup instructions for each subsystem:
+
+3. Create and activate a virtual environment:
+    ```bash
+    python -m venv venv
+    source venv/bin/activate
+    ```
+
+4. Install Dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+4. Install Dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+
+1000. Follow the setup instructions for each subsystem:
     - **Flask API:**
         ```bash
         cd api
