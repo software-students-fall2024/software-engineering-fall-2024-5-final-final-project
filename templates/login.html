@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block container %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+</head>
+<body>
+    <h1>Login</h1>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <br>
+            <ul>
+                {% for message in messages %}
+                    <li class="li">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    <form method="POST">
+        <br>
+        <div>
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        <br>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <br>
+        <button type="submit" style="padding: 10px;">Login</button>
+    </form>
+    <br>
+    <p>Don't have an account? <a href="{{ url_for('createAccount') }}"><u>Create one here</u></a></p>
+</body>
+</html>
+{%endblock%}

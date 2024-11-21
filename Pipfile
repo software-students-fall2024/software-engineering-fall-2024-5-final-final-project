@@ -6,8 +6,9 @@ name = "pypi"
 [packages]
 requests = "*"
 pymongo = "*"
-flask = "*"
 python-dotenv = "*"
+flask = "*"
+flask-login = "*"
 
 [dev-packages]
 
