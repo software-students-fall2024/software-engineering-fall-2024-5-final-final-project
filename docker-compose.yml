@@ -1,0 +1,36 @@
+services:
+  web-app:
+    build: .
+    container_name: web-app
+    ports:
+      - "5001:5001"
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_ENV=development
+      - FLASK_RUN_PORT=5001
+      - FLASK_DEBUG=1
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - mongodb
+    networks:
+      - app-network
+  
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    networks:
+      - app-network
+    volumes:
+      - mongodb-data:/data/db
+
+networks:
+  app-network:
+    driver: bridge
+  
+volumes:
+  mongodb-data:
