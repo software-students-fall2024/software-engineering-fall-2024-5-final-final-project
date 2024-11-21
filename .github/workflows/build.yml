@@ -39,4 +39,4 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          venv/bin/python -m pytest tests/test_routes.py --cov=backend --cov-report=html
+          venv/bin/python -m pytest tests --cov=backend
