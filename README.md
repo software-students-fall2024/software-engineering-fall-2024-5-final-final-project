@@ -6,7 +6,7 @@ put badge here
 
 Replace here with description
 
-## DockerHub container images
+## DockerHub Container Images
 
 - [image1](https://hub.docker.com/)
 - [image2](https://hub.docker.com/)
