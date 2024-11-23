@@ -1,0 +1,123 @@
+/* General Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #1e3a5f, #2c2f58);
+    color: #f4f4f9;
+    margin: 0;
+    padding: 0;
+}
+
+h1, h2, h3 {
+    color: #c8c8d1;
+    text-align: center;
+}
+
+a {
+    color: #70a1ff;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #a29bfe;
+}
+
+/* Container */
+.container {
+    width: 90%;
+    max-width: 800px;
+    margin: 30px auto;
+    background: rgba(44, 47, 88, 0.95);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    color: #f4f4f9;
+}
+
+/* Form Styling */
+.form {
+    margin: 20px 0;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #c8c8d1;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #495073;
+    border-radius: 5px;
+    background: #2c2f58;
+    color: #f4f4f9;
+}
+
+.form-group input::placeholder {
+    color: #9fa5c0;
+}
+
+/* Form Actions */
+.form-actions {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.form-actions .btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #5468ff;
+    color: white;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.form-actions .btn:hover {
+    background-color: #3740c8;
+}
+
+.form-actions .btn-link {
+    display: block;
+    margin-top: 10px;
+    color: #70a1ff;
+    font-size: 14px;
+}
+
+.form-actions .btn-link:hover {
+    color: #a29bfe;
+}
+
+/* Alerts */
+.alerts {
+    margin-bottom: 20px;
+}
+
+.alert {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 14px;
+    color: #f4f4f9;
+}
+
+.alert-success {
+    background: #28a745;
+    border: 1px solid #218838;
+}
+
+.alert-error {
+    background: #dc3545;
+    border: 1px solid #c82333;
+}
+
+.alert-info {
+    background: #17a2b8;
+    border: 1px solid #138496;
+}

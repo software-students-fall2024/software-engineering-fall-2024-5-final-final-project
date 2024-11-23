@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dream Analysis Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Greeting Section -->
+        <header class="greeting">
+            <h1>Welcome, {{ username }}!</h1>
+            <p>What dream did you have last night?</p>
+        </header>
+
+        <!-- Flash Message -->
+        <div class="flash-message">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="alert">
+                        {{ messages[0] }}
+                    </div>
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- Dream Submission Section -->
+        <section class="card">
+            <div class="card-body">
+                <h3>Analyze Your Dream</h3>
+                <form method="POST" action="{{ url_for('dashboard') }}">
+                    <textarea 
+                        name="dream_description" 
+                        placeholder="Describe your dream here..." 
+                        rows="5" 
+                        cols="50" 
+                        required
+                    ></textarea>
+                    <br>
+                    <button type="submit" class="btn btn-primary mt-2">Analyze Dream</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Last Dream Analysis Section -->
+        <section class="card">
+            <div class="card-body">
+                <h3>Last Dream Analysis</h3>
+                {% if last_dream %}
+                    <div class="dream-data">
+                        <p><strong>Dream Description:</strong> {{ last_dream.dream_description }}</p>
+                        <p><strong>Interpretation:</strong> {{ last_dream.dream_interpretation }}</p>
+                        <p><strong>Analyzed At:</strong> {{ last_dream.timestamp }}</p>
+                    </div>
+                {% else %}
+                    <p class="no-data">No dream analysis available yet. Submit a dream above to get started!</p>
+                {% endif %}
+            </div>
+        </section>
+
+        <!-- Logout Button -->
+        <div class="logout-container">
+            <form action="/logout" method="POST">
+                <button type="submit" class="btn logout-btn">Logout</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
