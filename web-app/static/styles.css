@@ -121,3 +121,30 @@ a:hover {
     background: #17a2b8;
     border: 1px solid #138496;
 }
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1em;
+    font-family: Arial, sans-serif;
+}
+
+button, a {
+    margin: 5px;
+    padding: 5px 10px;
+    text-decoration: none;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+th {
+    background-color: #f2f2f2;
+}

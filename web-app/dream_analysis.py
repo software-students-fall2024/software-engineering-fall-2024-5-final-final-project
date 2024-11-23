@@ -3,30 +3,27 @@ import string
 from nltk.stem import WordNetLemmatizer
 from collections import defaultdict
 
-def tokenize(text):
-    lemmatizer = WordNetLemmatizer()
-    stop_words = ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 
-                'your', 'yours', 'yourself', 'yourselves', 'he', 'him', 'his', 
-                'himself', 'she', 'her', 'hers', 'herself', 'it', 'its', 'itself', 
-                'they', 'them', 'their', 'theirs', 'themselves', 'what', 'which', 
-                'who', 'whom', 'this', 'that', 'these', 'those', 'am', 'is', 'are', 
-                'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'having', 
-                'do', 'does', 'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if', 
-                'or', 'because', 'as', 'until', 'while', 'of', 'at', 'by', 'for', 
-                'with', 'about', 'against', 'between', 'into', 'through', 'during', 
-                'before', 'after', 'above', 'below', 'to', 'from', 'up', 'down', 
-                'in', 'out', 'on', 'off', 'over', 'under', 'again', 'further', 
-                'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how', 
-                'all', 'any', 'both', 'each', 'few', 'more', 'most', 'other', 
-                'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same', 
-                'so', 'than', 'too', 'very', 's', 't', 'can', 'will', 'just', 
-                'don', 'should', 'now', 'd', 'll', 'm', 'o', 're', 've', 'y', 
-                'ain', 'aren', 'couldn', 'didn', 'doesn', 'hadn', 'hasn', 
-                'haven', 'isn', 'ma', 'mightn', 'mustn', 'needn', 'shan', 
-                'shouldn', 'wasn', 'weren', 'won', 'wouldn']
 
+def tokenize(text):
+    """Tokenizes and lemmatizes the input text while filtering out stop words."""
+    if not isinstance(text, str) or not text.strip():
+        raise ValueError("Input must be a non-empty string.")
+
+    lemmatizer = WordNetLemmatizer()
+    from nltk.corpus import stopwords
+    try:
+        stop_words = set(stopwords.words("english"))
+    except LookupError:
+        nltk.download("stopwords")
+        stop_words = set(stopwords.words("english"))
+
+    # Tokenize, lemmatize, and filter stop words/punctuation
     tokens = nltk.word_tokenize(text.lower())
-    return [lemmatizer.lemmatize(token.strip(string.punctuation).lower()) for token in tokens if token not in stop_words and token.isalpha()]
+    return [
+        lemmatizer.lemmatize(token.strip(string.punctuation))
+        for token in tokens
+        if token not in stop_words and token.isalpha()
+    ]
 
 def analyze_dream(dream_description):
     dream_symbols = {
@@ -225,24 +222,35 @@ def analyze_dream(dream_description):
         "tent": "Tents symbolize temporary shelter, adaptability, or impermanence. Living in a tent reflects flexibility, while a collapsed tent suggests instability or lack of support."
     }
 
-    preprocessed_words = tokenize(dream_description)
-    #preprocessed_words = dream_description
+    try:
+        # Preprocess the input text
+        preprocessed_words = tokenize(dream_description)
 
-    # Initialize analysis
-    analysis = defaultdict(list)
+        # Analyze for matching symbols
+        analysis = defaultdict(list)
+        for word in preprocessed_words:
+            if word in dream_symbols:
+                analysis["symbols"].append(word)
+                analysis["interpretations"].append(dream_symbols[word])
 
-    # Analyze dream description
-    for word in preprocessed_words:
-        if word in dream_symbols:
-            analysis["symbols"].append(word)
-            analysis["interpretations"].append(dream_symbols[word])
+        # Formulate the result
+        if analysis["symbols"]:
+            result = f"Dream Analysis:\n\nDream Description: {dream_description}\n\n"
+            result += "Identified Symbols:\n"
+            for symbol, interpretation in zip(analysis["symbols"], analysis["interpretations"]):
+                result += f"- {symbol.capitalize()}: {interpretation}\n"
+            return result
+        else:
+            return "No specific symbols were identified in your dream. Try describing it in more detail!"
 
-    # Formulate response
-    if analysis["symbols"]:
-        result = f"Dream Analysis:\n\nDream Description: {dream_description}\n\n"
-        result += "Identified Symbols:\n"
-        for symbol in analysis["symbols"]:
-            result += f"- {symbol.capitalize()}: {dream_symbols[symbol]}\n"
-        return result
-    else:
-        return "No specific symbols were identified in your dream. Try describing it in more detail!"
+    except Exception as e:
+        return f"An error occurred during analysis: {str(e)}"
+
+# Example usage:
+if __name__ == "__main__":
+    nltk.download("punkt")  # Ensure the required NLTK resources are downloaded
+    nltk.download("stopwords")
+    nltk.download("wordnet")
+
+    dream = "I was falling in a dark forest, chased by an animal."
+    print(analyze_dream(dream))
