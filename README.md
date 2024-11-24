@@ -10,10 +10,13 @@ An exercise to put to practice software development teamwork, subsystem communic
 
 ## TABLE OF CONTENTS
 1. [Description](#description)
+2. [Links to Container Images](#container-images)
 3. [Setup Steps](#setup-steps)
-3. [Team Members](#team-members)
+4. [Team Members](#team-members)
 
 ## DESCRIPTION
+
+## CONTAINER IMAGES
 
 ## SETUP STEPS
 
