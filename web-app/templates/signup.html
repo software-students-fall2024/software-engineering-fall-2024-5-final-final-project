@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Sign Up</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
     <div class="container">
-        <h2 class="text-center">Login</h2>
+        <h2 class="text-center">Sign Up</h2>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -20,7 +20,7 @@
         {% endif %}
         {% endwith %}
 
-        <form action="/login" method="POST" class="form">
+        <form action="/signup" method="POST" class="form">
             <div class="form-group">
                 <label for="username">Username</label>
                 <input type="text" id="username" name="username" required>
@@ -30,8 +30,8 @@
                 <input type="password" id="password" name="password" required>
             </div>
             <div class="form-actions">
-                <button type="submit" class="btn">Login</button>
-                <a href="/signup" class="btn-link">Don't have an account? Sign Up</a>
+                <button type="submit" class="btn">Sign Up</button>
+                <a href="/login" class="btn-link">Already have an account? Login</a>
             </div>
         </form>
     </div>
