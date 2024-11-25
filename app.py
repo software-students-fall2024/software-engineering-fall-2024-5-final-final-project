@@ -27,5 +27,5 @@ MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DBNAME = os.getenv("MONGO_DBNAME", "default_db_name")
 client = MongoClient(MONGO_URI)
 db = client[MONGO_DBNAME]
-emotion_data_collection = db["emotion_data"]
+emotion_data_collection = db["bar"]
 users_collection = db["users"]

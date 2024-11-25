@@ -28,4 +28,4 @@ RUN test -f /machine_learning_client/face_model.h5 || (echo "Model file not foun
 EXPOSE 5002
 
 # Set the command to run the ML client
-CMD ["pipenv", "run", "python", "ml_client.py"]
+CMD ["pipenv", "run", "python", "bar_recs.py"]
