@@ -1,7 +1,7 @@
 name: Publish Docker Image and Deploy to DigitalOcean
 
 on:
-  push:
+  pull-request:
     branches:
       - main 
 
@@ -38,7 +38,7 @@ jobs:
           script: |
             set -e
 
-            cd /app
+            cd app
 
             docker compose down
 
