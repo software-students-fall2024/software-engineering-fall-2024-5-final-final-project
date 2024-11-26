@@ -38,12 +38,19 @@ jobs:
           script: |
             set -e
 
-            cd /app
+            echo "Navigating to the app directory..."
+            cd app
 
-            docker compose down
+            echo "Pulling the latest changes from the repository..."
+            git pull
 
-            git pull origin main
+            echo "Stopping and removing existing Docker services..."
+            docker compose down || echo "No services were running, skipping 'docker compose down'."
 
+            echo "Building Docker images..."
             docker compose build
 
+            echo "Starting the services in detached mode..."
             docker compose up -d
+
+            echo "Deployment completed successfully!"
