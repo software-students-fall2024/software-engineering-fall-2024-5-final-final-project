@@ -1,7 +1,7 @@
 name: Publish Docker Image and Deploy to DigitalOcean
 
 on:
-  pull-request:
+  pull_request:
     branches:
       - main 
 
