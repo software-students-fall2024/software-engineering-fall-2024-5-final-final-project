@@ -1,0 +1,28 @@
+name: Test web-app on Pull Request
+
+on:
+  pull_request:
+    branches:
+      - main  
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Create .env file
+        run: |
+          echo FLASK_SECRET=${{ secrets.FLASK_SECRET }} >> .env
+          echo MONGODB_USERNAME=${{ secrets.MONGODB_USERNAME }} >> .env
+          echo MONGODB_PASSWORD=${{ secrets.MONGODB_PASSWORD }} >> .env
+
+      - name: Build Docker Image
+        run: |
+          docker build -t web-app .
+
+      - name: Run Tests in Docker Container
+        run: |
+          docker run --rm --env-file .env web-app pytest
