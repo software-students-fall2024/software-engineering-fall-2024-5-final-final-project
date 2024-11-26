@@ -30,7 +30,7 @@ jobs:
 
     steps:
       - name: Deploy App to DigitalOcean
-        uses: appleboy/ssh-action@master 
+        uses: appleboy/ssh-action@v1.2.0 
         with:
           host: ${{ secrets.DIGITALOCEAN_IP }}
           username: root
