@@ -1,0 +1,24 @@
+services:
+  mongodb:
+    image: mongo
+    container_name: mongodb-container
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGODB_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD}
+    volumes:
+      - ./data:/data/db
+
+  web-app:
+    build: .
+    container_name: web-app-container
+    depends_on:
+      - mongodb
+    environment:
+      - DB_URI=mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@mongodb:27017
+      - FLASK_SECRET=${FLASK_SECRET}
+      - PYTHONPATH=/project
+    volumes:
+      - .:/project
+    working_dir: /project
+    ports:
+      - "8080:8080"
