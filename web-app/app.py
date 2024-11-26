@@ -9,12 +9,18 @@ from flask import (
     flash,
 )
 from pymongo import MongoClient
+from pymongo.server_api import ServerApi
 from datetime import datetime
 import os
 import bcrypt
 from dotenv import load_dotenv
 from dream_analysis import analyze_dream
 import nltk
+
+load_dotenv()
+uri = os.getenv("MONGODB_URI")
+client = MongoClient(uri, server_api=ServerApi('1'))
+
 nltk.download('punkt')
 nltk.download('stopwords')  # Download stopwords resource
 
