@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block container %}
+<h1>Add a New Item to Wish List</h1>
+<form method="POST" action="{{ url_for('add_item') }}">
+    <label for="item_name">Name:</label>
+    <input type="text" id="item_name" name="item_name" placeholder="Enter name of item" required>
+    <br>
+
+    <label for="item_price">Price:</label>
+    <input type="text" id="item_price" name="item_price" placeholder="Enter price of item" required>
+    <br>
+
+    <label for="item_link">Item Link:</label>
+    <input type="url" id="item_link" name="item_link" placeholder="Enter item link">
+    <br>
+
+    <button type="submit">Add New Wish</button>
+</form>
+{% endblock %}
