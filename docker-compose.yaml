@@ -1,0 +1,31 @@
+#version: '3.8'
+
+services:
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - "27017:27017"  # Expose MongoDB port to the host
+    volumes:
+      - mongodb_data:/data/db  # Persist MongoDB data using Docker volumes
+
+  web_app:
+    build: ./web-app  # Path to Dockerfile for web-app
+    container_name: web_app
+    ports:
+      - "5000:5000"  # Map Flask web server to the host
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/  # MongoDB connection URI
+    depends_on:
+      - mongodb  # Wait for MongoDB before starting
+
+  ml_client:
+    build: ./machine-learning-client  # Path to Dockerfile for machine-learning-client
+    container_name: ml_client
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/  # MongoDB connection URI
+    depends_on:
+      - mongodb  # Wait for MongoDB before starting
+
+volumes:
+  mongodb_data:

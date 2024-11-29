@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Sentence Checker</title>
+  <link rel="stylesheet" href="../static/css/index.css">
+
+  <!-- Include D3.js and plugins -->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-cloud/1.2.5/d3.layout.cloud.js"></script>
+</head>
+<body>
+  <div class="container">
+      <header>
+          <h1>AI Sentence Checker</h1>
+          <p>Enter your sentence to check the sentiment.</p>
+      </header>
+
+      <div class="content">
+          <div class="input-section">
+              <textarea id="sentenceInput" placeholder="Start writing here..."></textarea>
+              <br>
+              <button onclick="analyzeSentence()">Analyze Sentiment</button>
+              <button id="speakButton" onclick="startDictation()">🎤 Speak</button>
+              <p id="uploadMessage" class="hidden" style="display: none; visibility: hidden;">The text has been uploaded successfully, analyzing...</p>
+          </div>
+
+          <!-- Result Sections -->
+          <div class="result-section">
+              <h2>Analysis Results</h2>
+
+              <div class="summary-section">
+                  <h3>Summary</h3>
+                  <p id="summaryText"></p>
+              </div>
+
+              <div class="topics-section">
+                  <h3>Topics</h3>
+                  <div id="topics"></div>
+              </div>
+
+              <div class="emotions-section">
+                  <h3>Overall Emotions</h3>
+                  <div id="overallEmotions"></div>
+              </div>
+
+              <div class="sentiment-trend-section">
+                  <h3>Sentiment Trend</h3>
+                  <div id="sentimentTrend"></div>
+              </div>
+
+              <div class="sentiment-intensity-section">
+                  <h3>Sentiment Intensity per Sentence</h3>
+                  <div id="sentimentIntensity"></div>
+              </div>
+
+              <div class="sentiment-distribution-section">
+                  <h3>Sentiment Distribution</h3>
+                  <div id="sentimentDistribution"></div>
+              </div>
+
+              <div class="emotional-shifts-section">
+                  <h3>Emotional Shifts</h3>
+                  <div id="emotionalShifts"></div>
+              </div>
+
+              <div class="redo-btn-container">
+                  <button onclick="redoAnalysis()">Redo Analysis</button>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <script src="../static/app.js"></script>
+</body>
+</html>
+

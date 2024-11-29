@@ -1,0 +1,2587 @@
+[{
+  "request_id": "2ca1c4d9-9f77-42a1-814d-be5f721408d0",
+  "sentences": [
+    {
+      "sentence": "With an apology and full back pay.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.184,
+        "neu": 0.658,
+        "pos": 0.158,
+        "compound": -0.0516
+      },
+      "emotions": [
+        "Sad"
+      ]
+    },
+    {
+      "sentence": "Thank you.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.286,
+        "pos": 0.714,
+        "compound": 0.3612
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "And they deserve an apology and they deserve full back pay and they'll get it.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.09,
+        "neu": 0.833,
+        "pos": 0.077,
+        "compound": -0.0516
+      },
+      "emotions": [
+        "Sad"
+      ]
+    },
+    {
+      "sentence": "And unlike Biden, possibly getting us into World War III, which can seriously happen, I will keep America out of foolish and unnecessary foreign wars just as I did for four straight years.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.288,
+        "neu": 0.663,
+        "pos": 0.048,
+        "compound": -0.8555
+      },
+      "emotions": [
+        "Fear"
+      ]
+    },
+    {
+      "sentence": "We will again have peace through strength.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.427,
+        "pos": 0.573,
+        "compound": 0.7717
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "That's all it is.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "(51:45) As events oversees have shown to protect our people from the unthinkable thread of nuclear weapons and hypersonic missiles, the United States must also build a state of the art next generation missile defense shield.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.071,
+        "neu": 0.76,
+        "pos": 0.169,
+        "compound": 0.4588
+      },
+      "emotions": [
+        "Fear"
+      ]
+    },
+    {
+      "sentence": "We need it.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "The power of these missiles and the power of a word that I refuse to say nuclear, we have to have it.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.104,
+        "neu": 0.896,
+        "pos": 0,
+        "compound": -0.296
+      },
+      "emotions": [
+        "Angry"
+      ]
+    },
+    {
+      "sentence": "We need a defense shield and we have to do it.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.857,
+        "pos": 0.143,
+        "compound": 0.128
+      },
+      "emotions": [
+        "Fear"
+      ]
+    },
+    {
+      "sentence": "And we actually have the technology and we're going to build it.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Fear"
+      ]
+    },
+    {
+      "sentence": "Just as I rebuilt our military, I will get this done.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "I rebuilt our entire military, which nobody talks about.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Fear"
+      ]
+    },
+    {
+      "sentence": "(52:28) When I got there, we had jet fighters that were 48 years old.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.091,
+        "neu": 0.909,
+        "pos": 0,
+        "compound": -0.0516
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "We had bombers that were 60 years old.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "We had bombers where their grandfathers flew them when they were new.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "And now the grandchild is flying the bomber, but not anymore.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "But as I have said before, the gravest threats to our civilization are not from abroad, but from within.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.294,
+        "neu": 0.706,
+        "pos": 0,
+        "compound": -0.7684
+      },
+      "emotions": [
+        "Fear"
+      ]
+    },
+    {
+      "sentence": "None is greater than the weaponization of the justice system, the FBI, and the DOJ.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.114,
+        "neu": 0.702,
+        "pos": 0.184,
+        "compound": 0.316
+      },
+      "emotions": [
+        "Fear"
+      ]
+    },
+    {
+      "sentence": "We must conduct a top to bottom overhaul to clean out the festering rot and corruption of Washington DC.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.78,
+        "pos": 0.22,
+        "compound": 0.5423
+      },
+      "emotions": [
+        "Surprise"
+      ]
+    },
+    {
+      "sentence": "Thank you.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.286,
+        "pos": 0.714,
+        "compound": 0.3612
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "And I'm a victim.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.512,
+        "neu": 0.488,
+        "pos": 0,
+        "compound": -0.2732
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "I will tell you I'm a victim.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.344,
+        "neu": 0.656,
+        "pos": 0,
+        "compound": -0.2732
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "Think of it.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "The FBI offered $1 million to Christopher Steel who wrote the fake dossier, if he will lie and say that the fake dossier was true.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.2,
+        "neu": 0.71,
+        "pos": 0.09,
+        "compound": -0.5267
+      },
+      "emotions": [
+        "Sad"
+      ]
+    },
+    {
+      "sentence": "And he refused to do it.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.306,
+        "neu": 0.694,
+        "pos": 0,
+        "compound": -0.296
+      },
+      "emotions": [
+        "Sad"
+      ]
+    },
+    {
+      "sentence": "So it had to be really fake.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.361,
+        "neu": 0.639,
+        "pos": 0,
+        "compound": -0.5256
+      },
+      "emotions": [
+        "Sad"
+      ]
+    },
+    {
+      "sentence": "And then they hired somebody Timchenko for $200,000 a year to focus on Trump and to get Trump and other things, including the raid of a very beautiful house that sits right here, the raid of Mar-a-Lago.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.89,
+        "pos": 0.11,
+        "compound": 0.6361
+      },
+      "emotions": [
+        "Surprise"
+      ]
+    },
+    {
+      "sentence": "Think of it and I say, Why didn't you raid Bush's place?",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Surprise",
+        "Fear"
+      ]
+    },
+    {
+      "sentence": "Why didn't you raid Clinton?",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Surprise"
+      ]
+    },
+    {
+      "sentence": "32,000 emails, why didn't you raid Clinton's place?",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Surprise",
+        "Fear"
+      ]
+    },
+    {
+      "sentence": "Why didn't you do Obama who took a lot of things with him?",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Surprise",
+        "Sad"
+      ]
+    },
+    {
+      "sentence": "(54:28) We will dismantle the deep state and restore government by the people.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.845,
+        "pos": 0.155,
+        "compound": 0.296
+      },
+      "emotions": [
+        "Sad"
+      ]
+    },
+    {
+      "sentence": "To further drain the swamp, I will push for a constitutional amendment to impose term limits on members of Congress.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.115,
+        "neu": 0.885,
+        "pos": 0,
+        "compound": -0.296
+      },
+      "emotions": [
+        "Surprise"
+      ]
+    },
+    {
+      "sentence": "It's time.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "It's time.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "And I will ask for a permanent ban on taxpayer funding of campaigns, a lifetime ban on lobbying by former members of Congress and cabinet member.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.298,
+        "neu": 0.702,
+        "pos": 0,
+        "compound": -0.8176
+      },
+      "emotions": [
+        "Sad"
+      ]
+    },
+    {
+      "sentence": "Now I see what they make.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Sad"
+      ]
+    },
+    {
+      "sentence": "They leave the White House or they leave Congress and they're paid millions and millions and millions of dollars a year.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.118,
+        "neu": 0.882,
+        "pos": 0,
+        "compound": -0.1027
+      },
+      "emotions": [
+        "Surprise",
+        "Fear"
+      ]
+    },
+    {
+      "sentence": "No, you have to have a ban.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.592,
+        "neu": 0.408,
+        "pos": 0,
+        "compound": -0.7003
+      },
+      "emotions": [
+        "Sad"
+      ]
+    },
+    {
+      "sentence": "We want to ban on members of Congress getting rich by trading stocks with insider information.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.167,
+        "neu": 0.605,
+        "pos": 0.228,
+        "compound": 0.0772
+      },
+      "emotions": [
+        "Fear"
+      ]
+    },
+    {
+      "sentence": "And many of our great members agree with that.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.515,
+        "pos": 0.485,
+        "compound": 0.765
+      },
+      "emotions": [
+        "Happy"
+      ]
+    },
+    {
+      "sentence": "They actually agree with that.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.615,
+        "pos": 0.385,
+        "compound": 0.3612
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "And of course, we will do whatever it takes to bring back honesty, confidence, and trust in our elections.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.62,
+        "pos": 0.38,
+        "compound": 0.8689
+      },
+      "emotions": [
+        "Fear"
+      ]
+    },
+    {
+      "sentence": "To eliminate cheating I will immediately demand voter ID.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.459,
+        "neu": 0.541,
+        "pos": 0,
+        "compound": -0.6249
+      },
+      "emotions": [
+        "Surprise"
+      ]
+    },
+    {
+      "sentence": "Same day voting and only paper ballots, only paper ballots.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Happy"
+      ]
+    },
+    {
+      "sentence": "France just had an election.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "36 million people voted.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "It was all done by 10 o'clock in the evening.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "No complaints.",
+      "status": "processed",
+      "analysis": {
+        "neg": 1,
+        "neu": 0,
+        "pos": 0,
+        "compound": -0.5994
+      },
+      "emotions": [
+        "Sad"
+      ]
+    },
+    {
+      "sentence": "You had a winner, you had a loser.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.304,
+        "neu": 0.357,
+        "pos": 0.339,
+        "compound": 0.1027
+      },
+      "emotions": [
+        "Sad"
+      ]
+    },
+    {
+      "sentence": "The loser went home.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.531,
+        "neu": 0.469,
+        "pos": 0,
+        "compound": -0.5267
+      },
+      "emotions": [
+        "Sad"
+      ]
+    },
+    {
+      "sentence": "The winner, he's a friend of mine.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.364,
+        "pos": 0.636,
+        "compound": 0.7906
+      },
+      "emotions": [
+        "Happy"
+      ]
+    },
+    {
+      "sentence": "Nice guy.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.263,
+        "pos": 0.737,
+        "compound": 0.4215
+      },
+      "emotions": [
+        "Happy"
+      ]
+    },
+    {
+      "sentence": "But he was happy.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.373,
+        "pos": 0.627,
+        "compound": 0.7227
+      },
+      "emotions": [
+        "Happy"
+      ]
+    },
+    {
+      "sentence": "But there was no complaints.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.679,
+        "neu": 0.321,
+        "pos": 0,
+        "compound": -0.7469
+      },
+      "emotions": [
+        "Sad"
+      ]
+    },
+    {
+      "sentence": "And if there is a complaint, you check it out and you can fix it very easily.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.116,
+        "neu": 0.741,
+        "pos": 0.143,
+        "compound": 0.1263
+      },
+      "emotions": [
+        "Sad",
+        "Fear"
+      ]
+    },
+    {
+      "sentence": "You can find out what's going on.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "No.",
+      "status": "processed",
+      "analysis": {
+        "neg": 1,
+        "neu": 0,
+        "pos": 0,
+        "compound": -0.296
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "Paper ballots, same day voting, voter ID.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Happy"
+      ]
+    },
+    {
+      "sentence": "So simple.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Fear"
+      ]
+    },
+    {
+      "sentence": "And we want all votes counted by election night.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.86,
+        "pos": 0.14,
+        "compound": 0.0772
+      },
+      "emotions": [
+        "Fear"
+      ]
+    },
+    {
+      "sentence": "They spent all of the money for machines and all of this stuff and they end up two weeks later, three weeks later.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Angry",
+        "Fear"
+      ]
+    },
+    {
+      "sentence": "By that time, everyone forgot there was even an election.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Angry"
+      ]
+    },
+    {
+      "sentence": "It's horrible.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.778,
+        "neu": 0.222,
+        "pos": 0,
+        "compound": -0.5423
+      },
+      "emotions": [
+        "Fear"
+      ]
+    },
+    {
+      "sentence": "And this doesn't happen, I said it before, it doesn't happen in third world countries.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "They do better than we do.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.633,
+        "pos": 0.367,
+        "compound": 0.4404
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "It's horrible what's happening with our election and election process and I'll get that job done.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.189,
+        "neu": 0.811,
+        "pos": 0,
+        "compound": -0.5423
+      },
+      "emotions": [
+        "Fear"
+      ]
+    },
+    {
+      "sentence": "That's a very personal job for me.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Fear"
+      ]
+    },
+    {
+      "sentence": "I take that very personally.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "But this is just the beginning of our national greatness agenda.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Happy"
+      ]
+    },
+    {
+      "sentence": "And that's what we call it, a national greatness agenda.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Happy"
+      ]
+    },
+    {
+      "sentence": "Because our country can be greater than it ever was.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.783,
+        "pos": 0.217,
+        "compound": 0.3612
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "Our country was great.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.423,
+        "pos": 0.577,
+        "compound": 0.6249
+      },
+      "emotions": [
+        "Happy"
+      ]
+    },
+    {
+      "sentence": "Our country's not great anymore.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.452,
+        "neu": 0.548,
+        "pos": 0,
+        "compound": -0.5096
+      },
+      "emotions": [
+        "Happy"
+      ]
+    },
+    {
+      "sentence": "Our country a laughingstock right now.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "But our country can be greater than it ever was before by a lot.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.787,
+        "pos": 0.213,
+        "compound": 0.5023
+      },
+      "emotions": [
+        "Sad"
+      ]
+    },
+    {
+      "sentence": "(57:57) There will be more, much more to come in the months ahead.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "There are so many things we can do.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Surprise"
+      ]
+    },
+    {
+      "sentence": "Many of them are not even hard to implement.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.861,
+        "pos": 0.139,
+        "compound": 0.0762
+      },
+      "emotions": [
+        "Angry"
+      ]
+    },
+    {
+      "sentence": "The journey ahead of us will not be easy.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.231,
+        "neu": 0.769,
+        "pos": 0,
+        "compound": -0.3412
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "Anyone who truly seeks to take on this rigged and corrupt system will be faced with a storm of fire that only a few could understand.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.181,
+        "neu": 0.72,
+        "pos": 0.099,
+        "compound": -0.3346
+      },
+      "emotions": [
+        "Fear"
+      ]
+    },
+    {
+      "sentence": "Right.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "I happen to have some children in the front row.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "I think they understand.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "In fact my one boy, stand up, Eric.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Fear"
+      ]
+    },
+    {
+      "sentence": "(58:44) I think he got more subpoenas than any man in the history of our country.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Fear"
+      ]
+    },
+    {
+      "sentence": "So unfair.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.772,
+        "neu": 0.228,
+        "pos": 0,
+        "compound": -0.5256
+      },
+      "emotions": [
+        "Sad"
+      ]
+    },
+    {
+      "sentence": "Al Capone, you all heard of the great gangster?",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.661,
+        "pos": 0.339,
+        "compound": 0.6249
+      },
+      "emotions": [
+        "Happy",
+        "Surprise"
+      ]
+    },
+    {
+      "sentence": "Al Capone got far less.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "Billy the Kid got almost none.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Happy"
+      ]
+    },
+    {
+      "sentence": "Jesse James, no.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.524,
+        "neu": 0.476,
+        "pos": 0,
+        "compound": -0.296
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "Eric Trump got more subpoenas.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Surprise"
+      ]
+    },
+    {
+      "sentence": "He's a PhD in subpoenas.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "They come from Congress.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Surprise"
+      ]
+    },
+    {
+      "sentence": "They... And I appreciate the job you do and the abuse that you've taken.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.235,
+        "neu": 0.615,
+        "pos": 0.151,
+        "compound": -0.3612
+      },
+      "emotions": [
+        "Happy",
+        "Fear"
+      ]
+    },
+    {
+      "sentence": "I really do.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "And it hasn't been a joy ride for our great first lady either.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.179,
+        "neu": 0.582,
+        "pos": 0.239,
+        "compound": 0.2565
+      },
+      "emotions": [
+        "Happy"
+      ]
+    },
+    {
+      "sentence": "It hasn't been a joy ride.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.434,
+        "neu": 0.566,
+        "pos": 0,
+        "compound": -0.4717
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "Stand up.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Fear"
+      ]
+    },
+    {
+      "sentence": "Stand up.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Fear"
+      ]
+    },
+    {
+      "sentence": "(59:45) I go home and she says, they do love her, I go home and she says, You look angry and upset.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.218,
+        "neu": 0.627,
+        "pos": 0.155,
+        "compound": -0.1779
+      },
+      "emotions": [
+        "Sad"
+      ]
+    },
+    {
+      "sentence": "I say, just leave me alone.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.516,
+        "neu": 0.484,
+        "pos": 0,
+        "compound": -0.296
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "I got...",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "Hasn't been the easiest thing.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.368,
+        "neu": 0.632,
+        "pos": 0,
+        "compound": -0.3252
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "But she's been a great first lady and people love her.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.411,
+        "pos": 0.589,
+        "compound": 0.9253
+      },
+      "emotions": [
+        "Happy"
+      ]
+    },
+    {
+      "sentence": "We will be resisted by the combined forces of the establishment, the media, the special interest, the globalists, the Marxist, radicals, the woke corporations, the weaponized power of the federal government, the colossal political machines, the tidal wave of dark money and the most dangerous domestic censorship system ever created by man or woman.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.056,
+        "neu": 0.818,
+        "pos": 0.126,
+        "compound": 0.5118
+      },
+      "emotions": [
+        "Fear"
+      ]
+    },
+    {
+      "sentence": "The most dangerous system we've ever had.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.361,
+        "neu": 0.639,
+        "pos": 0,
+        "compound": -0.5256
+      },
+      "emotions": [
+        "Fear"
+      ]
+    },
+    {
+      "sentence": "We will be attacked.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.5,
+        "neu": 0.5,
+        "pos": 0,
+        "compound": -0.4588
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "We will be slandered.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "We will be persecuted just as I have been.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.247,
+        "neu": 0.753,
+        "pos": 0,
+        "compound": -0.3182
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "I mean I have been, but many people in this room have been.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Fear"
+      ]
+    },
+    {
+      "sentence": "But we will not be intimidated.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.617,
+        "pos": 0.383,
+        "compound": 0.4782
+      },
+      "emotions": [
+        "Surprise"
+      ]
+    },
+    {
+      "sentence": "We will persevere.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "We will stand tall in the storm.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Sad",
+        "Fear"
+      ]
+    },
+    {
+      "sentence": "We will march forward into the torrent and we in the end will win.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.774,
+        "pos": 0.226,
+        "compound": 0.5859
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "Our country will win.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.441,
+        "pos": 0.559,
+        "compound": 0.5859
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "We will win.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.345,
+        "pos": 0.655,
+        "compound": 0.5859
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "(01:01:20) My fellow Americans, we will join together and reverse this staggering American decline.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.855,
+        "pos": 0.145,
+        "compound": 0.296
+      },
+      "emotions": [
+        "Surprise",
+        "Sad"
+      ]
+    },
+    {
+      "sentence": "And it is staggering indeed.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Surprise"
+      ]
+    },
+    {
+      "sentence": "And we will again restore the spirit of our nation.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.672,
+        "pos": 0.328,
+        "compound": 0.4404
+      },
+      "emotions": [
+        "Sad"
+      ]
+    },
+    {
+      "sentence": "And then we must build and raise up a legacy that will stand without equal in the entire history of the world.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Fear"
+      ]
+    },
+    {
+      "sentence": "With your help, we will create communities where our children will grow up safe and strong and a nation where they will grow up free, prosperous, and well.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.506,
+        "pos": 0.494,
+        "compound": 0.9552
+      },
+      "emotions": [
+        "Happy"
+      ]
+    },
+    {
+      "sentence": "We will reestablish the principles of hard work and merit and end the scourge of homelessness that is plaguing our beleaguered, Democrat run cities.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.053,
+        "neu": 0.84,
+        "pos": 0.107,
+        "compound": 0.34
+      },
+      "emotions": [
+        "Fear"
+      ]
+    },
+    {
+      "sentence": "(01:02:02) We will heal our divisions and bring our people back together through incredible success.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.791,
+        "pos": 0.209,
+        "compound": 0.5719
+      },
+      "emotions": [
+        "Sad"
+      ]
+    },
+    {
+      "sentence": "We will defend life, liberty, and the pursuit of happiness.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.533,
+        "pos": 0.467,
+        "compound": 0.7906
+      },
+      "emotions": [
+        "Fear"
+      ]
+    },
+    {
+      "sentence": "We will expand the frontiers of human knowledge and extend the horizons of human achievement.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.765,
+        "pos": 0.235,
+        "compound": 0.4588
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "And we will plant our beautiful American flag very soon on the surface of Mars, which I got started.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.813,
+        "pos": 0.187,
+        "compound": 0.5994
+      },
+      "emotions": [
+        "Happy"
+      ]
+    },
+    {
+      "sentence": "But we need everyone involved.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Fear"
+      ]
+    },
+    {
+      "sentence": "We need everyone's help.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.526,
+        "pos": 0.474,
+        "compound": 0.4019
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "We need to look out for one another.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "We need to be friends, and we need every patriot on board because this is not just a campaign, this is a quest to save our country.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.785,
+        "pos": 0.215,
+        "compound": 0.743
+      },
+      "emotions": [
+        "Happy",
+        "Sad"
+      ]
+    },
+    {
+      "sentence": "Talking about saving our country.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "(01:03:06) Thank you.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.444,
+        "pos": 0.556,
+        "compound": 0.3612
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "Thank you very much.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.545,
+        "pos": 0.455,
+        "compound": 0.3612
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "Thank you very much.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.545,
+        "pos": 0.455,
+        "compound": 0.3612
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "I am asking for your vote.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 1,
+        "pos": 0,
+        "compound": 0
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "I am asking for your support, and I am asking for your friendship and your prayers.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.682,
+        "pos": 0.318,
+        "compound": 0.6808
+      },
+      "emotions": [
+        "Sad"
+      ]
+    },
+    {
+      "sentence": "This very incredible but dangerous journey.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0.476,
+        "neu": 0.524,
+        "pos": 0,
+        "compound": -0.6752
+      },
+      "emotions": [
+        "Surprise",
+        "Fear"
+      ]
+    },
+    {
+      "sentence": "If our movement remains united and confident, then we will shatter the forces of tyranny and we will unleash that glories of liberty for ourselves and for our children, and for generations yet to come.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.713,
+        "pos": 0.287,
+        "compound": 0.91
+      },
+      "emotions": [
+        "Fear"
+      ]
+    },
+    {
+      "sentence": "America's golden age is just ahead and together we will make America powerful again.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.823,
+        "pos": 0.177,
+        "compound": 0.4215
+      },
+      "emotions": [
+        "Angry",
+        "Sad"
+      ]
+    },
+    {
+      "sentence": "We will make America wealthy again.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.667,
+        "pos": 0.333,
+        "compound": 0.3612
+      },
+      "emotions": [
+        "Happy",
+        "Sad"
+      ]
+    },
+    {
+      "sentence": "We will make America strong again.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.602,
+        "pos": 0.398,
+        "compound": 0.5106
+      },
+      "emotions": [
+        "Happy",
+        "Sad"
+      ]
+    },
+    {
+      "sentence": "We will make America proud again.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.617,
+        "pos": 0.383,
+        "compound": 0.4767
+      },
+      "emotions": [
+        "Happy",
+        "Sad"
+      ]
+    },
+    {
+      "sentence": "We will make America safe again.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.633,
+        "pos": 0.367,
+        "compound": 0.4404
+      },
+      "emotions": [
+        "Sad"
+      ]
+    },
+    {
+      "sentence": "We will make America glorious again and we will make America great again.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.57,
+        "pos": 0.43,
+        "compound": 0.8519
+      },
+      "emotions": [
+        "Sad"
+      ]
+    },
+    {
+      "sentence": "Thank you very much.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.545,
+        "pos": 0.455,
+        "compound": 0.3612
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    },
+    {
+      "sentence": "God bless you all.",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.29,
+        "pos": 0.71,
+        "compound": 0.5994
+      },
+      "emotions": [
+        "Happy",
+        "Surprise"
+      ]
+    },
+    {
+      "sentence": "Thank you",
+      "status": "processed",
+      "analysis": {
+        "neg": 0,
+        "neu": 0.286,
+        "pos": 0.714,
+        "compound": 0.3612
+      },
+      "emotions": [
+        "Neutural"
+      ]
+    }
+  ],
+  "overall_status": "processed",
+  "timestamp": {
+    "$date": "2024-11-12T02:23:46.522Z"
+  },
+  "overall_emotions": [
+    "Neutural"
+  ],
+  "sentiment_trend": [
+    {
+      "sentence_index": 0,
+      "compound": -0.0516
+    },
+    {
+      "sentence_index": 1,
+      "compound": 0.3612
+    },
+    {
+      "sentence_index": 2,
+      "compound": -0.0516
+    },
+    {
+      "sentence_index": 3,
+      "compound": -0.8555
+    },
+    {
+      "sentence_index": 4,
+      "compound": 0.7717
+    },
+    {
+      "sentence_index": 5,
+      "compound": 0
+    },
+    {
+      "sentence_index": 6,
+      "compound": 0.4588
+    },
+    {
+      "sentence_index": 7,
+      "compound": 0
+    },
+    {
+      "sentence_index": 8,
+      "compound": -0.296
+    },
+    {
+      "sentence_index": 9,
+      "compound": 0.128
+    },
+    {
+      "sentence_index": 10,
+      "compound": 0
+    },
+    {
+      "sentence_index": 11,
+      "compound": 0
+    },
+    {
+      "sentence_index": 12,
+      "compound": 0
+    },
+    {
+      "sentence_index": 13,
+      "compound": -0.0516
+    },
+    {
+      "sentence_index": 14,
+      "compound": 0
+    },
+    {
+      "sentence_index": 15,
+      "compound": 0
+    },
+    {
+      "sentence_index": 16,
+      "compound": 0
+    },
+    {
+      "sentence_index": 17,
+      "compound": -0.7684
+    },
+    {
+      "sentence_index": 18,
+      "compound": 0.316
+    },
+    {
+      "sentence_index": 19,
+      "compound": 0.5423
+    },
+    {
+      "sentence_index": 20,
+      "compound": 0.3612
+    },
+    {
+      "sentence_index": 21,
+      "compound": -0.2732
+    },
+    {
+      "sentence_index": 22,
+      "compound": -0.2732
+    },
+    {
+      "sentence_index": 23,
+      "compound": 0
+    },
+    {
+      "sentence_index": 24,
+      "compound": -0.5267
+    },
+    {
+      "sentence_index": 25,
+      "compound": -0.296
+    },
+    {
+      "sentence_index": 26,
+      "compound": -0.5256
+    },
+    {
+      "sentence_index": 27,
+      "compound": 0.6361
+    },
+    {
+      "sentence_index": 28,
+      "compound": 0
+    },
+    {
+      "sentence_index": 29,
+      "compound": 0
+    },
+    {
+      "sentence_index": 30,
+      "compound": 0
+    },
+    {
+      "sentence_index": 31,
+      "compound": 0
+    },
+    {
+      "sentence_index": 32,
+      "compound": 0.296
+    },
+    {
+      "sentence_index": 33,
+      "compound": -0.296
+    },
+    {
+      "sentence_index": 34,
+      "compound": 0
+    },
+    {
+      "sentence_index": 35,
+      "compound": 0
+    },
+    {
+      "sentence_index": 36,
+      "compound": -0.8176
+    },
+    {
+      "sentence_index": 37,
+      "compound": 0
+    },
+    {
+      "sentence_index": 38,
+      "compound": -0.1027
+    },
+    {
+      "sentence_index": 39,
+      "compound": -0.7003
+    },
+    {
+      "sentence_index": 40,
+      "compound": 0.0772
+    },
+    {
+      "sentence_index": 41,
+      "compound": 0.765
+    },
+    {
+      "sentence_index": 42,
+      "compound": 0.3612
+    },
+    {
+      "sentence_index": 43,
+      "compound": 0.8689
+    },
+    {
+      "sentence_index": 44,
+      "compound": -0.6249
+    },
+    {
+      "sentence_index": 45,
+      "compound": 0
+    },
+    {
+      "sentence_index": 46,
+      "compound": 0
+    },
+    {
+      "sentence_index": 47,
+      "compound": 0
+    },
+    {
+      "sentence_index": 48,
+      "compound": 0
+    },
+    {
+      "sentence_index": 49,
+      "compound": -0.5994
+    },
+    {
+      "sentence_index": 50,
+      "compound": 0.1027
+    },
+    {
+      "sentence_index": 51,
+      "compound": -0.5267
+    },
+    {
+      "sentence_index": 52,
+      "compound": 0.7906
+    },
+    {
+      "sentence_index": 53,
+      "compound": 0.4215
+    },
+    {
+      "sentence_index": 54,
+      "compound": 0.7227
+    },
+    {
+      "sentence_index": 55,
+      "compound": -0.7469
+    },
+    {
+      "sentence_index": 56,
+      "compound": 0.1263
+    },
+    {
+      "sentence_index": 57,
+      "compound": 0
+    },
+    {
+      "sentence_index": 58,
+      "compound": -0.296
+    },
+    {
+      "sentence_index": 59,
+      "compound": 0
+    },
+    {
+      "sentence_index": 60,
+      "compound": 0
+    },
+    {
+      "sentence_index": 61,
+      "compound": 0.0772
+    },
+    {
+      "sentence_index": 62,
+      "compound": 0
+    },
+    {
+      "sentence_index": 63,
+      "compound": 0
+    },
+    {
+      "sentence_index": 64,
+      "compound": -0.5423
+    },
+    {
+      "sentence_index": 65,
+      "compound": 0
+    },
+    {
+      "sentence_index": 66,
+      "compound": 0.4404
+    },
+    {
+      "sentence_index": 67,
+      "compound": -0.5423
+    },
+    {
+      "sentence_index": 68,
+      "compound": 0
+    },
+    {
+      "sentence_index": 69,
+      "compound": 0
+    },
+    {
+      "sentence_index": 70,
+      "compound": 0
+    },
+    {
+      "sentence_index": 71,
+      "compound": 0
+    },
+    {
+      "sentence_index": 72,
+      "compound": 0.3612
+    },
+    {
+      "sentence_index": 73,
+      "compound": 0.6249
+    },
+    {
+      "sentence_index": 74,
+      "compound": -0.5096
+    },
+    {
+      "sentence_index": 75,
+      "compound": 0
+    },
+    {
+      "sentence_index": 76,
+      "compound": 0.5023
+    },
+    {
+      "sentence_index": 77,
+      "compound": 0
+    },
+    {
+      "sentence_index": 78,
+      "compound": 0
+    },
+    {
+      "sentence_index": 79,
+      "compound": 0.0762
+    },
+    {
+      "sentence_index": 80,
+      "compound": -0.3412
+    },
+    {
+      "sentence_index": 81,
+      "compound": -0.3346
+    },
+    {
+      "sentence_index": 82,
+      "compound": 0
+    },
+    {
+      "sentence_index": 83,
+      "compound": 0
+    },
+    {
+      "sentence_index": 84,
+      "compound": 0
+    },
+    {
+      "sentence_index": 85,
+      "compound": 0
+    },
+    {
+      "sentence_index": 86,
+      "compound": 0
+    },
+    {
+      "sentence_index": 87,
+      "compound": -0.5256
+    },
+    {
+      "sentence_index": 88,
+      "compound": 0.6249
+    },
+    {
+      "sentence_index": 89,
+      "compound": 0
+    },
+    {
+      "sentence_index": 90,
+      "compound": 0
+    },
+    {
+      "sentence_index": 91,
+      "compound": -0.296
+    },
+    {
+      "sentence_index": 92,
+      "compound": 0
+    },
+    {
+      "sentence_index": 93,
+      "compound": 0
+    },
+    {
+      "sentence_index": 94,
+      "compound": 0
+    },
+    {
+      "sentence_index": 95,
+      "compound": -0.3612
+    },
+    {
+      "sentence_index": 96,
+      "compound": 0
+    },
+    {
+      "sentence_index": 97,
+      "compound": 0.2565
+    },
+    {
+      "sentence_index": 98,
+      "compound": -0.4717
+    },
+    {
+      "sentence_index": 99,
+      "compound": 0
+    },
+    {
+      "sentence_index": 100,
+      "compound": 0
+    },
+    {
+      "sentence_index": 101,
+      "compound": -0.1779
+    },
+    {
+      "sentence_index": 102,
+      "compound": -0.296
+    },
+    {
+      "sentence_index": 103,
+      "compound": 0
+    },
+    {
+      "sentence_index": 104,
+      "compound": -0.3252
+    },
+    {
+      "sentence_index": 105,
+      "compound": 0.9253
+    },
+    {
+      "sentence_index": 106,
+      "compound": 0.5118
+    },
+    {
+      "sentence_index": 107,
+      "compound": -0.5256
+    },
+    {
+      "sentence_index": 108,
+      "compound": -0.4588
+    },
+    {
+      "sentence_index": 109,
+      "compound": 0
+    },
+    {
+      "sentence_index": 110,
+      "compound": -0.3182
+    },
+    {
+      "sentence_index": 111,
+      "compound": 0
+    },
+    {
+      "sentence_index": 112,
+      "compound": 0.4782
+    },
+    {
+      "sentence_index": 113,
+      "compound": 0
+    },
+    {
+      "sentence_index": 114,
+      "compound": 0
+    },
+    {
+      "sentence_index": 115,
+      "compound": 0.5859
+    },
+    {
+      "sentence_index": 116,
+      "compound": 0.5859
+    },
+    {
+      "sentence_index": 117,
+      "compound": 0.5859
+    },
+    {
+      "sentence_index": 118,
+      "compound": 0.296
+    },
+    {
+      "sentence_index": 119,
+      "compound": 0
+    },
+    {
+      "sentence_index": 120,
+      "compound": 0.4404
+    },
+    {
+      "sentence_index": 121,
+      "compound": 0
+    },
+    {
+      "sentence_index": 122,
+      "compound": 0.9552
+    },
+    {
+      "sentence_index": 123,
+      "compound": 0.34
+    },
+    {
+      "sentence_index": 124,
+      "compound": 0.5719
+    },
+    {
+      "sentence_index": 125,
+      "compound": 0.7906
+    },
+    {
+      "sentence_index": 126,
+      "compound": 0.4588
+    },
+    {
+      "sentence_index": 127,
+      "compound": 0.5994
+    },
+    {
+      "sentence_index": 128,
+      "compound": 0
+    },
+    {
+      "sentence_index": 129,
+      "compound": 0.4019
+    },
+    {
+      "sentence_index": 130,
+      "compound": 0
+    },
+    {
+      "sentence_index": 131,
+      "compound": 0.743
+    },
+    {
+      "sentence_index": 132,
+      "compound": 0
+    },
+    {
+      "sentence_index": 133,
+      "compound": 0.3612
+    },
+    {
+      "sentence_index": 134,
+      "compound": 0.3612
+    },
+    {
+      "sentence_index": 135,
+      "compound": 0.3612
+    },
+    {
+      "sentence_index": 136,
+      "compound": 0
+    },
+    {
+      "sentence_index": 137,
+      "compound": 0.6808
+    },
+    {
+      "sentence_index": 138,
+      "compound": -0.6752
+    },
+    {
+      "sentence_index": 139,
+      "compound": 0.91
+    },
+    {
+      "sentence_index": 140,
+      "compound": 0.4215
+    },
+    {
+      "sentence_index": 141,
+      "compound": 0.3612
+    },
+    {
+      "sentence_index": 142,
+      "compound": 0.5106
+    },
+    {
+      "sentence_index": 143,
+      "compound": 0.4767
+    },
+    {
+      "sentence_index": 144,
+      "compound": 0.4404
+    },
+    {
+      "sentence_index": 145,
+      "compound": 0.8519
+    },
+    {
+      "sentence_index": 146,
+      "compound": 0.3612
+    },
+    {
+      "sentence_index": 147,
+      "compound": 0.5994
+    },
+    {
+      "sentence_index": 148,
+      "compound": 0.3612
+    }
+  ],
+  "summary": "That's all it is. You had a winner, you had a loser. They... And I appreciate the job you do and the abuse that you've taken. We will be resisted by the combined forces of the establishment, the media, the special interest, the globalists, the Marxist, radicals, the woke corporations, the weaponized power of the federal government, the colossal political machines, the tidal wave of dark money and the most dangerous domestic censorship system ever created by man or woman. If our movement remains united and confident, then we will shatter the forces of tyranny and we will unleash that glories of liberty for ourselves and for our children, and for generations yet to come.",
+  "topics": [
+    [
+      0,
+      "0.250*\"country\" + 0.201*\"wa\" + 0.176*\"need\" + 0.176*\"thank\""
+    ],
+    [
+      1,
+      "0.342*\"america\" + 0.307*\"make\" + 0.232*\"election\" + 0.045*\"great\""
+    ],
+    [
+      2,
+      "0.486*\"got\" + 0.347*\"year\" + 0.018*\"america\" + 0.014*\"country\""
+    ],
+    [
+      3,
+      "0.419*\"people\" + 0.418*\"great\" + 0.014*\"thank\" + 0.014*\"election\""
+    ],
+    [
+      4,
+      "0.404*\"stand\" + 0.404*\"congress\" + 0.020*\"year\" + 0.016*\"wa\""
+    ]
+  ]
+}]
