@@ -15,8 +15,23 @@ from app import (
     perform_sentiment_trend_analysis,
     perform_overall_emotion_detection,
     process_document,
+    perform_ner,
 )
 
+def test_perform_ner():
+    """Test the NER function."""
+    sample_sentences = [
+        {"sentence": "Barack Obama was the 44th President of the United States."},
+        {"sentence": "Google was founded in September 1998 by Larry Page and Sergey Brin."}
+    ]
+    result = perform_ner(sample_sentences)
+    assert len(result) == 2
+    assert "entities" in result[0]
+    assert result[0]["entities"] == [
+        {"text": "Barack Obama", "label": "PERSON"},
+        {"text": "44th", "label": "ORDINAL"},
+        {"text": "the United States", "label": "GPE"}
+    ]
 
 @pytest.fixture(autouse=True)
 def setup_test_env():

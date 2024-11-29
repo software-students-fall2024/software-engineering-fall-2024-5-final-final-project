@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -28,7 +29,12 @@
           <!-- Result Sections -->
           <div class="result-section">
               <h2>Analysis Results</h2>
-
+              
+              <div class="entities-section">
+                <h3>Named Entity Recognition</h3>
+                <div id="entities"></div>
+            </div>
+            
               <div class="summary-section">
                   <h3>Summary</h3>
                   <p id="summaryText"></p>
@@ -64,6 +70,11 @@
                   <div id="emotionalShifts"></div>
               </div>
 
+              <div class="emotion-intensity-section">
+                   <h3>Emotion Intensity Scale</h3>
+                   <div id="emotionIntensityScale"></div>
+              </div>
+
               <div class="redo-btn-container">
                   <button onclick="redoAnalysis()">Redo Analysis</button>
               </div>
@@ -74,4 +85,3 @@
   <script src="../static/app.js"></script>
 </body>
 </html>
-
