@@ -118,6 +118,7 @@ function visualizeResults(data) {
     visualizeSentimentIntensity(data);
     visualizeSentimentDistribution(data);
     visualizeEmotionalShifts(data);
+    visualizeEntities(data); 
 }
 
 // Function to display the summary text
@@ -521,4 +522,39 @@ function redoAnalysis() {
     d3.selectAll("svg").remove();
     document.getElementById('summaryText').textContent = '';
     document.getElementById('uploadMessage').classList.add('hidden'); // Ensure the upload message is hidden
+}
+
+// Function to visualize Named Entities
+function visualizeEntities(data) {
+    const sentences = data.sentences;
+
+    // Remove existing content
+    const entitiesContainer = document.getElementById('entities');
+    entitiesContainer.innerHTML = '';
+
+    sentences.forEach((sentenceEntry, index) => {
+        const sentenceDiv = document.createElement('div');
+        sentenceDiv.classList.add('sentence-entry');
+
+        const sentenceText = document.createElement('p');
+        sentenceText.innerHTML = `<strong>Sentence ${index + 1}:</strong> ${sentenceEntry.sentence}`;
+        sentenceDiv.appendChild(sentenceText);
+
+        // Display entities
+        if (sentenceEntry.entities && sentenceEntry.entities.length > 0) {
+            const entitiesList = document.createElement('ul');
+            sentenceEntry.entities.forEach(entity => {
+                const entityItem = document.createElement('li');
+                entityItem.innerHTML = `<strong>${entity.text}</strong> (${entity.label})`;
+                entitiesList.appendChild(entityItem);
+            });
+            sentenceDiv.appendChild(entitiesList);
+        } else {
+            const noEntities = document.createElement('p');
+            noEntities.innerText = 'No entities found.';
+            sentenceDiv.appendChild(noEntities);
+        }
+
+        entitiesContainer.appendChild(sentenceDiv);
+    });
 }

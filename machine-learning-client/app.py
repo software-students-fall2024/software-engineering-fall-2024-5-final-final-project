@@ -26,6 +26,8 @@ from sumy.nlp.tokenizers import Tokenizer
 from sumy.summarizers.lex_rank import LexRankSummarizer
 import text2emotion as te
 
+import spacy
+
 # step 1: retrive the data in this structure
 # {
 #     "_id": ObjectId("..."),
@@ -64,6 +66,8 @@ nltk.download("stopwords")
 nltk.download("wordnet")
 nltk.download("vader_lexicon")
 
+# Load the spaCy English model
+nlp = spacy.load("en_core_web_sm")
 
 def perform_sentiment_analysis(sentences):
     """
@@ -259,17 +263,11 @@ def perform_sentiment_trend_analysis(sentences):
 
 # process all
 def process_document(document):
-    """
-    Process a single document: perform sentiment analysis, topic modeling,
-    emotion detection, text summarization, and sentiment trend analysis.
-
-    :param document: MongoDB document
-    :return: Updated document with analyses
-    """
     sentences = document["sentences"]
     sentences = perform_sentiment_analysis(sentences)
     topics = perform_topic_modeling(sentences)
     sentences = perform_emotion_detection(sentences)
+    sentences = perform_ner(sentences)  # Ensure this line is present
     summary = perform_text_summarization(sentences)
     sentiment_trend = perform_sentiment_trend_analysis(sentences)
     overall_emotions = perform_overall_emotion_detection(sentences)
@@ -285,6 +283,8 @@ def process_document(document):
         "timestamp": datetime.now(),
     }
     return updated_document
+
+
 
 
 # update to database
@@ -309,6 +309,23 @@ def update_document_in_db(document):
             }
         },
     )
+
+# perform named entity recognition
+def perform_ner(sentences):
+    """
+    Perform Named Entity Recognition on each sentence.
+    Adds an 'entities' field to each sentence entry.
+
+    :param sentences: List of sentence entries
+    :return: Updated list with entities extracted
+    """
+    def extract_entities(sentence_entry):
+        text = sentence_entry["sentence"]
+        doc = nlp(text)
+        entities = [{"text": ent.text, "label": ent.label_} for ent in doc.ents]
+        return {**sentence_entry, "entities": entities}
+
+    return list(map(extract_entities, sentences))
 
 
 def main():

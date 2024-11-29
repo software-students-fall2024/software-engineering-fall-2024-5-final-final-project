@@ -14,6 +14,9 @@ RUN pip install -r requirements.txt
 RUN pip install --no-cache-dir nltk
 RUN python -m nltk.downloader punkt punkt_tab
 
+# Install spaCy and download the English model
+RUN python -m spacy download en_core_web_sm
+
 # Copy the application files into the container
 COPY . .
 
