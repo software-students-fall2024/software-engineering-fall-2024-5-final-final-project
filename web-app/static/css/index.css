@@ -118,3 +118,29 @@ button:hover {
 .redo-btn-container button:hover {
   background-color: #e53935;
 }
+
+/* Entities Table Styles */
+.entities-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.entities-table th,
+.entities-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.entities-table th {
+  background-color: #f2f2f2;
+  text-align: left;
+}
+
+.entities-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.entities-table tr:hover {
+  background-color: #e9e9e9;
+}
