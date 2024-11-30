@@ -524,9 +524,14 @@ function redoAnalysis() {
     d3.selectAll("svg").remove();
     document.getElementById('summaryText').textContent = '';
     document.getElementById('uploadMessage').classList.add('hidden'); // Ensure the upload message is hidden
+
+    // Clear NER visualization
+    const entitiesContainer = document.getElementById('entities');
+    entitiesContainer.innerHTML = '';
 }
 
-// Function to visualize Named Entities
+
+// Function to visualize Named Entities in a table format
 function visualizeEntities(data) {
     const sentences = data.sentences;
 
@@ -534,32 +539,78 @@ function visualizeEntities(data) {
     const entitiesContainer = document.getElementById('entities');
     entitiesContainer.innerHTML = '';
 
+    // Create table
+    const table = document.createElement('table');
+    table.classList.add('entities-table');
+
+    // Create table header
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+
+    const sentenceHeader = document.createElement('th');
+    sentenceHeader.innerText = 'Sentence';
+    headerRow.appendChild(sentenceHeader);
+
+    const entityHeader = document.createElement('th');
+    entityHeader.innerText = 'Entity';
+    headerRow.appendChild(entityHeader);
+
+    const attributeHeader = document.createElement('th');
+    attributeHeader.innerText = 'Attribute';
+    headerRow.appendChild(attributeHeader);
+
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+
+    // Create table body
+    const tbody = document.createElement('tbody');
+
     sentences.forEach((sentenceEntry, index) => {
-        const sentenceDiv = document.createElement('div');
-        sentenceDiv.classList.add('sentence-entry');
+        const sentenceText = sentenceEntry.sentence;
+        const entities = sentenceEntry.entities;
 
-        const sentenceText = document.createElement('p');
-        sentenceText.innerHTML = `<strong>Sentence ${index + 1}:</strong> ${sentenceEntry.sentence}`;
-        sentenceDiv.appendChild(sentenceText);
+        if (entities && entities.length > 0) {
+            entities.forEach(entity => {
+                const row = document.createElement('tr');
 
-        // Display entities
-        if (sentenceEntry.entities && sentenceEntry.entities.length > 0) {
-            const entitiesList = document.createElement('ul');
-            sentenceEntry.entities.forEach(entity => {
-                const entityItem = document.createElement('li');
-                entityItem.innerHTML = `<strong>${entity.text}</strong> (${entity.label})`;
-                entitiesList.appendChild(entityItem);
+                const sentenceCell = document.createElement('td');
+                sentenceCell.innerText = `Sentence ${index + 1}: ${sentenceText}`;
+                row.appendChild(sentenceCell);
+
+                const entityCell = document.createElement('td');
+                entityCell.innerText = entity.text;
+                row.appendChild(entityCell);
+
+                const attributeCell = document.createElement('td');
+                attributeCell.innerText = entity.label;
+                row.appendChild(attributeCell);
+
+                tbody.appendChild(row);
             });
-            sentenceDiv.appendChild(entitiesList);
         } else {
-            const noEntities = document.createElement('p');
-            noEntities.innerText = 'No entities found.';
-            sentenceDiv.appendChild(noEntities);
-        }
+            // If no entities, still display the sentence with 'No entities found'
+            const row = document.createElement('tr');
 
-        entitiesContainer.appendChild(sentenceDiv);
+            const sentenceCell = document.createElement('td');
+            sentenceCell.innerText = `Sentence ${index + 1}: ${sentenceText}`;
+            row.appendChild(sentenceCell);
+
+            const entityCell = document.createElement('td');
+            entityCell.innerText = 'No entities found';
+            row.appendChild(entityCell);
+
+            const attributeCell = document.createElement('td');
+            attributeCell.innerText = '-';
+            row.appendChild(attributeCell);
+
+            tbody.appendChild(row);
+        }
     });
+
+    table.appendChild(tbody);
+    entitiesContainer.appendChild(table);
 }
+
 
 // Function to visualize emotion intensity as a temperature scale
 function visualizeEmotionIntensity(requestId) {
