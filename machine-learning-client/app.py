@@ -104,7 +104,11 @@ def perform_topic_modeling(sentences, num_topics=5):
     :return: List of identified topics
     :raises: ValueError
     """
-
+    # check if it is empty
+    if not sentences:
+        print("No sentences provided for topic modeling.")
+        return []
+    
     def preprocess(text):
         tokens = word_tokenize(text.lower())
         tokens = [
@@ -263,15 +267,33 @@ def perform_sentiment_trend_analysis(sentences):
 
 # process all
 def process_document(document):
-    sentences = document["sentences"]
+    """
+    Process a single document: perform sentiment analysis, topic modeling,
+    emotion detection, text summarization, sentiment trend analysis, and NER.
+
+    :param document: MongoDB document
+    :return: Updated document with analyses
+    """
+    sentences = document.get("sentences", [])
+    if not sentences:
+        print(f"No sentences to process for document with request_id: {document.get('request_id')}")
+        updated_document = {
+            **document,
+            "overall_status": "error",
+            "error_message": "No sentences to process.",
+            "timestamp": datetime.now(),
+        }
+        return updated_document
+
     sentences = perform_sentiment_analysis(sentences)
     topics = perform_topic_modeling(sentences)
     sentences = perform_emotion_detection(sentences)
-    sentences = perform_ner(sentences)  # Ensure this line is present
+    sentences = perform_ner(sentences)
     summary = perform_text_summarization(sentences)
     sentiment_trend = perform_sentiment_trend_analysis(sentences)
     overall_emotions = perform_overall_emotion_detection(sentences)
-    # update document
+
+    # Update document
     updated_document = {
         **document,
         "sentences": sentences,
@@ -287,6 +309,7 @@ def process_document(document):
 
 
 
+
 # update to database
 def update_document_in_db(document):
     """
@@ -295,20 +318,27 @@ def update_document_in_db(document):
     :param document: Document to update
     """
     doc_id = document["_id"]
+    update_fields = {
+        "sentences": document.get("sentences", []),
+        "overall_status": document.get("overall_status", "processed"),
+        "timestamp": document["timestamp"],
+    }
+
+    if document.get("overall_status") == "processed":
+        update_fields.update({
+            "topics": document.get("topics", []),
+            "summary": document.get("summary", ""),
+            "sentiment_trend": document.get("sentiment_trend", []),
+            "overall_emotions": document.get("overall_emotions", []),
+        })
+    elif document.get("overall_status") == "error":
+        update_fields["error_message"] = document.get("error_message", "An error occurred during processing.")
+
     texts_collection.update_one(
         {"_id": doc_id},
-        {
-            "$set": {
-                "sentences": document["sentences"],
-                "overall_status": document["overall_status"],
-                "topics": document["topics"],
-                "summary": document["summary"],
-                "sentiment_trend": document["sentiment_trend"],
-                "overall_emotions": document["overall_emotions"],
-                "timestamp": document["timestamp"],
-            }
-        },
+        {"$set": update_fields},
     )
+
 
 # perform named entity recognition
 def perform_ner(sentences):

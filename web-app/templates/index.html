@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,12 +8,15 @@
   <!-- Include D3.js and plugins -->
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-cloud/1.2.5/d3.layout.cloud.js"></script>
+
+  <!-- Include Google Fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
 </head>
 <body>
   <div class="container">
       <header>
           <h1>AI Sentence Checker</h1>
-          <p>Enter your sentence to check the sentiment.</p>
+          <p>Enter your text to perform sentiment analysis and more.</p>
       </header>
 
       <div class="content">
@@ -23,18 +25,13 @@
               <br>
               <button onclick="analyzeSentence()">Analyze Sentiment</button>
               <button id="speakButton" onclick="startDictation()">🎤 Speak</button>
-              <p id="uploadMessage" class="hidden" style="display: none; visibility: hidden;">The text has been uploaded successfully, analyzing...</p>
+              <p id="uploadMessage" class="hidden">Analyzing your text, please wait...</p>
           </div>
 
           <!-- Result Sections -->
-          <div class="result-section">
+          <div class="result-section hidden">
               <h2>Analysis Results</h2>
-              
-              <div class="entities-section">
-                <h3>Named Entity Recognition</h3>
-                <div id="entities"></div>
-            </div>           
-            
+
               <div class="summary-section">
                   <h3>Summary</h3>
                   <p id="summaryText"></p>
@@ -70,9 +67,10 @@
                   <div id="emotionalShifts"></div>
               </div>
 
-              <div class="emotion-intensity-section">
-                   <h3>Emotion Intensity Scale</h3>
-                   <div id="emotionIntensityScale"></div>
+              <!-- Keep NER Table Outcome -->
+              <div class="entities-section">
+                  <h3>Named Entity Recognition</h3>
+                  <div id="entities"></div>
               </div>
 
               <div class="redo-btn-container">
