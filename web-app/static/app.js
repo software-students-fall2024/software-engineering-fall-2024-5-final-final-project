@@ -640,3 +640,4 @@ function renderTemperatureScale(emotionData) {
         .attr("text-anchor", "start")
         .text(d => (d.intensity * 100).toFixed(1) + "%");
 }
+
