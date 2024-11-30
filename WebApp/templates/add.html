@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Expense</title>
+    <style>
+      .calculator {
+        display: flex;
+        flex-wrap: wrap;
+        margin-top: 10px;
+        gap: 10px;
+      }
+      .calculator button {
+        width: calc(25% - 10px);
+        padding: 15px;
+        font-size: 1.2em;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .calculator button:hover {
+        background-color: gray;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Add Expense</h1>
+      <form action="/add-expense" method="POST">
+        <!-- Date Selection -->
+        <div class="form-group">
+          <label for="date">Choose Date:</label>
+          <input type="date" id="date" name="date" required />
+        </div>
+
+        <!-- Category Selection -->
+        <div class="form-group">
+          <label for="category">Choose Category:</label>
+          <select id="category" name="category" required>
+            <option value="Food">Food</option>
+            <option value="Transportation">Transportation</option>
+            <option value="Entertainment">Entertainment</option>
+            <option value="Housing">Housing</option>
+            <option value="Grocery">Grocery</option>
+            <option value="Shopping">Shopping</option>
+          </select>
+        </div>
+
+        <!-- Amount Input with Calculator -->
+        <div class="form-group">
+          <label for="amount">Amount of Cost:</label>
+          <input type="text" id="amount" name="amount" readonly required />
+          <div class="calculator">
+            <!-- Calculator Buttons -->
+            <button type="button" onclick="addToAmount('1')">1</button>
+            <button type="button" onclick="addToAmount('2')">2</button>
+            <button type="button" onclick="addToAmount('3')">3</button>
+            <button type="button" onclick="addToAmount('4')">4</button>
+            <button type="button" onclick="addToAmount('5')">5</button>
+            <button type="button" onclick="addToAmount('6')">6</button>
+            <button type="button" onclick="addToAmount('7')">7</button>
+            <button type="button" onclick="addToAmount('8')">8</button>
+            <button type="button" onclick="addToAmount('9')">9</button>
+            <button type="button" onclick="addToAmount('0')">0</button>
+            <button type="button" onclick="addToAmount('.')">.</button>
+            <button type="button" onclick="clearAmount()">C</button>
+          </div>
+        </div>
+
+        <!-- Note Input -->
+        <div class="form-group">
+          <label for="note">Note (optional):</label>
+          <textarea id="note" name="note" rows="3" placeholder="Add a note..."></textarea>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit">Add Expense</button>
+      </form>
+    </div>
+
+    <script>
+      function addToAmount(value) {
+        const amountField = document.getElementById("amount");
+        amountField.value += value;
+      }
+
+      function clearAmount() {
+        const amountField = document.getElementById("amount");
+        amountField.value = "";
+      }
+    </script>
+  </body>
+</html>
