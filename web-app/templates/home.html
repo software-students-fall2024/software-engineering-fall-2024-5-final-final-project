@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock Paper Scissors - Home</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f9f9f9;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 3rem;
+            color: #333;
+        }
+        p {
+            font-size: 1.2rem;
+            color: #666;
+        }
+        .button-container {
+            margin-top: 50px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            margin: 15px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #fff;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .secondary-btn {
+            background-color: #28a745;
+        }
+        .secondary-btn:hover {
+            background-color: #1e7e34;
+        }
+        .info-btn {
+            background-color: #ffc107;
+            color: #333;
+        }
+        .info-btn:hover {
+            background-color: #e0a800;
+        }
+        #gameInfo, #loadingMessage {
+            margin-top: 30px;
+            font-size: 1.2rem;
+            color: #555;
+        }
+        #loadingMessage {
+            color: #007BFF;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to Rock Paper Scissors!</h1>
+    <p>Choose your game mode, invite a friend, match with a random player, view rankings, or save your session:</p>
+    <div class="button-container">
+        <a href="/ai" class="btn">Play Against AI</a>
+        <button class="btn" onclick="inviteFriend()">Invite a Friend</button>
+        <button class="btn" onclick="matchRandom()">Match Randomly</button>
+        <a href="/rankings" class="secondary-btn">View Rankings</a>
+        <button class="info-btn" onclick="saveSession()">Save Session</button>
+    </div>
+
+    <div id="loadingMessage" style="display: none;">Loading...</div>
+    <div id="sessionResult" style="margin-top: 30px; display: none;">
+        <p>Your session has been saved! Use this link to continue:</p>
+        <a id="sessionLink" href="#" style="font-size: 1.2rem; word-wrap: break-word; color: #007BFF;"></a>
+    </div>
+    <div id="gameInfo"></div>
+
+    <script>
+        
+        function showLoading(message) {
+            const loadingDiv = document.getElementById('loadingMessage');
+            loadingDiv.textContent = message;
+            loadingDiv.style.display = 'block';
+        }
+
+    
+        function hideLoading() {
+            document.getElementById('loadingMessage').style.display = 'none';
+        }
+
+
+        async function saveSession() {
+            const playerName = prompt("Enter your name to save your session:");
+            if (!playerName) {
+                alert("Session save canceled.");
+                return;
+            }
+
+            const stats = {
+                player_name: playerName,
+                wins: 0,
+                losses: 0,
+                ties: 0
+            };
+
+            try {
+                showLoading("Saving session...");
+                const response = await fetch('/save-session', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(stats)
+                });
+
+                const data = await response.json();
+                hideLoading();
+
+                if (data.session_url) {
+                    document.getElementById('sessionResult').style.display = 'block';
+                    const sessionLink = document.getElementById('sessionLink');
+                    sessionLink.href = data.session_url;
+                    sessionLink.textContent = data.session_url;
+                } else {
+                    alert("Failed to save session.");
+                }
+            } catch (error) {
+                hideLoading();
+                alert("An error occurred while saving the session. Please try again.");
+                console.error(error);
+            }
+        }
+
+        
+        async function inviteFriend() {
+            try {
+                showLoading("Creating a game...");
+                const response = await fetch('/create-game', { method: 'POST' });
+                const data = await response.json();
+                hideLoading();
+
+                document.getElementById('gameInfo').innerHTML = `
+                    Game created! Share this link with your friend: 
+                    <a href="${data.invite_link}">${data.invite_link}</a>
+                `;
+            } catch (error) {
+                hideLoading();
+                alert("An error occurred while creating the game. Please try again.");
+                console.error(error);
+            }
+        }
+
+        
+        async function matchRandom() {
+            const playerName = prompt("Enter your name:");
+            if (!playerName) {
+                alert("Name is required for random match.");
+                return;
+            }
+
+            try {
+                showLoading("Searching for an opponent...");
+                const response = await fetch('/random-match', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ player_name: playerName })
+                });
+
+                const data = await response.json();
+                hideLoading();
+
+                if (data.status === "waiting") {
+                    document.getElementById('gameInfo').textContent = "Waiting for an opponent...";
+                } else if (data.status === "matched") {
+                    document.getElementById('gameInfo').innerHTML = `
+                        Matched with ${data.opponent}! 
+                        <a href="/game.html?gameId=${data.game_id}">Start Game</a>
+                    `;
+                }
+            } catch (error) {
+                hideLoading();
+                alert("An error occurred while matching. Please try again.");
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>
