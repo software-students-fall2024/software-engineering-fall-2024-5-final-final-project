@@ -99,6 +99,8 @@ function fetchAnalysisWithRetry(requestId, retries) {
                 } else {
                     // Pass the data to visualization functions
                     visualizeResults(data);
+                    // Call visualizeEmotionIntensity
+                    visualizeEmotionIntensity(requestId);
                     document.getElementById('uploadMessage').classList.add('hidden'); // Hide upload message once results are available
                 }
             })
@@ -558,3 +560,84 @@ function visualizeEntities(data) {
         entitiesContainer.appendChild(sentenceDiv);
     });
 }
+
+// Function to visualize emotion intensity as a temperature scale
+function visualizeEmotionIntensity(requestId) {
+    fetch(`/emotion_intensity/${requestId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error(data.error);
+                return;
+            }
+
+            // Prepare data
+            const emotions = Object.keys(data);
+            const intensities = Object.values(data);
+
+            // Map data into an array of objects
+            const emotionData = emotions.map((emotion, index) => ({
+                emotion: emotion,
+                intensity: intensities[index]
+            }));
+
+            // Visualize using D3.js
+            renderTemperatureScale(emotionData);
+        })
+        .catch(error => console.error('Error fetching emotion intensity:', error));
+}
+
+// Function to render the temperature scale visualization
+function renderTemperatureScale(emotionData) {
+    // Remove any existing visualization
+    d3.select("#emotionIntensityScale").selectAll("*").remove();
+
+    // Set dimensions
+    const width = 600;
+    const barHeight = 30;
+    const height = barHeight * emotionData.length;
+
+    const svg = d3.select("#emotionIntensityScale")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+    // Define scales
+    const xScale = d3.scaleLinear()
+        .domain([0, 1])  // Intensity values are between 0 and 1
+        .range([0, width - 150]);  // Leave space for labels
+
+    // Define color scale (from cool to warm colors)
+    const colorScale = d3.scaleLinear()
+        .domain([0, 1])
+        .range(["#ADD8E6", "#FF4500"]);  // Light blue to orange-red
+
+    // Create bars
+    const bars = svg.selectAll("g")
+        .data(emotionData)
+        .enter()
+        .append("g")
+        .attr("transform", (d, i) => `translate(150, ${i * barHeight})`);  // Leave space for labels
+
+    bars.append("rect")
+        .attr("width", d => xScale(d.intensity))
+        .attr("height", barHeight - 5)
+        .attr("fill", d => colorScale(d.intensity));
+
+    // Add emotion labels
+    bars.append("text")
+        .attr("x", -10)
+        .attr("y", barHeight / 2)
+        .attr("dy", ".35em")
+        .attr("text-anchor", "end")
+        .text(d => d.emotion);
+
+    // Add intensity labels at the end of bars
+    bars.append("text")
+        .attr("x", d => xScale(d.intensity) + 5)
+        .attr("y", barHeight / 2)
+        .attr("dy", ".35em")
+        .attr("text-anchor", "start")
+        .text(d => (d.intensity * 100).toFixed(1) + "%");
+}
+

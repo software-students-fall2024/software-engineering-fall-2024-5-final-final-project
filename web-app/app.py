@@ -11,6 +11,7 @@ from flask import Flask, render_template, request, jsonify
 from pymongo import MongoClient, errors
 import nltk
 from nltk.tokenize import sent_tokenize
+from collections import defaultdict
 
 app = Flask(__name__)
 
@@ -91,6 +92,29 @@ def get_analysis():
     print("No processed analysis found for request_id:", request_id)  # Debugging line
     return jsonify({"message": "No processed analysis found"}), 404
 
+@app.route("/emotion_intensity/<string:request_id>", methods=["GET"])
+def get_emtion_intensity(request_id):
+    """
+    Calculate the intensity of each emotion for the given document and return the result as JSON.
+    """
+    document = collection.find_one({"request_id": request_id})
+
+    if not document:
+        return jsonify({"error": "Document not found"}), 404
+    
+    # caculate emotion intensity
+    emotion_intensity = defaultdict(float)
+    for sentence in document.get("sentences", []):
+        emotions = sentence.get("emotions", [])
+        for emotion in emotions:
+            emotion_intensity[emotion] += 1
+    
+    # normalize the values by the total number of sentences to get average intensity
+    total_sentences = len(document.get("sentences", []))
+    if total_sentences > 0:
+        emotion_intensity = {k: v / total_sentences for k, v in emotion_intensity.items()}
+
+    return jsonify(emotion_intensity)
 
 if __name__ == "__main__":
     app.run(debug=True)
