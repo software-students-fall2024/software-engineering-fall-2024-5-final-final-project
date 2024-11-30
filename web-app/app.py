@@ -38,7 +38,10 @@ def submit_sentence():
     and store them in MongoDB with a unique request_id.
     """
     data = request.get_json()
-    paragraph = data.get("sentence")
+    paragraph = data.get("sentence", "").strip()
+
+    if not paragraph:
+        return jsonify({"error": "Input text is empty."}), 400
 
     # Split paragraph into individual sentences
     sentences = sent_tokenize(paragraph)
@@ -63,34 +66,39 @@ def submit_sentence():
     try:
         # Insert into MongoDB
         result = collection.insert_one(document)
-        print("Inserted Document ID:", result.inserted_id)  # Debugging line
+        print("Inserted Document ID:", result.inserted_id)
     except errors.PyMongoError as e:
-        print(f"Error inserting document: {e}")  # Specific error handling for MongoDB
+        print(f"Error inserting document: {e}")
+        return jsonify({"error": "Database insertion error."}), 500
 
     # Return the request_id for fetching results later
     return jsonify({"request_id": request_id})
+
 
 
 @app.route("/get_analysis", methods=["GET"])
 def get_analysis():
     """
     Fetch the sentiment analysis result for a given request_id.
-    Only returns processed documents.
+    Returns both processed and error documents.
     """
     request_id = request.args.get("request_id")
-    print(
-        f"Received request to get analysis for request_id: {request_id}"
-    )  # Debugging line
+    print(f"Received request to get analysis for request_id: {request_id}")
 
-    document = collection.find_one(
-        {"request_id": request_id, "overall_status": "processed"}
-    )
+    document = collection.find_one({"request_id": request_id})
     if document:
-        print("Document found:", document)  # Debugging line
+        print("Document found:", document)
         document["_id"] = str(document["_id"])
-        return jsonify(document)
-    print("No processed analysis found for request_id:", request_id)  # Debugging line
-    return jsonify({"message": "No processed analysis found"}), 404
+        if document.get("overall_status") == "processed":
+            return jsonify(document)
+        elif document.get("overall_status") == "error":
+            return jsonify({"error": document.get("error_message", "Processing error.")}), 400
+        else:
+            print("Document not yet processed.")
+            return jsonify({"message": "Analysis not yet complete."}), 202
+    print("No analysis found for request_id:", request_id)
+    return jsonify({"message": "No analysis found"}), 404
+
 
 @app.route("/emotion_intensity/<string:request_id>", methods=["GET"])
 def get_emtion_intensity(request_id):

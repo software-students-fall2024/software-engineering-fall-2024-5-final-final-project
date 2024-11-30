@@ -2,72 +2,94 @@
 
 // Function to analyze the input sentence
 function analyzeSentence() {
-    const sentence = document.getElementById('sentenceInput').value;
+    const sentenceInput = document.getElementById('sentenceInput');
+    const sentence = sentenceInput.value.trim(); // Trim whitespace
+
+    if (!sentence) {
+        alert("Please enter some text before analyzing.");
+        return;
+    }
+
     const uploadMessage = document.getElementById('uploadMessage');
-    uploadMessage.classList.remove('hidden'); // Show upload message
+    uploadMessage.classList.remove('hidden');
 
     fetch('/checkSentiment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sentence })
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(data => {
+                throw new Error(data.error || 'An error occurred');
+            });
+        }
+        return response.json();
+    })
     .then(data => {
         const requestId = data.request_id;
         // Keep checking until the analysis is available
         fetchAnalysisWithRetry(requestId, 10);  // Max retries: 10
     })
-    .catch(error => console.error('Error:', error));
+    .catch(error => {
+        console.error('Error:', error);
+        uploadMessage.classList.add('hidden'); // Hide upload message on error
+        alert(error.message);
+    });
 }
 
-let isRecording = false;
+
+
 let recognition;
+let recognizing = false;
 
 function startDictation() {
-  const speakButton = document.getElementById("speakButton");
+    const speakButton = document.getElementById("speakButton");
 
-  if (!('webkitSpeechRecognition' in window)) {
-    alert("Your browser does not support speech recognition. Please try Chrome.");
-    return;
-  }
+    if (!('webkitSpeechRecognition' in window)) {
+        alert("Your browser does not support speech recognition. Please try Chrome.");
+        return;
+    }
 
-  if (!recognition) {
-    // Initialize speech recognition
-    recognition = new webkitSpeechRecognition();
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.lang = "en-US";
+    if (!recognition) {
+        // Initialize speech recognition
+        recognition = new webkitSpeechRecognition();
+        recognition.continuous = false; // Set to false to stop when user stops speaking
+        recognition.interimResults = false; // Set to false to get final results only
+        recognition.lang = "en-US";
 
-    recognition.onstart = function () {
-      console.log("Voice recognition started.");
-    };
+        recognition.onstart = function () {
+            recognizing = true;
+            speakButton.innerText = "Listening...";
+            speakButton.disabled = true; // Disable the button while recording
+            console.log("Voice recognition started.");
+        };
 
-    recognition.onresult = function (event) {
-      let transcript = "";
-      for (let i = event.resultIndex; i < event.results.length; ++i) {
-        if (event.results[i].isFinal) {
-          transcript += event.results[i][0].transcript + " ";
-        }
-      }
-      document.getElementById("sentenceInput").value += transcript;
-    };
+        recognition.onresult = function (event) {
+            let transcript = event.results[0][0].transcript;
+            document.getElementById("sentenceInput").value += transcript + ' ';
+        };
 
-    recognition.onerror = function (event) {
-      console.error("Recognition error:", event.error);
-    };
+        recognition.onerror = function (event) {
+            console.error("Recognition error:", event.error);
+            recognizing = false;
+            speakButton.innerText = "🎤 Speak";
+            speakButton.disabled = false;
+        };
 
-    recognition.onend = function () {
-      console.log("Voice recognition ended.");
-      stopRecognition(speakButton);  // Reset button when recognition ends
-    };
-  }
+        recognition.onend = function () {
+            recognizing = false;
+            speakButton.innerText = "🎤 Speak";
+            speakButton.disabled = false; // Re-enable the button
+            console.log("Voice recognition ended.");
+        };
+    }
 
-  if (!isRecording) {
-    startRecognition(speakButton);
-  } else {
-    stopRecognition(speakButton);
-  }
+    if (!recognizing) {
+        recognition.start();
+    }
 }
+
 
 function startRecognition(button) {
   recognition.start();
@@ -85,12 +107,21 @@ function stopRecognition(button) {
 function fetchAnalysisWithRetry(requestId, retries) {
     if (retries <= 0) {
         console.error("Failed to retrieve analysis after multiple attempts");
+        alert("Analysis failed or is taking too long. Please try again later.");
+        document.getElementById('uploadMessage').classList.add('hidden');
         return;
     }
 
     setTimeout(() => {
         fetch(`/get_analysis?request_id=${requestId}`)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.error || data.message || 'An error occurred');
+                    });
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.message) {
                     console.error(data.message);
@@ -99,20 +130,28 @@ function fetchAnalysisWithRetry(requestId, retries) {
                 } else {
                     // Pass the data to visualization functions
                     visualizeResults(data);
-                    // Call visualizeEmotionIntensity
-                    visualizeEmotionIntensity(requestId);
                     document.getElementById('uploadMessage').classList.add('hidden'); // Hide upload message once results are available
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                fetchAnalysisWithRetry(requestId, retries - 1);
+                alert(error.message);
+                document.getElementById('uploadMessage').classList.add('hidden');
             });
     }, 5000);  // Retry interval set to 5 seconds
 }
 
+
 // Function to visualize all results
 function visualizeResults(data) {
+    // Hide the upload message
+    const uploadMessage = document.getElementById('uploadMessage');
+    uploadMessage.classList.add('hidden');
+
+    // Show the results section
+    document.querySelector('.result-section').classList.remove('hidden');
+
+    // Visualization functions
     displaySummary(data);
     visualizeTopics(data);
     visualizeOverallEmotions(data);
@@ -120,8 +159,9 @@ function visualizeResults(data) {
     visualizeSentimentIntensity(data);
     visualizeSentimentDistribution(data);
     visualizeEmotionalShifts(data);
-    visualizeEntities(data); 
+    visualizeEntities(data);
 }
+
 
 // Function to display the summary text
 function displaySummary(data) {
@@ -523,12 +563,27 @@ function redoAnalysis() {
     document.getElementById('sentenceInput').value = '';
     d3.selectAll("svg").remove();
     document.getElementById('summaryText').textContent = '';
-    document.getElementById('uploadMessage').classList.add('hidden'); // Ensure the upload message is hidden
+    document.getElementById('uploadMessage').classList.add('hidden');
 
     // Clear NER visualization
     const entitiesContainer = document.getElementById('entities');
     entitiesContainer.innerHTML = '';
+
+    // Hide the results section
+    document.querySelector('.result-section').classList.add('hidden');
+
+    // Reset speech recognition state
+    if (recognition && recognizing) {
+        recognition.stop();
+        recognizing = false;
+        const speakButton = document.getElementById("speakButton");
+        speakButton.innerText = "🎤 Speak";
+        speakButton.disabled = false;
+    }
 }
+
+
+
 
 
 // Function to visualize Named Entities in a table format
