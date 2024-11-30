@@ -220,18 +220,34 @@ function visualizeTopics(data) {
     }
 }
 
+
 // Function to visualize overall emotions using a pie chart
 function visualizeOverallEmotions(data) {
-    const emotions = data.overall_emotions;
-    const emotionCounts = {};
-    emotions.forEach(emotion => {
-        emotionCounts[emotion] = (emotionCounts[emotion] || 0) + 1;
+    const sentences = data.sentences;
+
+    // Classify each sentence based on the compound score
+    const sentimentCounts = { Positive: 0, Negative: 0, Neutral: 0 };
+
+    sentences.forEach(sentence => {
+        const compoundScore = sentence.analysis.compound;
+        if (compoundScore >= 0.05) {
+            sentimentCounts.Positive += 1;
+        } else if (compoundScore <= -0.05) {
+            sentimentCounts.Negative += 1;
+        } else {
+            sentimentCounts.Neutral += 1;
+        }
     });
 
-    const pieData = Object.entries(emotionCounts).map(([emotion, count]) => ({ emotion, count }));
+    const totalSentences = sentences.length;
+    const pieData = [
+        { sentiment: 'Positive', count: sentimentCounts.Positive },
+        { sentiment: 'Negative', count: sentimentCounts.Negative },
+        { sentiment: 'Neutral', count: sentimentCounts.Neutral }
+    ];
 
     // Set dimensions
-    const width = 300;
+    const width = 400;
     const height = 300;
     const radius = Math.min(width, height) / 2;
 
@@ -239,65 +255,74 @@ function visualizeOverallEmotions(data) {
     d3.select("#overallEmotions").selectAll("*").remove();
 
     const svg = d3.select("#overallEmotions").append("svg")
-        .attr("width", width)
+        .attr("width", width + 200)  // Extra space for the legend
         .attr("height", height)
         .append("g")
-        .attr("transform", `translate(${width / 2}, ${height / 2})`);
+        .attr("transform", `translate(${radius}, ${height / 2})`);
 
     const color = d3.scaleOrdinal()
-        .domain(pieData.map(d => d.emotion))
-        .range(d3.schemeCategory10);
+        .domain(pieData.map(d => d.sentiment))
+        .range(['#4caf50', '#f44336', '#9e9e9e']); // Green for Positive, Red for Negative, Grey for Neutral
 
     const pie = d3.pie()
         .value(d => d.count);
 
     const data_ready = pie(pieData);
 
+    // Build the pie chart
     svg.selectAll('whatever')
         .data(data_ready)
-        .join('path')
+        .enter()
+        .append('path')
         .attr('d', d3.arc()
             .innerRadius(0)
             .outerRadius(radius)
         )
-        .attr('fill', d => color(d.data.emotion))
+        .attr('fill', d => color(d.data.sentiment))
         .attr("stroke", "#fff")
-        .style("stroke-width", "2px")
-        .style("opacity", 0.7);
+        .style("stroke-width", "2px");
 
-    // Add labels
+    // Add percentage labels
     svg.selectAll('mySlices')
         .data(data_ready)
         .enter()
         .append('text')
-        .text(d => `${d.data.emotion} (${d.data.count})`)
-        .attr("transform", d => `translate(${d3.arc().innerRadius(0).outerRadius(radius).centroid(d)})`)
+        .text(d => {
+            const percent = ((d.data.count / totalSentences) * 100).toFixed(1);
+            return `${percent}%`;
+        })
+        .attr("transform", d => `translate(${d3.arc()
+            .innerRadius(0)
+            .outerRadius(radius)
+            .centroid(d)})`)
         .style("text-anchor", "middle")
-        .style("font-size", 12);
+        .style("font-size", 14)
+        .style("fill", "#fff");
 
     // Add legend
     const legend = svg.append("g")
-        .attr("transform", `translate(${width / 2 + 20}, ${-height / 2})`);
+        .attr("transform", `translate(${radius + 20}, ${-height / 2 + 20})`);
 
     legend.selectAll(".legend-item")
         .data(pieData)
         .enter()
         .append("g")
         .attr("class", "legend-item")
-        .attr("transform", (d, i) => `translate(0, ${i * 20})`)
+        .attr("transform", (d, i) => `translate(0, ${i * 25})`)
         .call(g => {
             g.append("rect")
-                .attr("width", 10)
-                .attr("height", 10)
-                .attr("fill", d => color(d.emotion));
+                .attr("width", 18)
+                .attr("height", 18)
+                .attr("fill", d => color(d.sentiment));
 
             g.append("text")
-                .attr("x", 15)
-                .attr("y", 10)
-                .text(d => d.emotion)
-                .style("font-size", 12);
+                .attr("x", 24)
+                .attr("y", 14)
+                .text(d => `${d.sentiment} (${d.count})`)
+                .style("font-size", 14);
         });
 }
+
 
 // Function to visualize sentiment trend using a line chart
 function visualizeSentimentTrend(data) {
@@ -309,13 +334,14 @@ function visualizeSentimentTrend(data) {
     // Set dimensions and margins
     const width = 600;
     const height = 300;
-    const margin = { top: 20, right: 100, bottom: 50, left: 50 };
+    const margin = { top: 20, right: 120, bottom: 50, left: 50 };
 
     const svg = d3.select("#sentimentTrend")
         .append("svg")
         .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
+        .attr("height", height + margin.top + margin.bottom);
+
+    const chartArea = svg.append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
     // Create scales
@@ -328,62 +354,77 @@ function visualizeSentimentTrend(data) {
         .range([height, 0]);
 
     // Add X axis
-    svg.append("g")
+    chartArea.append("g")
         .attr("transform", `translate(0,${height})`)
-        .call(d3.axisBottom(x).ticks(10));
+        .call(d3.axisBottom(x).ticks(10))
+        .append("text")
+        .attr("x", width / 2)
+        .attr("y", 40)
+        .attr("fill", "#000")
+        .style("font-size", "14px")
+        .style("text-anchor", "middle")
+        .text("Sentence Number");
 
     // Add Y axis
-    svg.append("g")
-        .call(d3.axisLeft(y));
+    chartArea.append("g")
+        .call(d3.axisLeft(y))
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -height / 2)
+        .attr("y", -40)
+        .attr("fill", "#000")
+        .style("font-size", "14px")
+        .style("text-anchor", "middle")
+        .text("Compound Sentiment Score");
 
     // Add line path
-    svg.append("path")
+    chartArea.append("path")
         .datum(sentimentTrend)
         .attr("fill", "none")
         .attr("stroke", "#4CAF50")
-        .attr("stroke-width", 1.5)
+        .attr("stroke-width", 2)
         .attr("d", d3.line()
             .x(d => x(d.sentence_index))
             .y(d => y(d.compound))
         );
 
     // Add points
-    svg.selectAll("dot")
+    chartArea.selectAll("dot")
         .data(sentimentTrend)
         .enter()
         .append("circle")
         .attr("cx", d => x(d.sentence_index))
         .attr("cy", d => y(d.compound))
-        .attr("r", 3)
+        .attr("r", 4)
         .attr("fill", "#4CAF50");
 
     // Add legend
     const legend = svg.append("g")
-        .attr("transform", `translate(${width + 20}, ${0})`)
-        .call(g => {
-            g.append("rect")
-                .attr("width", 10)
-                .attr("height", 10)
-                .attr("fill", "#4CAF50");
+        .attr("transform", `translate(${width + margin.left + 20}, ${margin.top})`);
 
-            g.append("text")
-                .attr("x", 15)
-                .attr("y", 10)
-                .text("Sentiment Trend")
-                .style("font-size", 12);
-        });
+    legend.append("rect")
+        .attr("width", 18)
+        .attr("height", 18)
+        .attr("fill", "#4CAF50");
+
+    legend.append("text")
+        .attr("x", 24)
+        .attr("y", 14)
+        .text("Compound Sentiment Score")
+        .style("font-size", 14);
 }
+
 
 // Function to visualize sentiment intensity per sentence using a bar chart
 function visualizeSentimentIntensity(data) {
     const sentences = data.sentences;
-    const sentenceIndices = sentences.map((_, i) => i);
+    const sentenceIndices = sentences.map((_, i) => i + 1); // Start from 1
     const compoundScores = sentences.map(sentence => sentence.analysis.compound);
 
     // Set dimensions
-    const width = 600;
-    const height = 300;
-    const margin = { top: 20, right: 30, bottom: 50, left: 50 };
+    const width = 700;  // Increased width
+    const height = 400; // Increased height
+    const margin = { top: 20, right: 50, bottom: 70, left: 70 };
 
     // Remove existing SVG
     d3.select("#sentimentIntensity").selectAll("*").remove();
@@ -391,8 +432,9 @@ function visualizeSentimentIntensity(data) {
     const svg = d3.select("#sentimentIntensity")
         .append("svg")
         .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
+        .attr("height", height + margin.top + margin.bottom);
+
+    const chartArea = svg.append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
     // Create scales
@@ -406,34 +448,78 @@ function visualizeSentimentIntensity(data) {
         .range([height, 0]);
 
     // Add X axis
-    svg.append("g")
+    chartArea.append("g")
         .attr("transform", `translate(0,${height})`)
-        .call(d3.axisBottom(x).tickValues(x.domain().filter((d, i) => !(i % 5))));
+        .call(d3.axisBottom(x).tickValues(x.domain().filter((d, i) => !(i % 5))))
+        .append("text")
+        .attr("x", width / 2)
+        .attr("y", 50)
+        .attr("fill", "#000")
+        .style("font-size", "14px")
+        .style("text-anchor", "middle")
+        .text("Sentence Number");
 
     // Add Y axis
-    svg.append("g")
-        .call(d3.axisLeft(y));
+    chartArea.append("g")
+        .call(d3.axisLeft(y))
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -height / 2)
+        .attr("y", -50)
+        .attr("fill", "#000")
+        .style("font-size", "14px")
+        .style("text-anchor", "middle")
+        .text("Compound Sentiment Score");
 
     // Add bars
-    svg.selectAll(".bar")
+    chartArea.selectAll(".bar")
         .data(compoundScores)
         .enter()
         .append("rect")
-        .attr("x", (d, i) => x(i))
+        .attr("x", (d, i) => x(i + 1))
         .attr("width", x.bandwidth())
         .attr("y", d => y(Math.max(0, d)))
         .attr("height", d => Math.abs(y(d) - y(0)))
         .attr("fill", d => d >= 0 ? "#4caf50" : "#f44336");
+
+    // Add legend
+    const legendData = [
+        { label: "Positive", color: "#4caf50" },
+        { label: "Negative", color: "#f44336" }
+    ];
+
+    const legend = svg.append("g")
+        .attr("transform", `translate(${width + margin.left + 20}, ${margin.top})`);
+
+    legend.selectAll(".legend-item")
+        .data(legendData)
+        .enter()
+        .append("g")
+        .attr("class", "legend-item")
+        .attr("transform", (d, i) => `translate(0, ${i * 25})`)
+        .call(g => {
+            g.append("rect")
+                .attr("width", 18)
+                .attr("height", 18)
+                .attr("fill", d => d.color);
+
+            g.append("text")
+                .attr("x", 24)
+                .attr("y", 14)
+                .text(d => d.label)
+                .style("font-size", 14);
+        });
 }
+
 
 // Function to visualize sentiment distribution using a histogram
 function visualizeSentimentDistribution(data) {
     const compoundScores = data.sentences.map(sentence => sentence.analysis.compound);
 
     // Set dimensions
-    const width = 600;
-    const height = 300;
-    const margin = { top: 20, right: 30, bottom: 50, left: 50 };
+    const width = 700;
+    const height = 400;
+    const margin = { top: 20, right: 50, bottom: 70, left: 70 };
 
     // Remove existing SVG
     d3.select("#sentimentDistribution").selectAll("*").remove();
@@ -441,8 +527,9 @@ function visualizeSentimentDistribution(data) {
     const svg = d3.select("#sentimentDistribution")
         .append("svg")
         .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
+        .attr("height", height + margin.top + margin.bottom);
+
+    const chartArea = svg.append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
     // Create x-axis scale
@@ -463,39 +550,70 @@ function visualizeSentimentDistribution(data) {
         .range([height, 0]);
 
     // Add X axis
-    svg.append("g")
+    chartArea.append("g")
         .attr("transform", `translate(0,${height})`)
-        .call(d3.axisBottom(x));
+        .call(d3.axisBottom(x))
+        .append("text")
+        .attr("x", width / 2)
+        .attr("y", 50)
+        .attr("fill", "#000")
+        .style("font-size", "14px")
+        .style("text-anchor", "middle")
+        .text("Compound Sentiment Score");
 
     // Add Y axis
-    svg.append("g")
-        .call(d3.axisLeft(y));
+    chartArea.append("g")
+        .call(d3.axisLeft(y))
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -height / 2)
+        .attr("y", -50)
+        .attr("fill", "#000")
+        .style("font-size", "14px")
+        .style("text-anchor", "middle")
+        .text("Number of Sentences");
 
     // Add bars
-    svg.selectAll("rect")
+    chartArea.selectAll("rect")
         .data(bins)
         .enter()
         .append("rect")
-        .attr("x", 1)
-        .attr("transform", d => `translate(${x(d.x0)}, ${y(d.length)})`)
-        .attr("width", d => x(d.x1) - x(d.x0) - 1)
+        .attr("x", d => x(d.x0) + 1)
+        .attr("y", d => y(d.length))
+        .attr("width", d => x(d.x1) - x(d.x0) - 2)
         .attr("height", d => height - y(d.length))
         .style("fill", "#69b3a2");
+
+    // Add legend
+    const legend = svg.append("g")
+        .attr("transform", `translate(${width + margin.left + 20}, ${margin.top})`);
+
+    legend.append("rect")
+        .attr("width", 18)
+        .attr("height", 18)
+        .attr("fill", "#69b3a2");
+
+    legend.append("text")
+        .attr("x", 24)
+        .attr("y", 14)
+        .text("Sentiment Distribution")
+        .style("font-size", 14);
 }
+
 
 // Function to visualize emotional shifts using a stacked area chart
 function visualizeEmotionalShifts(data) {
     const sentences = data.sentences;
-    const emotionTypes = ["Happy", "Angry", "Surprise", "Sad", "Fear", "Neutural"];
+    const emotionTypes = ["Happy", "Angry", "Surprise", "Sad", "Fear", "Neutral"];
     const emotionData = [];
 
     sentences.forEach((sentence, index) => {
         const emotions = sentence.emotions;
-        const emotionCounts = {};
+        const emotionCounts = { sentence_index: index + 1 };
         emotionTypes.forEach(emotion => {
             emotionCounts[emotion] = emotions.includes(emotion) ? 1 : 0;
         });
-        emotionData.push({ sentence_index: index, ...emotionCounts });
+        emotionData.push(emotionCounts);
     });
 
     // Prepare data for stack
@@ -503,9 +621,9 @@ function visualizeEmotionalShifts(data) {
     const stackedData = stack(emotionData);
 
     // Set dimensions
-    const width = 600;
-    const height = 300;
-    const margin = { top: 20, right: 30, bottom: 50, left: 50 };
+    const width = 700;
+    const height = 400;
+    const margin = { top: 20, right: 120, bottom: 70, left: 70 };
 
     // Remove existing SVG
     d3.select("#emotionalShifts").selectAll("*").remove();
@@ -513,21 +631,18 @@ function visualizeEmotionalShifts(data) {
     const svg = d3.select("#emotionalShifts")
         .append("svg")
         .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
+        .attr("height", height + margin.top + margin.bottom);
+
+    const chartArea = svg.append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
     // Create scales
     const x = d3.scaleLinear()
-        .domain(d3.extent(emotionData, d => d.sentence_index))
+        .domain([1, sentences.length])
         .range([0, width]);
 
     const y = d3.scaleLinear()
-        .domain([0, d3.max(emotionData, d => {
-            let sum = 0;
-            emotionTypes.forEach(emotion => sum += d[emotion]);
-            return sum;
-        })])
+        .domain([0, emotionTypes.length])  // Maximum possible sum
         .range([height, 0]);
 
     // Create color scale
@@ -536,16 +651,31 @@ function visualizeEmotionalShifts(data) {
         .range(d3.schemeCategory10);
 
     // Add X axis
-    svg.append("g")
+    chartArea.append("g")
         .attr("transform", `translate(0,${height})`)
-        .call(d3.axisBottom(x).ticks(10));
+        .call(d3.axisBottom(x).ticks(10))
+        .append("text")
+        .attr("x", width / 2)
+        .attr("y", 50)
+        .attr("fill", "#000")
+        .style("font-size", "14px")
+        .style("text-anchor", "middle")
+        .text("Sentence Number");
 
     // Add Y axis
-    svg.append("g")
-        .call(d3.axisLeft(y));
+    chartArea.append("g")
+        .call(d3.axisLeft(y).ticks(emotionTypes.length))
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -height / 2)
+        .attr("y", -50)
+        .attr("fill", "#000")
+        .style("font-size", "14px")
+        .style("text-anchor", "middle")
+        .text("Emotion Intensity");
 
     // Add area layers
-    svg.selectAll(".layer")
+    chartArea.selectAll(".layer")
         .data(stackedData)
         .enter()
         .append("path")
@@ -556,7 +686,31 @@ function visualizeEmotionalShifts(data) {
             .y0(d => y(d[0]))
             .y1(d => y(d[1]))
         );
+
+    // Add legend
+    const legend = svg.append("g")
+        .attr("transform", `translate(${width + margin.left + 20}, ${margin.top})`);
+
+    legend.selectAll(".legend-item")
+        .data(emotionTypes)
+        .enter()
+        .append("g")
+        .attr("class", "legend-item")
+        .attr("transform", (d, i) => `translate(0, ${i * 25})`)
+        .call(g => {
+            g.append("rect")
+                .attr("width", 18)
+                .attr("height", 18)
+                .attr("fill", d => color(d));
+
+            g.append("text")
+                .attr("x", 24)
+                .attr("y", 14)
+                .text(d => d)
+                .style("font-size", 14);
+        });
 }
+
 
 // Function to redo the analysis
 function redoAnalysis() {
