@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock Paper Scissors - Real Person</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f9f9f9;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 3rem;
+            color: #333;
+        }
+        p {
+            font-size: 1.2rem;
+            color: #666;
+        }
+        .choice-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        .choice {
+            margin: 0 20px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .choice img {
+            width: 150px;
+            height: 150px;
+            border: 2px solid transparent;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+        .choice img:hover {
+            transform: scale(1.1);
+            border-color: #007BFF;
+        }
+        .result-container {
+            margin-top: 30px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+        .countdown {
+            font-size: 2rem;
+            color: red;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Rock Paper Scissors - Play Against a Friend</h1>
+    <p>Make your choice below. The game will start in 5 seconds:</p>
+
+    <div class="countdown" id="countdown">5</div>
+
+    <div class="choice-container">
+        <div class="choice" onclick="makeChoice('rock')">
+            <img src="../static/images/rock.jpg" alt="Rock">
+            <p>Rock</p>
+        </div>
+        <div class="choice" onclick="makeChoice('paper')">
+            <img src="../static/images/paper.jpg" alt="Paper">
+            <p>Paper</p>
+        </div>
+        <div class="choice" onclick="makeChoice('scissors')">
+            <img src="../static/images/scissor.jpg" alt="Scissors">
+            <p>Scissors</p>
+        </div>
+    </div>
+
+    <div class="result-container" id="result"></div>
+
+    <script>
+        let playerChoice = null;
+        const urlParams = new URLSearchParams(window.location.search);
+        const gameId = urlParams.get('gameId');
+        const player = prompt("Enter 'player1' or 'player2':");
+
+        let countdownValue = 5;
+        let countdownInterval;
+
+ 
+        function startCountdown() {
+            countdownInterval = setInterval(() => {
+                countdownValue -= 1;
+                document.getElementById('countdown').textContent = countdownValue;
+
+                if (countdownValue <= 0) {
+                    clearInterval(countdownInterval);
+                    submitChoice();
+                }
+            }, 1000);
+        }
+
+
+        function makeChoice(choice) {
+            if (!playerChoice) {
+                playerChoice = choice;
+                document.getElementById('result').textContent = `You picked: ${choice}`;
+            }
+        }
+
+   
+        async function submitChoice() {
+            const response = await fetch('/submit-choice', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    game_id: gameId,
+                    player: player,
+                    choice: playerChoice
+                })
+            });
+
+            const data = await response.json();
+            displayResult(data);
+        }
+
+       
+        function displayResult(data) {
+            if (data.result) {
+                document.getElementById('result').innerHTML = `
+                    <b>Player 1 chose:</b> ${data.player1_choice || "Nothing"}<br>
+                    <b>Player 2 chose:</b> ${data.player2_choice || "Nothing"}<br>
+                    <b>Result:</b> ${data.result}
+                `;
+            } else {
+                document.getElementById('result').textContent = "Waiting for the other player...";
+                setTimeout(fetchResult, 2000);
+            }
+        }
+
+
+        async function fetchResult() {
+            const response = await fetch(`/get-result/${gameId}`);
+            const data = await response.json();
+            displayResult(data);
+        }
+
+    
+        startCountdown();
+    </script>
+</body>
+</html>
