@@ -20,5 +20,7 @@ EXPOSE 8080
 ENV FLASK_APP=src/app.py
 
 ENV FLASK_ENV=development
+ENV FLASK_DEBUG=1
+ENV PYTHONUNBUFFERED=1
 
-CMD ["flask", "run", "--host=0.0.0.0", "--port=8080"]
+CMD ["flask", "run", "--host=0.0.0.0", "--port=8080", "--debug"]

@@ -4,7 +4,6 @@ from io import BytesIO
 from flask import Flask, render_template, request, jsonify
 from pymongo import MongoClient
 from gridfs import GridFS
-import requests
 from pymongo.errors import PyMongoError
 from bson import ObjectId
 from bson.errors import InvalidId
@@ -17,12 +16,10 @@ app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET')
 mongodb_username = os.getenv('MONGODB_USERNAME') 
 mongodb_password = os.getenv('MONGODB_PASSWORD')
 
-db_uri = f"mongodb://{mongodb_username}:{mongodb_password}@mongodb:27017"
-client = MongoClient(db_uri)
+client = MongoClient(os.getenv('DB_URI'))
 db = client["audio_db"]
 grid_fs = GridFS(db)
 metadata_collection = db["audio_metadata"]
-
 
 def fetch_and_convert_to_wav(file_id):
     """
@@ -77,7 +74,6 @@ def transcribe(file_id):
     """
     Predict transcription for the given file_id.
     """
-    file_id = request.args.get("file_id")
     if not file_id:
         return jsonify({"error": "file_id is required"}), 400
 
@@ -106,7 +102,6 @@ def transcribe(file_id):
             print("Document matched, but no changes were made.")
         else:
             print("Document updated successfully.")
-
         return (
             jsonify(
                 {
@@ -132,6 +127,9 @@ def transcribe(file_id):
 
 @app.route('/')
 def index():
+    print("printing documents")
+    for document in metadata_collection.find():
+        print(document)
     return render_template('index.html')
 
 @app.route("/record")
@@ -179,5 +177,4 @@ def upload_audio():
     return transcribe(gridfs_id)
 
 if __name__ == "__main__":
-    FLASK_PORT = os.getenv("FLASK_PORT", "8080")
-    app.run(port=FLASK_PORT)
+    app.run(port=8080, debug=True)
