@@ -1,29 +1,117 @@
 import os
 from datetime import datetime
 from io import BytesIO
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for, session, flash
+from flask_login import LoginManager, UserMixin, login_required, login_user, current_user, logout_user
 from pymongo import MongoClient
 from gridfs import GridFS
 from pymongo.errors import PyMongoError
 from bson import ObjectId
 from bson.errors import InvalidId
+from werkzeug.security import generate_password_hash, check_password_hash
 from pydub import AudioSegment
 import speech_recognition as sr
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET')  
+app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET')
 
 client = MongoClient(os.getenv('DB_URI'))
 db = client["audio_db"]
 grid_fs = GridFS(db)
 metadata_collection = db["audio_metadata"]
+users_collection = db["users"]
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    """
+    Handles registration.
+    """
+    if request.method == 'GET':
+        return render_template('register.html')
+
+    username = request.form['username']
+    password = request.form['password']
+
+    if not username or not password:
+        flash("Username and password are required.", "error")
+        return redirect(url_for('register'))
+
+    if users_collection.find_one({"username": username}):
+        flash("Username already exists. Please choose a different one.", "error")
+        return redirect(url_for('register'))
+
+    password_hash = generate_password_hash(password)
+    new_user = {
+        "username": username,
+        "password_hash": password_hash
+    }
+
+    try:
+        users_collection.insert_one(new_user)
+        flash("Registration successful. Please log in.", "success")
+        return redirect(url_for('login'))
+    except PyMongoError as e:
+        flash("Database error occurred. Please try again.", "error")
+        return str(e), 500
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    """
+    Handles  login
+    """
+    if request.method == 'GET':
+        return render_template('login.html')
+
+    username = request.form['username']
+    password = request.form['password']
+
+    if not username or not password:
+        flash("Username and password are required.", "error")
+        return redirect(url_for('login'))
+
+    user = users_collection.find_one({"username": username})
+    if not user:
+        flash("Invalid username or password.", "error")
+        return redirect(url_for('login'))
+
+    if not check_password_hash(user["password_hash"], password):
+        flash("Invalid username or password.", "error")
+        return redirect(url_for('login'))
+
+    login_user(User(user["username"]))
+    session['username'] = username
+    flash("Login successful.", "success")
+    return redirect(url_for('index'))
+
+
+@app.route('/logout')
+def logout():
+    """
+    Handles logout
+    """
+    logout_user()
+    session.pop('username', None)
+    flash("Logged out successfully.", "success")
+    return redirect(url_for('login'))
+
+
+class User(UserMixin):
+    """
+    User class
+    """
+
+    def __init__(self, username):
+        self.id = username
+
 
 def fetch_and_convert_to_wav(file_id):
     """
     Fetch binary audio from GridFS and convert it to WAV format.
     """
     grid_file = grid_fs.get(file_id)
-    content_type = grid_file.content_type  
+    content_type = grid_file.content_type
 
     file_data = grid_file.read()
     audio = AudioSegment.from_file(
@@ -121,12 +209,14 @@ def transcribe(file_id):
         print("Database operation failed:", str(e))
         return jsonify({"error": "Database operation failed"}), 500
 
+
 @app.route('/')
 def index():
     print("printing documents")
     for document in metadata_collection.find():
         print(document)
     return render_template('index.html')
+
 
 @app.route("/record")
 def record():
@@ -151,7 +241,7 @@ def upload_audio():
     gridfs_id = grid_fs.put(
         audio_file,
         filename=file_name,
-        content_type=audio_file.mimetype,  
+        content_type=audio_file.mimetype,
     )
 
     if not gridfs_id:
@@ -171,6 +261,7 @@ def upload_audio():
 
     print("File successfully uploaded with GridFS ID:", gridfs_id)
     return transcribe(gridfs_id)
+
 
 if __name__ == "__main__":
     app.run(port=8080, debug=True)

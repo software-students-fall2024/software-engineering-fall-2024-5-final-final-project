@@ -4,11 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-flask = "*"
 pymongo = "*"
 pydub = "*"
 speechrecognition = "*"
 pocketsphinx = "*"
+flask = "*"
 
 [dev-packages]
 pytest = "*"
