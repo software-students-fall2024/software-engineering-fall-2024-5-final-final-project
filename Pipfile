@@ -10,13 +10,9 @@ speechrecognition = "*"
 pocketsphinx = "*"
 flask = "*"
 flask-login = "*"
-werkzeug = "*"
 
 [dev-packages]
 pytest = "*"
-black = "*"
-flake8 = "*"
-isort = "*"
 
 [requires]
 python_version = "3.10"
