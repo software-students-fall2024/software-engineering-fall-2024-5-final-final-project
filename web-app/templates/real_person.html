@@ -50,15 +50,35 @@
             color: red;
             margin-top: 20px;
         }
+        .home-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            color: #fff;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .home-button:hover {
+            background-color: #0056b3;
+        }
+        .disabled {
+            pointer-events: none;
+            opacity: 0.5;
+        }
     </style>
 </head>
 <body>
+    <a href="/" class="home-button">Return Home</a>
     <h1>Rock Paper Scissors - Play Against a Friend</h1>
-    <p>Make your choice below. The game will start in 5 seconds:</p>
+    <p id="status">Connecting to the game...</p>
+    <div class="countdown" id="countdown" style="display: none;">5</div>
 
-    <div class="countdown" id="countdown">5</div>
-
-    <div class="choice-container">
+    <div class="choice-container disabled" id="choiceContainer">
         <div class="choice" onclick="makeChoice('rock')">
             <img src="../static/images/rock.jpg" alt="Rock">
             <p>Rock</p>
@@ -75,16 +95,38 @@
 
     <div class="result-container" id="result"></div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.0/socket.io.min.js"></script>
     <script>
-        let playerChoice = null;
+        const socket = io();
         const urlParams = new URLSearchParams(window.location.search);
         const gameId = urlParams.get('gameId');
-        const player = prompt("Enter 'player1' or 'player2':");
-
+        let playerRole = null;
+        let playerChoice = null;
         let countdownValue = 5;
         let countdownInterval;
 
- 
+        // Join the game
+        if (gameId) {
+            socket.emit("join_game", { game_id: gameId });
+        } else {
+            document.getElementById("status").textContent = "Invalid game ID.";
+        }
+
+        // Handle waiting state
+        socket.on("waiting_for_opponent", () => {
+            document.getElementById('status').textContent = "Waiting for an opponent...";
+        });
+
+        // Start the game
+        socket.on("start_game", (data) => {
+            document.getElementById('status').textContent = "Game starting!";
+            playerRole = data.player_role;
+            startCountdown();
+            document.getElementById('countdown').style.display = "block";
+            document.getElementById('choiceContainer').classList.remove("disabled");
+        });
+
+        // Start the countdown
         function startCountdown() {
             countdownInterval = setInterval(() => {
                 countdownValue -= 1;
@@ -97,53 +139,39 @@
             }, 1000);
         }
 
-
+        // Player makes a choice
         function makeChoice(choice) {
             if (!playerChoice) {
                 playerChoice = choice;
                 document.getElementById('result').textContent = `You picked: ${choice}`;
+                document.getElementById('choiceContainer').classList.add("disabled");
+                submitChoice();
             }
         }
 
-   
-        async function submitChoice() {
-            const response = await fetch('/submit-choice', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    game_id: gameId,
-                    player: player,
-                    choice: playerChoice
-                })
+        // Submit player's choice
+        function submitChoice() {
+            socket.emit("submit_choice", {
+                game_id: gameId,
+                player: playerRole,
+                choice: playerChoice || "None"
             });
-
-            const data = await response.json();
-            displayResult(data);
         }
 
-       
-        function displayResult(data) {
-            if (data.result) {
-                document.getElementById('result').innerHTML = `
-                    <b>Player 1 chose:</b> ${data.player1_choice || "Nothing"}<br>
-                    <b>Player 2 chose:</b> ${data.player2_choice || "Nothing"}<br>
-                    <b>Result:</b> ${data.result}
-                `;
-            } else {
-                document.getElementById('result').textContent = "Waiting for the other player...";
-                setTimeout(fetchResult, 2000);
-            }
-        }
+        // Listen for game result
+        socket.on("game_result", (data) => {
+            document.getElementById('result').innerHTML = `
+                <b>Player 1 chose:</b> ${data.player1_choice || "Nothing"}<br>
+                <b>Player 2 chose:</b> ${data.player2_choice || "Nothing"}<br>
+                <b>Result:</b> ${data.result}
+            `;
+            document.getElementById('status').textContent = "Game over!";
+        });
 
-
-        async function fetchResult() {
-            const response = await fetch(`/get-result/${gameId}`);
-            const data = await response.json();
-            displayResult(data);
-        }
-
-    
-        startCountdown();
+        // Handle errors
+        socket.on("error", (data) => {
+            document.getElementById('status').textContent = `Error: ${data.message}`;
+        });
     </script>
 </body>
 </html>
