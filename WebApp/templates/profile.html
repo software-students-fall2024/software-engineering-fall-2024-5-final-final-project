@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Profile</title>
+  </head>
+  <body>
+    <div class="container">
+      <h1>User Profile</h1>
+
+      <!-- Display Profile Picture -->
+      <img src="/WebApp/img/default.png" alt="Profile Picture" class="profile-pic" id="profile-pic" />
+
+      <!-- Upload New Profile Picture -->
+      <form action="/upload-pic" method="POST" enctype="multipart/form-data" class="form-group">
+        <label for="profilePic">Upload New Profile Picture:</label>
+        <input type="file" id="profilePic" name="profilePic" accept="image/*" />
+        <button type="submit">Upload Picture</button>
+      </form>
+
+      <!-- Display Username -->
+      <div class="form-group">
+        <label>Username:</label>
+        <p id="username-display">Name</p>
+      </div>
+
+      <!-- Change Username Form -->
+      <form id="username-form" action="/update-username" method="POST">
+        <label for="newUsername">Enter New Username:</label>
+        <input type="text" id="newUsername" name="newUsername" placeholder="Enter new username" required />
+        <button type="submit">Submit</button>
+      </form>
+
+      <!-- Display Birthday -->
+      <div class="form-group">
+        <label>Birthday:</label>
+        <p id="birthday-display">Not Set</p>
+      </div>
+
+      <!-- Change Birthday Form -->
+      <form id="birthday-form" action="/update-birthday" method="POST">
+        <label for="newBirthday">Enter Birthday:</label>
+        <input type="date" id="newBirthday" name="newBirthday" />
+        <button type="submit">Submit</button>
+      </form>
+
+      <!-- User Email -->
+      <div class="form-group">
+        <label>Email:</label>
+        <p id="email-display">123@example.com</p>
+      </div>
+
+      <!-- Profile Actions -->
+      <div class="actions">
+        <a href="/logout" class="logout">Logout</a>
+        <a href="/delete-account" class="delete">Delete Account</a>
+      </div>
+    </div>
+  </body>
+</html>
