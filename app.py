@@ -13,9 +13,6 @@ import speech_recognition as sr
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET')  
 
-mongodb_username = os.getenv('MONGODB_USERNAME') 
-mongodb_password = os.getenv('MONGODB_PASSWORD')
-
 client = MongoClient(os.getenv('DB_URI'))
 db = client["audio_db"]
 grid_fs = GridFS(db)
@@ -27,7 +24,6 @@ def fetch_and_convert_to_wav(file_id):
     """
     grid_file = grid_fs.get(file_id)
     content_type = grid_file.content_type  
-    print(content_type)
 
     file_data = grid_file.read()
     audio = AudioSegment.from_file(
