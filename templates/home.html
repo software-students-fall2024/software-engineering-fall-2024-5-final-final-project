@@ -2,7 +2,6 @@
 <head>
     <meta charset="UTF-8">
     <title>My Calendar</title>
-    <link rel="stylesheet" href="/css/base.css" type="text/css" media="screen">
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 </head>
 <body>
@@ -12,7 +11,7 @@
     <p>To edit events, simply drag the events around in the calendar. Duration can be edited only in weekly and daily views.</p>
 
         <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
-		<script src='/js/calendar.js' type='module' defer></script>
+        <script src="{{ url_for('static', filename='js/calendar.js') }}"></script>
 		<div class='popup' id='popup'>
 			<div id='event-title'></div>
 			From <div class='time' id='event-startTime'></div>

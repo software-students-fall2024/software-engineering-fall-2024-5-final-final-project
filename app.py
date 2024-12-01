@@ -3,6 +3,7 @@ from flask_login import LoginManager, UserMixin, login_user, logout_user, curren
 import pymongo
 import datetime
 from bson.objectid import ObjectId
+from bson import json_util
 from datetime import datetime, time
 import os
 
@@ -41,12 +42,11 @@ def create_app():
 
     login_manager.user_loader(load_user)
 
-    '''
     try:
         cxn.admin.command("ping")
         print(" *", "Connected to MongoDB!")
     except Exception as e:
-        print(" * MongoDB connection error:", e)'''
+        print(" * MongoDB connection error:", e)
 
     @app.route('/register', methods=['GET', 'POST'])
     def register():
@@ -126,7 +126,7 @@ def create_app():
                 "time": datetime_str,
                 "user": current_user.username
             }
-            db.tasks.insert_one(doc)
+            events.insert_one(doc)
 
             return redirect(url_for("home"))
         return render_template('event-add.html')
@@ -135,7 +135,7 @@ def create_app():
     @login_required
     def database():
         user_events = list(events.find({"user": current_user.username}))
-        return jsonify(user_events)
+        return jsonify(json_util.dumps(user_events))
     
     @app.route('/event/<event_id>/edit', methods=['POST'])
     def edit_event(event_id):
@@ -147,22 +147,26 @@ def create_app():
         Returns:
             redirect (Response): A redirect response to the home page.
         """
-        name = request.form["fname"]
-        description = request.form["fmessage"]
-        hour = request.form["hours"]
-        minute = request.form["minutes"]
-        date = request.form["date"]
+        if not request.form["fname"] :
+            start = request.form["start"]
+            events.update_one({"_id": ObjectId(event_id)}, {"$set": {time: start}})
+        else :
+            name = request.form["fname"]
+            description = request.form["fmessage"]
+            hour = request.form["hours"]
+            minute = request.form["minutes"]
+            date = request.form["date"]
 
-        datetime_str = datetime.strptime(date + " " + hour + ":" + minute, '%m/%d/%Y %H:%M')
+            datetime_str = datetime.strptime(date + " " + hour + ":" + minute, '%m/%d/%Y %H:%M')
 
-        doc = {
-            "name": name,
-            "description": description,
-            "time": datetime_str,
-            "user": current_user.username
-        }
+            doc = {
+                "name": name,
+                "description": description,
+                "time": datetime_str,
+                "user": current_user.username
+            }
 
-        events.update_one({"_id": ObjectId(event_id)}, {"$set": doc})
+            events.update_one({"_id": ObjectId(event_id)}, {"$set": doc})
         return redirect(url_for("home"))
 
     @app.route('/event/<event_id>/delete', methods=['POST'])

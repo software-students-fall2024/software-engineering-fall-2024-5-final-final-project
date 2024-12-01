@@ -1,27 +1,40 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-<head>
-<meta charset="utf-8">
-<title>My Calendar</title>
-<link rel="stylesheet" href="/css/base.css" type="text/css" media="screen" title="no title" charset="utf-8">
-</head>
-<header>
-<nav>
-	<span class="home-link">
-		<a href="/event/add"> Add Event </a>
-	</span>
-	<span class="login-status">
-		Logged in as: username
-		<a href="/logout"> Log Out </a>
-		<a href="/register"> Register </a> 
-        <a href="/login"> Login </a>
-	</span>
-</nav>
-</header>
-<body>
-	<br>
-	<a href='/home'><h1 style="text-decoration:underline overline">My Calendar</h1></a>
-	<div>
-	</div>
-</body>
+  <head>
+    <title>My Calendar</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1 style="text-align: center;">My Calendar</h1>
+        <div class="navbar">
+          <a id="home" class="active" href="{{ url_for('home')}}">Home</a>
+          <a id="add" class="active" href="{{ url_for('add_event')}}">Add Event</a>
+          <a id="login" class="active" href="{{ url_for('login')}}">Log In</a>
+          <a id="signup" class="active" href="{{ url_for('register')}}">Sign Up</a>
+          <a id="logout" class="active" href="{{ url_for('logout')}}">Log Out</a>
+        </div>
+
+        <script>
+          fetch('/api/status')
+    .then(response => response.json())
+    .then(data => {
+        if (data.logged_in) {
+          document.getElementById('login').style.display = 'none'
+          document.getElementById('signup').style.display = 'none'
+        } else {
+          document.getElementById('add').style.display = 'none'
+          document.getElementById('logout').style.display = 'none'
+        }
+    })
+    .catch(error => console.error('Error fetching login status:', error));
+        </script>
+      </header> 
+      <main> {% block container %} {% endblock %} </main>    
+    </div>
+  </body>
 </html>
