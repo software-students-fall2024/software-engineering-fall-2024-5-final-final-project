@@ -1,0 +1,41 @@
+version: '3.10'
+
+services:
+  webapp:
+    build:
+      context: ./web-app
+    ports:
+      - "5001:5001"
+    environment:
+      - MONGO_URI=${MONGO_URI}
+      - MONGO_DBNAME=${MONGO_DBNAME}
+    depends_on:
+      - mongo
+      - bar-recs
+    command: ["pipenv", "run", "python", "app.py"] 
+
+  machine_learning_client:
+    build:
+      context: ./bar-recs
+    ports:
+      - "5002:5000"
+    environment:
+      - MONGO_URI=${MONGO_URI}
+      - MONGO_DBNAME=${MONGO_DBNAME}
+    # environment:
+    #   - MONGO_URI=mongodb://mongo:27017/${SWE_Project_4}
+    depends_on:
+      - mongo
+    command: ["pipenv", "run", "python", "bar-recs.py"]  
+
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=${MONGO_DBNAME}
+
+volumes:
+  mongo_data:
