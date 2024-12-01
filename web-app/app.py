@@ -20,6 +20,7 @@ load_dotenv()
 
 # Flask configuration
 app = Flask(__name__)
+#getting secrete key 
 app.secret_key = os.getenv("SECRET_KEY")
 
 # MongoDB configuration
