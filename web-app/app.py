@@ -80,6 +80,20 @@ def logout():
     return redirect(url_for("index"))
 
 
+@app.route("/dashboard")
+def dashboard():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    # last_emotion = emotion_data_collection.find_one(
+    #     {"user_id": session["user_id"]}, sort=[("timestamp", -1)]
+    # )
+    username = session.get("username", "User")
+    return render_template(
+        "dashboard.html",  username=username
+    )
+
+
 if __name__ == "__main__":
     app.run(
         host="0.0.0.0",

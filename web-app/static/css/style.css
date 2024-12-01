@@ -11,7 +11,7 @@ body {
     background: linear-gradient(135deg, #eca8e6, #df8dea, #CCF5FF); /* Gradient: yellow, baby pink, baby blue */
     background-size: 400% 400%;
     animation: gradientAnimation 15s ease infinite;
-    color: #333; /* Default text color */
+    color: #0e0d0d; /* Default text color */
 }
 
 /* Gradient animation for a smooth transition effect */
@@ -41,7 +41,7 @@ body {
 
 /* Headings with soft, modern colors */
 h1, h2 {
-    color: #444;
+    color: #0b0b0b;
     font-weight: 600;
     margin-bottom: 20px;
     line-height: 1.3;
