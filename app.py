@@ -1,8 +1,24 @@
 import os
 from datetime import datetime
 from io import BytesIO
-from flask import Flask, render_template, request, jsonify, redirect, url_for, session, flash
-from flask_login import LoginManager, UserMixin, login_required, login_user, current_user, logout_user
+from flask import (
+    Flask,
+    render_template,
+    request,
+    jsonify,
+    redirect,
+    url_for,
+    session,
+    flash,
+)
+from flask_login import (
+    LoginManager,
+    UserMixin,
+    login_required,
+    login_user,
+    current_user,
+    logout_user,
+)
 from pymongo import MongoClient
 from gridfs import GridFS
 from pymongo.errors import PyMongoError
@@ -13,88 +29,85 @@ from pydub import AudioSegment
 import speech_recognition as sr
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET')
+app.config["SECRET_KEY"] = os.getenv("FLASK_SECRET")
 
-client = MongoClient(os.getenv('DB_URI'))
+client = MongoClient(os.getenv("DB_URI"))
 db = client["audio_db"]
 grid_fs = GridFS(db)
 metadata_collection = db["audio_metadata"]
 users_collection = db["users"]
 
 
-@app.route('/register', methods=['GET', 'POST'])
+@app.route("/register", methods=["GET", "POST"])
 def register():
     """
     Handles registration.
     """
-    if request.method == 'GET':
-        return render_template('register.html')
+    if request.method == "GET":
+        return render_template("register.html")
 
-    username = request.form['username']
-    password = request.form['password']
+    username = request.form["username"]
+    password = request.form["password"]
 
     if not username or not password:
         flash("Username and password are required.", "error")
-        return redirect(url_for('register'))
+        return redirect(url_for("register"))
 
     if users_collection.find_one({"username": username}):
         flash("Username already exists. Please choose a different one.", "error")
-        return redirect(url_for('register'))
+        return redirect(url_for("register"))
 
     password_hash = generate_password_hash(password)
-    new_user = {
-        "username": username,
-        "password_hash": password_hash
-    }
+    new_user = {"username": username, "password_hash": password_hash}
 
     try:
         users_collection.insert_one(new_user)
         flash("Registration successful. Please log in.", "success")
-        return redirect(url_for('login'))
+        return redirect(url_for("login"))
     except PyMongoError as e:
         flash("Database error occurred. Please try again.", "error")
         return str(e), 500
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route("/login", methods=["GET", "POST"])
 def login():
     """
     Handles  login
     """
-    if request.method == 'GET':
-        return render_template('login.html')
+    if request.method == "GET":
+        return render_template("login.html")
 
-    username = request.form['username']
-    password = request.form['password']
+    username = request.form["username"]
+    password = request.form["password"]
 
     if not username or not password:
         flash("Username and password are required.", "error")
-        return redirect(url_for('login'))
+        return redirect(url_for("login"))
 
     user = users_collection.find_one({"username": username})
     if not user:
         flash("Invalid username or password.", "error")
-        return redirect(url_for('login'))
+        return redirect(url_for("login"))
 
     if not check_password_hash(user["password_hash"], password):
         flash("Invalid username or password.", "error")
-        return redirect(url_for('login'))
+        return redirect(url_for("login"))
 
     login_user(User(user["username"]))
-    session['username'] = username
+    session["username"] = username
     flash("Login successful.", "success")
-    return redirect(url_for('index'))
+    return redirect(url_for("index"))
 
 
-@app.route('/logout')
+@app.route("/logout")
 def logout():
     """
     Handles logout
     """
     logout_user()
-    session.pop('username', None)
+    session.pop("username", None)
     flash("Logged out successfully.", "success")
-    return redirect(url_for('login'))
+    return redirect(url_for("login"))
 
 
 class User(UserMixin):
@@ -210,12 +223,12 @@ def transcribe(file_id):
         return jsonify({"error": "Database operation failed"}), 500
 
 
-@app.route('/')
+@app.route("/")
 def index():
     print("printing documents")
     for document in metadata_collection.find():
         print(document)
-    return render_template('index.html')
+    return render_template("index.html")
 
 
 @app.route("/record")
