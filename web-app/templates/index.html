@@ -2,13 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <!-- Title of the web page -->
     <title>Welcome to SipCity</title>
+    
+    <!-- Link to the CSS stylesheet for styling the page -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-
 </head>
 <body>
+    <!-- Main Heading -->
     <h1>Welcome to SipCity</h1>
-        <a href="{{ url_for('login') }}">Login</a>
-        <a href="{{ url_for('signup') }}">Sign Up</a>
+
+    <!-- Navigation links for Login and Sign Up -->
+    <!-- 'url_for' dynamically generates the URL for the corresponding Flask route -->
+    <a href="{{ url_for('login') }}">Login</a> <!-- Link to the Login page -->
+    <a href="{{ url_for('signup') }}">Sign Up</a> <!-- Link to the Sign-Up page -->
 </body>
 </html>
