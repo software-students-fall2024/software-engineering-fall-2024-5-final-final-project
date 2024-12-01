@@ -8,7 +8,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 
 <h2>Add an Event</h2>
-<form method="POST" action="{{ url_for('create_task') }}">
+<form method="POST" action="{{ url_for('add_event') }}">
   <input type="text" id="fname" name="fname" placeholder="Event Name" required/>
   <br> <br> <br>
   <input type="text" required style="display: block; width: 80%; max-width: 400px; margin: 0 auto; padding: 10px; font-size: 1.2em; border: 1px solid #ccc; border-radius: 5px;" id="datepicker" name="date" class="form-control" placeholder="Select Date">
