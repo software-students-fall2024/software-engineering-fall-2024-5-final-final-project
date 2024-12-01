@@ -6,6 +6,7 @@ from flask_login import LoginManager, UserMixin, login_required, login_user, log
 from werkzeug.security import generate_password_hash, check_password_hash
 from bson.objectid import ObjectId
 
+
 load_dotenv()
 
 def create_app():
@@ -119,7 +120,28 @@ def create_app():
         Route for the home page
         """
         return render_template("index.html")
-
+    
+    @app.route("/add_Item",methods=["GET","POST"])
+    @login_required
+    def add():
+        if request.method=="POST": #get data about new item 
+            itemName=request.form.get("item_name")
+            itemPrice=request.form.get("item_price")
+            itemLink=request.form.get("item_link")
+        
+        if itemName and itemPrice and itemLink: #validate
+            db.items.insert_one({ #insert into db
+                "name":itemName,
+                "price":itemPrice,
+                "link":itemLink,
+                "user_id":current_user.id
+            })
+            flash("Item added!")
+            return redirect(url_for("home"))
+        else:
+            flash("Missing information")
+        return render_template("add.html")
+    
     return app
 
 if __name__ =="__main__":
