@@ -1,8 +1,7 @@
 import pytest
-from app import create_app
+from app import app
 
 def test_secret():
-    app=create_app()
     assert app.config['SECRET_KEY'] is not None
 
 

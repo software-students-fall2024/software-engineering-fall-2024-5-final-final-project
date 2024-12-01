@@ -6,6 +6,9 @@ name = "pypi"
 [packages]
 flask = "*"
 pymongo = "*"
+pydub = "*"
+speechrecognition = "*"
+pocketsphinx = "*"
 
 [dev-packages]
 pytest = "*"
