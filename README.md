@@ -1,3 +1,3 @@
-# Final Project
+# SplitSmart
 
-An exercise to put to practice software development teamwork, subsystem communication, containers, deployment, and CI/CD pipelines. See [instructions](./instructions.md) for details.
+An app which can track group expensises
