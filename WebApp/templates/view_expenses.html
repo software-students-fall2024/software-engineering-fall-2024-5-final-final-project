@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Expense History</title>
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Expense History</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    </head>
 <body>
-    <a href="/profile">Check user profile</a> 
-    <a href="/set_budget">Set monthly budget</a> 
-    <a href="/add">Create new spent</a>
+    <nav>
+        <a href="/profile">Check user profile</a>
+        <a href="/set_budget">Set monthly budget</a>
+        <a href="/add">Create new spent</a>
+    </nav>
 
     <h1>Expense History</h1>
 
