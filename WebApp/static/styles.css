@@ -8,6 +8,7 @@ body, h1, h2, h3, p, form, input, select, button, textarea {
 
 /* Body Styling */
 body {
+    font-family: 'Arial', sans-serif;
     background-color: #f9f9f9;
     color: #333;
     line-height: 1.6;
@@ -16,11 +17,11 @@ body {
 
 /* Container */
 .container {
-    max-width: 800px;
-    margin: 20px auto;
+    max-width: 900px;
+    margin: 30px auto;
     padding: 20px;
     background: #fff;
-    border-radius: 8px;
+    border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -31,8 +32,32 @@ h1, h2 {
     color: #4CAF50;
 }
 
+* Navbar */
+.navbar {
+    background-color: #4CAF50;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    font-size: 18px;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    margin: 0 10px;
+    transition: color 0.3s;
+}
+
+.navbar a:hover {
+    color: #C8E6C9;
+}
+
+
 /* Form Styling */
 form {
+    margin-top: 20px;
     display: flex;
     flex-direction: column;
     gap: 15px;
@@ -60,12 +85,18 @@ button {
     color: white;
     border: none;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 18px;
     transition: background-color 0.3s ease;
 }
 
 button:hover {
     background-color: #45a049;
+}
+
+/* Input Focus */
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: #4CAF50;
 }
 
 /* Links */
@@ -78,11 +109,18 @@ a {
 a:hover {
     color: #388E3C;
 }
+/* Login/Signup Divider */
+.divider {
+    text-align: center;
+    margin: 20px 0;
+    color: #777;
+}
+
 
 /* Profile Page */
 .profile-pic {
     display: block;
-    margin: 0 auto;
+    margin: 0 auto 20px;
     width: 150px;
     height: 150px;
     border-radius: 50%;
@@ -115,9 +153,13 @@ a:hover {
 
 .calculator button {
     background-color: #e0e0e0;
-    color: #333;
-    font-weight: bold;
     border: 1px solid #ccc;
+    color: #333;
+    font-size: 1.2em;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .calculator button:hover {
@@ -162,6 +204,21 @@ a:hover {
 
 .alert.error {
     background-color: #F44336;
+}
+
+/* Category Tags */
+.category {
+    display: inline-block;
+    padding: 5px 10px;
+    margin: 5px;
+    border-radius: 20px;
+    font-size: 14px;
+    color: white;
+    background-color: #4CAF50;
+}
+
+.category:hover {
+    background-color: #45a049;
 }
 
 /* Actions Section */
