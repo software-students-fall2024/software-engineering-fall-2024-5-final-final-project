@@ -11,7 +11,7 @@ load_dotenv()
 
 def create_app():
     
-    app = Flask(__name__)
+    app = Flask(__name__, static_url_path='/static')
 
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'defaultsecretkey')
 
@@ -86,6 +86,8 @@ def create_app():
     @app.route('/createAccount', methods=['GET', 'POST'])
     def createAccount():
         if request.method == 'POST':
+            first_name = request.form['first-name']
+            last_name = request.form['last-name']
             username = request.form['username']
             password = request.form['password']
             existing_user = db.users.find_one({'username': username})
@@ -94,6 +96,8 @@ def create_app():
                 hashed_password = generate_password_hash(password)
 
                 db.users.insert_one({
+                    'first-name': first_name,
+                    'last-name': last_name,
                     'username': username,
                     'password': hashed_password
                 })
