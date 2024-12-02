@@ -11,7 +11,7 @@ load_dotenv()
 
 def create_app():
     
-    app = Flask(__name__)
+    app = Flask(__name__, static_url_path='/static')
 
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'defaultsecretkey')
 
@@ -86,6 +86,8 @@ def create_app():
     @app.route('/createAccount', methods=['GET', 'POST'])
     def createAccount():
         if request.method == 'POST':
+            first_name = request.form['first-name']
+            last_name = request.form['last-name']
             username = request.form['username']
             password = request.form['password']
             existing_user = db.users.find_one({'username': username})
@@ -94,6 +96,8 @@ def create_app():
                 hashed_password = generate_password_hash(password)
 
                 db.users.insert_one({
+                    'first-name': first_name,
+                    'last-name': last_name,
                     'username': username,
                     'password': hashed_password
                 })
@@ -119,18 +123,20 @@ def create_app():
         """
         Route for the home page
         """
-        return render_template("index.html")
+        wishes = db.wishes.find({}).sort("created_at", -1)
+        return render_template("index.html", wishes=wishes)
     
-    @app.route("/add_Item",methods=["GET","POST"])
+    @app.route("/add",methods=["GET","POST"])
     @login_required
     def add():
-        if request.method=="POST": #get data about new item 
-            itemName=request.form.get("item_name")
-            itemPrice=request.form.get("item_price")
-            itemLink=request.form.get("item_link")
+        itemImage=request.form.get("item_image")
+        itemName=request.form.get("item_name")
+        itemPrice=request.form.get("item_price")
+        itemLink=request.form.get("item_link")
         
         if itemName and itemPrice and itemLink: #validate
-            db.items.insert_one({ #insert into db
+            db.wishes.insert_one({ #insert into db
+                "image": itemImage,
                 "name":itemName,
                 "price":itemPrice,
                 "link":itemLink,
