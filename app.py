@@ -123,18 +123,20 @@ def create_app():
         """
         Route for the home page
         """
-        return render_template("index.html")
+        wishes = db.wishes.find({}).sort("created_at", -1)
+        return render_template("index.html", wishes=wishes)
     
-    @app.route("/add_Item",methods=["GET","POST"])
+    @app.route("/add",methods=["GET","POST"])
     @login_required
     def add():
-        if request.method=="POST": #get data about new item 
-            itemName=request.form.get("item_name")
-            itemPrice=request.form.get("item_price")
-            itemLink=request.form.get("item_link")
+        itemImage=request.form.get("item_image")
+        itemName=request.form.get("item_name")
+        itemPrice=request.form.get("item_price")
+        itemLink=request.form.get("item_link")
         
         if itemName and itemPrice and itemLink: #validate
-            db.items.insert_one({ #insert into db
+            db.wishes.insert_one({ #insert into db
+                "image": itemImage,
                 "name":itemName,
                 "price":itemPrice,
                 "link":itemLink,
