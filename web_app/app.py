@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import requests
 from dotenv import load_dotenv
 
@@ -10,6 +10,11 @@ app = Flask(__name__)
 EDAMAM_APP_ID = os.getenv("EDAMAM_APP_ID")
 EDAMAM_APP_KEY = os.getenv("EDAMAM_APP_KEY")
 EDAMAM_BASE_URL = "https://api.edamam.com/api/recipes/v2"
+
+@app.route("/")
+def home():
+    """Render the homepage."""
+    return render_template("home.html")
 
 @app.route("/search", methods=["GET"])
 def search_recipes():
