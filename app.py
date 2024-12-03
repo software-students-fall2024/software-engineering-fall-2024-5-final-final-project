@@ -145,6 +145,7 @@ def create_app():
         itemName=request.form.get("item_name")
         itemPrice=request.form.get("item_price")
         itemLink=request.form.get("item_link")
+        comments=request.form.get("item_comments")
         
         if itemName and itemPrice and itemLink: #validate
             db.wishes.insert_one({ #insert into db
@@ -152,6 +153,7 @@ def create_app():
                 "name":itemName,
                 "price":itemPrice,
                 "link":itemLink,
+                "comments":comments,
                 "user_id":current_user.id
             })
             flash("Item added!")

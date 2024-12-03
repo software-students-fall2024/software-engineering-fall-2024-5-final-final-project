@@ -17,7 +17,8 @@
                     <img src="{{ wish.image }}" alt="item image">
                     <div>
                         <b>{{ wish.name }}</b>
-                        <p>${{ wish.price }}</p>    
+                        <p>${{ wish.price }}</p>   
+                        <p><i>Comments: {{ wish.comments or '' }}</i></p> 
                     </div>
                     <a target="_blank" href="{{ wish.link }}"><button role="link">Item link</button></a>
                 </li>
