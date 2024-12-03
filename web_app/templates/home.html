@@ -7,8 +7,8 @@
 </head>
 <body>
     <h1>Welcome to What's Cookin</h1>
-    {% if user %}
-        <p>Logged in as {{ user }}</p>
+    {% if username %}
+        <p>Logged in as {{ username }}</p>
         <a href="/logout"><button>Logout</button></a>
         <p>Search for your favorite recipes by entering a keyword.</p>
         <form action="/search" method="get">
