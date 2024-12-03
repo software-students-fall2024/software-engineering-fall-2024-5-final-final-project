@@ -1,4 +1,3 @@
-
 from flask import Flask, request, jsonify, render_template, redirect, url_for, session
 import os
 import bcrypt
@@ -8,10 +7,9 @@ from bson import ObjectId
 
 app = Flask(__name__)
 
-
 mongo_uri = os.getenv('MONGO_URI', 'mongodb://localhost:27017/')
 client = MongoClient(mongo_uri)
-#Setup database for users
+# Setup database for users
 db = client['p5_user_database']
 users_collection = db['p5_users']
 budgets_collection = db['p5_budgets']
@@ -20,7 +18,7 @@ expenses_collection = db['p5_expenses']
 # Constants
 EXPENSE_CATEGORIES = ['Food', 'Transportation', 'Entertainment', 'Housing', 'Grocery', 'Shopping']
 
-#user authentication using session
+# User authentication using session
 @app.route('/')
 def home():
     if 'username' in session:
@@ -33,7 +31,7 @@ def auth():
         return redirect('/') 
     return render_template('login.html')
 
-#Login
+# Login
 @app.route('/login', methods=['POST'])
 def login():
     username = request.form.get('username')
@@ -172,6 +170,74 @@ def edit_expense(expense_id):
         'date': expense['date'].strftime('%Y-%m-%d'),
         'notes': expense.get('notes', '')
     })
+
+@app.route('/api/expense_data/<date_range>', methods=['GET'])
+def get_expense_data(date_range):
+    if 'username' not in session:
+        return jsonify({"error": "User not logged in"}), 401
+
+    username = session['username']
+    start_date, end_date = get_date_range(date_range)
+
+    expenses = list(expenses_collection.find({
+        "username": username,
+        "date": {"$gte": start_date, "$lt": end_date}
+    }, {"_id": 0, "amount": 1}))
+    
+    data = [expense['amount'] for expense in expenses]
+    return jsonify(data)
+
+@app.route('/api/expense_details/<date_range>', methods=['GET'])
+def get_expense_details(date_range):
+    if 'username' not in session:
+        return jsonify({"error": "User not logged in"}), 401
+
+    username = session['username']
+    start_date, end_date = get_date_range(date_range)
+
+    pipeline = [
+        {
+            "$match": {
+                "username": username,
+                "date": {"$gte": start_date, "$lt": end_date}
+            }
+        },
+        {
+            "$group": {
+                "_id": "$category",
+                "num_transactions": {"$sum": 1},
+                "total_amount": {"$sum": "$amount"}
+            }
+        }
+    ]
+
+    result = list(expenses_collection.aggregate(pipeline))
+    details = [
+        {
+            "category": r["_id"],
+            "num_transactions": r["num_transactions"],
+            "amount_spent": r["total_amount"]
+        }
+        for r in result
+    ]
+    return jsonify(details)
+
+def get_date_range(date_range):
+    today = datetime.today()
+    if date_range == 'week':
+        start_date = today - timedelta(days=today.weekday())
+        end_date = start_date + timedelta(weeks=1)
+    elif date_range == 'month':
+        start_date = today.replace(day=1)
+        next_month = (today.month % 12) + 1
+        end_date = today.replace(month=next_month, day=1)
+    elif date_range == 'year':
+        start_date = today.replace(month=1, day=1)
+        end_date = today.replace(year=today.year + 1, month=1, day=1)
+    else:
+        start_date = end_date = today
+
+    return start_date, end_date
 
 # Helper function to calculate monthly total
 def get_monthly_total(username, year, month):
