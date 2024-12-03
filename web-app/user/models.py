@@ -5,7 +5,7 @@ from flask_login import UserMixin
 bcrypt = Bcrypt()
 
 class User(UserMixin):
-    def __init__(self, username, password=None, firstname=None, lastname=None, vocabList=None):
+    def __init__(self, username, password=None, firstname=None, lastname=None):
         self.username = username
         self.password = password
         self.firstname = firstname
@@ -18,7 +18,7 @@ class User(UserMixin):
         return db.users.find_one({"username": username})
 
     @staticmethod
-    def create_user(db, username, password, firstname, lastname, vocabList):
+    def create_user(db, username, password, firstname, lastname):
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
         user_data = {
             "username": username,
