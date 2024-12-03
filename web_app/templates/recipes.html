@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipes</title>
+</head>
+<body>
+    <h1>Recipes</h1>
+    {% if recipes %}
+        <ul>
+            {% for recipe in recipes %}
+                <li>
+                    <h2>{{ recipe.name }}</h2>
+                    <img src="{{ recipe.image }}" alt="Image of {{ recipe.name }}" style="width:150px;height:auto;">
+                    <p><strong>Source:</strong> {{ recipe.source }}</p>
+                    <p><a href="{{ recipe.url }}" target="_blank">View Full Recipe</a></p>
+                </li>
+            {% endfor %}
+        </ul>
+        <nav>
+            {% if page > 1 %}
+                <a href="{{ url_for('search_recipes', query=query, page=page-1) }}">Previous</a>
+            {% endif %}
+            {% if has_next %}
+                <a href="{{ url_for('search_recipes', query=query, page=page+1) }}">Next</a>
+            {% endif %}
+        </nav>
+    {% else %}
+        <p>No recipes found.</p>
+    {% endif %}
+</body>
+</html>
