@@ -10,13 +10,14 @@
     {% if user %}
         <p>Logged in as {{ user }}</p>
         <a href="/logout"><button>Logout</button></a>
+        <p>Search for your favorite recipes by entering a keyword.</p>
+        <form action="/search" method="get">
+            <input type="text" name="query" placeholder="Enter a keyword (e.g., chicken)" required>
+            <button type="submit">Search</button>
+        </form>
     {% else %}
         <a href="/login"><button>Login</button></a>
+        <p>Please log in to search for recipes.</p>
     {% endif %}
-    <p>Search for your favorite recipes by entering a keyword.</p>
-    <form action="/search" method="get">
-        <input type="text" name="query" placeholder="Enter a keyword (e.g., chicken)" required>
-        <button type="submit">Search</button>
-    </form>
 </body>
 </html>
