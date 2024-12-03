@@ -9,7 +9,6 @@ from flask import (
     redirect,
     url_for,
     session,
-    flash,
 )
 from flask_login import (
     LoginManager,
@@ -54,11 +53,11 @@ def register():
     password = request.form["password"]
 
     if not username or not password:
-        flash("Username and password are required.", "error")
+        print("Username and password are required.", "error")
         return redirect(url_for("register"))
 
     if users_collection.find_one({"username": username}):
-        flash("Username already exists. Please choose a different one.", "error")
+        print("Username already exists. Please choose a different one.", "error")
         return redirect(url_for("register"))
 
     password_hash = generate_password_hash(password)
@@ -66,10 +65,10 @@ def register():
 
     try:
         users_collection.insert_one(new_user)
-        flash("Registration successful. Please log in.", "success")
+        print("Registration successful. Please log in.", "success")
         return redirect(url_for("login"))
     except PyMongoError as e:
-        flash("Database error occurred. Please try again.", "error")
+        print("Database error occurred. Please try again.", "error")
         return str(e), 500
 
 
@@ -85,21 +84,21 @@ def login():
     password = request.form["password"]
 
     if not username or not password:
-        flash("Username and password are required.", "error")
+        print("Username and password are required.", "error")
         return redirect(url_for("login"))
 
     user = users_collection.find_one({"username": username})
     if not user:
-        flash("Invalid username or password.", "error")
+        print("Invalid username or password.", "error")
         return redirect(url_for("login"))
 
     if not check_password_hash(user["password_hash"], password):
-        flash("Invalid username or password.", "error")
+        print("Invalid username or password.", "error")
         return redirect(url_for("login"))
 
     login_user(User(user["username"]))
     session["username"] = username
-    flash("Login successful.", "success")
+    print("Login successful.", "success")
     return redirect(url_for("index"))
 
 
@@ -110,7 +109,7 @@ def logout():
     """
     logout_user()
     session.pop("username", None)
-    flash("Logged out successfully.", "success")
+    print("Logged out successfully.", "success")
     return redirect(url_for("login"))
 
 
@@ -298,7 +297,7 @@ def user_files():
     user = users_collection.find_one({"username": username})
 
     if not user:
-        flash("User not found.", "error")
+        print("User not found.", "error")
         return redirect(url_for("login"))
 
     files = metadata_collection.find({"user": username})
@@ -308,7 +307,6 @@ def user_files():
 @app.route("/public-files")
 def public_files():
     files = metadata_collection.find({"is_private": {"$ne": True}})
-    print(files)
     return render_template("public_files.html", files=files)
 
 @app.route("/edit-transcription/<file_id>", methods=["GET", "POST"])
@@ -317,7 +315,7 @@ def edit_transcription(file_id):
     file_metadata = metadata_collection.find_one({"file_id": file_id, "user": current_user.id})
 
     if not file_metadata:
-        flash("File not found or you don't have permission to edit it.", "error")
+        print("File not found or you don't have permission to edit it.", "error")
         return redirect(url_for("user_files"))
 
     if request.method == "POST":
@@ -336,21 +334,45 @@ def edit_transcription(file_id):
         )
 
         if result.modified_count > 0:
-            flash("File updated successfully.", "success")
+            print("File updated successfully.", "success")
         else:
-            flash("No changes were made.", "warning")
+            print("No changes were made.", "warning")
         
         return redirect(url_for("user_files"))
 
     return render_template("edit_transcription.html", file_metadata=file_metadata)
 
 
+@app.route("/delete-file/<file_id>", methods=["POST"])
+@login_required
+def delete_file(file_id):
+    file_metadata = metadata_collection.find_one({"file_id": file_id, "user": current_user.id})
+    if not file_metadata:
+        print("File not found or you don't have permission to delete it.", "error")
+        return redirect(url_for("user_files"))
 
+    for file in grid_fs.find():
+            print(f"File ID: {file._id}, Filename: {file.filename}, Content Type: {file.content_type}")
+    try:
+        file_id_obj = ObjectId(file_id)
+    except Exception as e:
+        print(f"Invalid file ID: {e}", "error")
+        return redirect(url_for("user_files"))   
 
+    try:
+        grid_fs.delete(file_id_obj)
 
+        result = metadata_collection.delete_one({"file_id": file_id, "user": current_user.id})
 
+        if result.deleted_count > 0:
+            print("File deleted successfully.", "success")
+        else:
+            print("Failed to delete the metadata.", "error")
 
-
+    except PyMongoError as e:
+        print(f"An error occurred: {e}", "error")
+    
+    return redirect(url_for("user_files"))
 
 if __name__ == "__main__":
     app.run(port=8080, debug=True)
