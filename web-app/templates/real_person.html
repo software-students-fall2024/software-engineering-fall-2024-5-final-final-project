@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rock Paper Scissors - Real Person</title>
+    <title>Rock Paper Scissors - Play Against a Friend</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -114,63 +114,49 @@
 
         // Handle waiting state
         socket.on("waiting_for_opponent", () => {
-            document.getElementById('status').textContent = "Waiting for an opponent...";
+            document.getElementById("status").textContent = "Waiting for an opponent...";
         });
 
         // Start the game
         socket.on("start_game", (data) => {
-            document.getElementById('status').textContent = "Game starting!";
+            document.getElementById("status").textContent = "Game starting!";
             playerRole = data.player_role;
-            startCountdown();
-            document.getElementById('countdown').style.display = "block";
-            document.getElementById('choiceContainer').classList.remove("disabled");
+            document.getElementById("choiceContainer").classList.remove("disabled");
         });
 
-        // Start the countdown
-        function startCountdown() {
-            countdownInterval = setInterval(() => {
-                countdownValue -= 1;
-                document.getElementById('countdown').textContent = countdownValue;
-
-                if (countdownValue <= 0) {
-                    clearInterval(countdownInterval);
-                    submitChoice();
-                }
-            }, 1000);
-        }
-
-        // Player makes a choice
+        // Handle player choice submission
         function makeChoice(choice) {
             if (!playerChoice) {
                 playerChoice = choice;
-                document.getElementById('result').textContent = `You picked: ${choice}`;
-                document.getElementById('choiceContainer').classList.add("disabled");
-                submitChoice();
-            }
-        }
+                document.getElementById("result").textContent = `You picked: ${choice}`;
+                document.getElementById("choiceContainer").classList.add("disabled");
 
-        // Submit player's choice
-        function submitChoice() {
-            socket.emit("submit_choice", {
-                game_id: gameId,
-                player: playerRole,
-                choice: playerChoice || "None"
-            });
+                socket.emit("submit_choice", {
+                    game_id: gameId,
+                    player: playerRole,
+                    choice: playerChoice,
+                });
+            }
         }
 
         // Listen for game result
         socket.on("game_result", (data) => {
-            document.getElementById('result').innerHTML = `
+            document.getElementById("result").innerHTML = `
                 <b>Player 1 chose:</b> ${data.player1_choice || "Nothing"}<br>
                 <b>Player 2 chose:</b> ${data.player2_choice || "Nothing"}<br>
                 <b>Result:</b> ${data.result}
             `;
-            document.getElementById('status').textContent = "Game over!";
+            document.getElementById("status").textContent = "Game over!";
         });
 
-        // Handle errors
+        // Handle disconnection or errors
         socket.on("error", (data) => {
-            document.getElementById('status').textContent = `Error: ${data.message}`;
+            document.getElementById("status").textContent = `Error: ${data.message}`;
+            document.getElementById("choiceContainer").classList.add("disabled");
+        });
+
+        socket.on("disconnect", () => {
+            document.getElementById("status").textContent = "Disconnected from the server.";
         });
     </script>
 </body>

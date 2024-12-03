@@ -1,39 +1,201 @@
-from flask import Flask, render_template, request, jsonify, session
-from flask_socketio import SocketIO, emit, join_room, leave_room
+import eventlet
+eventlet.monkey_patch()
+
+from flask import Flask, render_template, request, jsonify
+from flask_socketio import SocketIO, emit, disconnect
 from uuid import uuid4
 import random
+import time
+from threading import Timer
 
-# Initialize app and SocketIO
+# Initialize Flask and Socket.IO
 app = Flask(__name__, template_folder="../templates", static_folder="../static")
-app.secret_key = "your_secret_key"
-socketio = SocketIO(app, manage_session=True)
+app.secret_key = "your_secret_key"  # Replace with a secure key in production
+socketio = SocketIO(app)
 
 # In-memory data
-player_stats = {"wins": 0, "losses": 0, "ties": 0}
-active_games = {}
 waiting_players = []
+active_games = {}
+disconnect_grace_period = {}  # Store timers for players' grace periods
 
 # ----------- ROUTES -----------
+
 @app.route('/')
 def home():
     """Render the home page."""
     return render_template('home.html')
+
 
 @app.route('/ai')
 def ai_page():
     """Render the AI game page."""
     return render_template('ai.html')
 
+
 @app.route('/real_person')
 def real_person_page():
     """Render the real person game page."""
     return render_template('real_person.html')
 
+
+# ----------- MATCHMAKING -----------
+
+@socketio.on("random_match")
+def handle_random_match(data):
+    """Handle random matchmaking."""
+    player_name = data.get("player_name")
+    sid = request.sid
+
+    if not player_name:
+        emit("match_error", {"error": "Player name is required."})
+        return
+
+    if waiting_players:
+        # Match the current player with a waiting player
+        opponent = waiting_players.pop(0)
+        game_id = str(uuid4())
+
+        # Store game details
+        active_games[game_id] = {
+            "player1_sid": opponent["sid"],
+            "player2_sid": sid,
+            "player1_choice": None,
+            "player2_choice": None,
+        }
+
+        # Notify both players
+        emit("match_found", {"game_id": game_id, "opponent": player_name}, to=opponent["sid"])
+        emit("match_found", {"game_id": game_id, "opponent": opponent["player_name"]}, to=sid)
+    else:
+        # Add player to the waiting list
+        waiting_players.append({"sid": sid, "player_name": player_name})
+        emit("waiting", {"message": "Waiting for an opponent..."}, to=sid)
+
+
+@socketio.on("join_game")
+def handle_join_game(data):
+    """Handle joining a specific game."""
+    game_id = data.get("game_id")
+    sid = request.sid
+
+    if game_id not in active_games:
+        emit("error", {"message": "Invalid game ID."})
+        return
+
+    game = active_games[game_id]
+
+    # Check if the game is already full
+    if sid in [game.get("player1_sid"), game.get("player2_sid")]:
+        # If the same player reconnects, reassign their role
+        if game.get("player1_sid") == sid:
+            emit("start_game", {"player_role": "player1"}, to=sid)
+        elif game.get("player2_sid") == sid:
+            emit("start_game", {"player_role": "player2"}, to=sid)
+        return
+
+    if not game["player2_sid"]:
+        # Assign the second player to the game
+        game["player2_sid"] = sid
+        emit("start_game", {"player_role": "player1"}, to=game["player1_sid"])
+        emit("start_game", {"player_role": "player2"}, to=sid)
+    else:
+        emit("error", {"message": "Game is already full."})
+
+
+@socketio.on("submit_choice")
+def handle_submit_choice(data):
+    """Handle submitting a choice during gameplay."""
+    game_id = data.get("game_id")
+    player = data.get("player")
+    choice = data.get("choice")
+
+    if game_id not in active_games:
+        emit("error", {"message": "Invalid game ID."})
+        return
+
+    game = active_games[game_id]
+
+    if player == "player1":
+        game["player1_choice"] = choice
+    elif player == "player2":
+        game["player2_choice"] = choice
+
+    if game["player1_choice"] and game["player2_choice"]:
+        result = determine_winner(game["player1_choice"], game["player2_choice"])
+        game["result"] = result
+
+        emit("game_result", {
+            "player1_choice": game["player1_choice"],
+            "player2_choice": game["player2_choice"],
+            "result": result,
+        }, to=game["player1_sid"])
+
+        emit("game_result", {
+            "player1_choice": game["player1_choice"],
+            "player2_choice": game["player2_choice"],
+            "result": result,
+        }, to=game["player2_sid"])
+
+        # Clean up game after completion
+        del active_games[game_id]
+
+
+@socketio.on("disconnect")
+def handle_disconnect():
+    """Handle player disconnection with grace period."""
+    sid = request.sid
+
+    # Check if the player is in an active game
+    for game_id, game in list(active_games.items()):
+        if sid in [game["player1_sid"], game["player2_sid"]]:
+            # Start a grace period
+            def end_grace_period():
+                """Finalize disconnection after the grace period."""
+                if sid == game.get("player1_sid") or sid == game.get("player2_sid"):
+                    opponent_sid = game["player2_sid"] if game["player1_sid"] == sid else game["player1_sid"]
+                    emit("error", {"message": "Your opponent disconnected."}, to=opponent_sid)
+                    del active_games[game_id]
+
+            # Store and start the timer
+            disconnect_grace_period[sid] = Timer(5, end_grace_period)
+            disconnect_grace_period[sid].start()
+
+            # Notify the opponent
+            opponent_sid = game["player2_sid"] if game["player1_sid"] == sid else game["player1_sid"]
+            emit("waiting", {"message": "Opponent temporarily disconnected. Waiting..."}, to=opponent_sid)
+            return
+
+    # Remove player from the waiting list
+    global waiting_players
+    waiting_players = [player for player in waiting_players if player["sid"] != sid]
+
+
+@socketio.on("reconnect")
+def handle_reconnect(data):
+    """Handle player reconnecting during the grace period."""
+    sid = request.sid
+    game_id = data.get("game_id")
+
+    if game_id in active_games:
+        game = active_games[game_id]
+
+        # Stop the disconnection grace period if it exists
+        if sid in disconnect_grace_period:
+            disconnect_grace_period[sid].cancel()
+            del disconnect_grace_period[sid]
+
+        if sid not in [game["player1_sid"], game["player2_sid"]]:
+            emit("error", {"message": "You are not part of this game."})
+        else:
+            emit("reconnected", {"message": "Reconnected successfully."}, to=sid)
+
+
+# ----------- GAME LOGIC -----------
+
 @app.route('/play/ai', methods=['POST'])
 def play_against_ai():
-    """Handle the game logic for playing against AI."""
+    """Handle playing against AI."""
     data = request.json
-    player_name = data.get('player_name', 'Player')
     player_choice = data.get('choice')
 
     if player_choice not in ['rock', 'paper', 'scissors']:
@@ -41,127 +203,34 @@ def play_against_ai():
 
     ai_choice = random.choice(['rock', 'paper', 'scissors'])
     result = determine_ai_winner(player_choice, ai_choice)
-    update_player_stats(result)
 
     return jsonify({
-        "player_name": player_name,
         "player_choice": player_choice,
         "ai_choice": ai_choice,
-        "result": result,
-        "stats": player_stats
+        "result": result
     })
 
-def determine_ai_winner(player_choice, ai_choice):
-    """Determine the winner for AI games."""
-    outcomes = {
-        "rock": {"rock": "tie", "paper": "lose", "scissors": "win"},
-        "paper": {"rock": "win", "paper": "tie", "scissors": "lose"},
-        "scissors": {"rock": "lose", "paper": "win", "scissors": "tie"}
-    }
-    return outcomes[player_choice][ai_choice]
-
-def update_player_stats(result):
-    """Update the player's stats based on the result of the game."""
-    if result == 'win':
-        player_stats['wins'] += 1
-    elif result == 'lose':
-        player_stats['losses'] += 1
-    elif result == 'tie':
-        player_stats['ties'] += 1
-
-@app.route('/create-game', methods=['POST'])
-def create_game():
-    """Create a new game session for inviting a friend."""
-    try:
-        game_id = str(uuid4())
-        active_games[game_id] = {
-            "player1": None,
-            "player2": None,
-            "player1_choice": None,
-            "player2_choice": None,
-            "result": None
-        }
-        invite_link = f"http://127.0.0.1:5000/real_person?gameId={game_id}"
-        print(f"Game created with ID: {game_id}")
-        return jsonify({"game_id": game_id, "invite_link": invite_link})
-    except Exception as e:
-        print(f"Error in /create-game: {e}")
-        return jsonify({"error": "Failed to create game."}), 500
-
-# ----------- MATCHMAKING -----------
-@app.route('/random-match', methods=['POST'])
-def random_match():
-    """Match players randomly."""
-    player_name = request.json.get("player_name")
-    if not player_name:
-        return jsonify({"error": "Player name is required"}), 400
-
-    if waiting_players:
-        opponent = waiting_players.pop(0)
-        game_id = str(uuid4())
-        active_games[game_id] = {
-            "player1": opponent,
-            "player2": player_name,
-            "player1_choice": None,
-            "player2_choice": None,
-            "result": None
-        }
-        return jsonify({"status": "matched", "game_id": game_id, "opponent": opponent})
-    else:
-        waiting_players.append(player_name)
-        return jsonify({"status": "waiting"})
-
-@app.route('/cancel-waiting', methods=['POST'])
-def cancel_waiting():
-    """Cancel the waiting state."""
-    player_name = request.json.get("player_name")
-    if player_name in waiting_players:
-        waiting_players.remove(player_name)
-        return jsonify({"status": "canceled"})
-    return jsonify({"error": "Player not in waiting list."}), 404
-
-@app.route('/submit-choice', methods=['POST'])
-def submit_choice():
-    """Submit a player's choice."""
-    data = request.json
-    game_id = data.get("game_id")
-    player_name = data.get("player_name")
-    choice = data.get("choice")
-
-    if game_id not in active_games:
-        return jsonify({"error": "Invalid game ID."}), 400
-
-    game = active_games[game_id]
-    if player_name == game["player1"]:
-        game["player1_choice"] = choice
-    elif player_name == game["player2"]:
-        game["player2_choice"] = choice
-
-    if game["player1_choice"] and game["player2_choice"]:
-        result = determine_winner(game["player1_choice"], game["player2_choice"])
-        game["result"] = result
-        return jsonify({"result": result})
-    return jsonify({"status": "waiting for opponent choice"})
 
 def determine_winner(player1_choice, player2_choice):
-    """Determine the winner based on player choices."""
+    """Determine the winner of a multiplayer game."""
     outcomes = {
         "rock": {"rock": "tie", "paper": "Player 2 wins!", "scissors": "Player 1 wins!"},
         "paper": {"rock": "Player 1 wins!", "paper": "tie", "scissors": "Player 2 wins!"},
-        "scissors": {"rock": "Player 2 wins!", "paper": "Player 1 wins!", "scissors": "tie"}
+        "scissors": {"rock": "Player 2 wins!", "paper": "Player 1 wins!", "scissors": "tie"},
     }
     return outcomes[player1_choice][player2_choice]
 
-# ----------- SOCKETIO HANDLERS -----------
 
-@socketio.on("disconnect")
-def handle_disconnect():
-    """Handle player disconnection."""
-    player_name = session.get("player_name")
-    if player_name in waiting_players:
-        waiting_players.remove(player_name)
-        print(f"{player_name} disconnected and removed from waiting list.")
+def determine_ai_winner(player_choice, ai_choice):
+    """Determine the winner against AI."""
+    outcomes = {
+        "rock": {"rock": "tie", "paper": "lose", "scissors": "win"},
+        "paper": {"rock": "win", "paper": "tie", "scissors": "lose"},
+        "scissors": {"rock": "lose", "paper": "win", "scissors": "tie"},
+    }
+    return outcomes[player_choice][ai_choice]
+
 
 # ----------- START THE SERVER -----------
 if __name__ == '__main__':
-    socketio.run(app, debug=True, host="0.0.0.0", port=5000, allow_unsafe_werkzeug=True)
+    socketio.run(app, host="0.0.0.0", port=5000, debug=True)
