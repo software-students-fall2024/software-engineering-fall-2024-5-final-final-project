@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+pymongo
+pytest
+coverage
+Flask
+pytest-cov
+pytest-flask
+flask-cors
+pydub
