@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Find a Bar</title>
+    <title>Search Saved Bars</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <div class="container">
-        <h2 class="text-center">Find a Bar</h2>
+        <h2 class="text-center">Search Your Saved Bars</h2>
 
         <!-- Search Form -->
-        <form action="{{ url_for('findbar') }}" method="POST" class="form">
+        <form action="{{ url_for('search_saved') }}" method="POST" class="form">
             <div class="form-group">
-                <label for="search_query">Search Bars</label>
+                <label for="search_query">Search Query</label>
                 <input type="text" id="search_query" name="search_query" placeholder="Enter bar name or location" required>
             </div>
             <div class="form-actions">
@@ -21,16 +21,10 @@
             </div>
         </form>
 
-        <!-- Flash Messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="alerts">
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
-                {% endfor %}
-            </div>
+        <!-- Error Message -->
+        {% if error %}
+            <p class="alert alert-error">{{ error }}</p>
         {% endif %}
-        {% endwith %}
 
         <!-- Search Results -->
         {% if search_results is not none %}

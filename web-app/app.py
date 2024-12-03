@@ -116,6 +116,51 @@ def dashboard():
     return render_template("dashboard.html", username=username)
 
 
+@app.route("/search_saved", methods=["GET", "POST"])
+def search_saved():
+    """Render the search saved page."""
+    if request.method == "POST":
+        # Handle search functionality here (if implemented)
+        search_query = request.form.get("search_query", "").strip()
+        if not search_query:
+            return render_template("search_saved.html", search_results=None, error="Please enter a search term.")
+
+        # Simulated search results (REPLACE LATER with database logic)
+        search_results = [
+            {"name": "tempnamer", "location1": "Downtown1", "description1": "A warm and inviting bar."},
+            {"name": "Skyline tempnamer", "location2": "Uptown2", "description2": "A rooftop bar with great views."}
+        ]
+        return render_template("search_saved.html", search_results=search_results, search_query=search_query)
+
+    return render_template("search_saved.html", search_results=None)
+
+
+@app.route("/home")
+def home():
+    """Render the home page."""
+    return render_template("home.html")
+
+@app.route("/findbar", methods=["GET", "POST"])
+def findbar():
+    """Render the find bar page."""
+    if request.method == "POST":
+        # Handle the search functionality for bars
+        search_query = request.form.get("search_query", "").strip()
+        if not search_query:
+            flash("Please enter a search term.", "error")
+            return redirect(url_for("findbar"))
+
+        # Simulated search results (replace with database logic)
+        search_results = [
+            {"name": "The Happy Hour Bar", "location": "Midtown", "description": "Best happy hour in town!"},
+            {"name": "The Chill Spot", "location": "Downtown", "description": "A relaxing lounge with great vibes."}
+        ]
+        return render_template("findbar.html", search_results=search_results, search_query=search_query)
+
+    return render_template("findbar.html", search_results=None)
+
+
+
 # Application entry point
 if __name__ == "__main__":
     # Run the Flask app with host, port, and debug mode configurations from environment variables

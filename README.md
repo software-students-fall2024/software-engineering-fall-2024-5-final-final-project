@@ -9,6 +9,7 @@
 An exercise to put to practice software development teamwork, subsystem communication, containers, deployment, and CI/CD pipelines. See [instructions](./instructions.md) for details.
 
 ## TABLE OF CONTENTS
+
 1. [Description](#description)
 2. [Links to Container Images](#container-images)
 3. [Setup Steps](#setup-steps)
@@ -21,51 +22,60 @@ An exercise to put to practice software development teamwork, subsystem communic
 ## SETUP STEPS
 
 **1. Clone the Repository**
+
 ```
 git clone <[repository-url](https://github.com/software-students-fall2024/5-final-finalfour)>
 cd <5-final-finalfour>
 ```
 
 **2. Verify MongoDB Connection:**
-- *Download MongoDB:* download this extension onto your chosen source code editor
-- *Connect to Database URL:* mongodb://mongodb:27017/
+
+- _Download MongoDB:_ download this extension onto your chosen source code editor
+- _Connect to Database URL:_ mongodb://mongodb:27017/
 
 **3. Go to Correct Filepath:**
-- *Mac:*
-   ```
-   cd Desktop/5-final-finalfour-main/web-app
-   ```
 
-- *Windows:*
-   ```
-   cd Desktop\5-final-finalfour-main\web-app
-   ```
+- _Mac:_
+
+  ```
+  cd Desktop/5-final-finalfour-main/web-app
+  ```
+
+- _Windows:_
+  ```
+  cd Desktop\5-final-finalfour-main\web-app
+  ```
 
 **4. Create a Virtual Environment:**
-- *Mac:*
-   ```
-   python3 -m venv .venv
-   source .venv/bin/activate
-   ```
 
-- *Windows:*
-   ```
-   python3 -m venv .venv
-   .venv\Scripts\activate
-   ```
+- _Mac:_
+
+  ```
+  python3 -m venv .venv
+  source .venv/bin/activate
+  ```
+
+- _Windows:_
+  ```
+  python3 -m venv .venv
+  .venv\Scripts\activate
+  ```
 
 **5. Install Dependencies:**
+
 ```
 pip install requests
 pip install pymongo
 ```
 
 **6. Install Docker-Compose:**
+
 ```
 brew install docker-compose
 ```
 
-**7. Integrate with Docker Compose:** 
+**7. Integrate with Docker Compose:**
+
 ```
 docker-compose down --volumes --remove-orphans
 docker-compose up --build
