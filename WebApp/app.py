@@ -171,35 +171,6 @@ def edit_expense(expense_id):
         'notes': expense.get('notes', '')
     })
 
-# Helper function to calculate monthly total
-def get_monthly_total(username, year, month):
-    start_date = datetime(year, month, 1)
-    if month == 12:
-        end_date = datetime(year + 1, 1, 1)
-    else:
-        end_date = datetime(year, month + 1, 1)
-
-    pipeline = [
-        {
-            '$match': {
-                'username': username,
-                'date': {
-                    '$gte': start_date,
-                    '$lt': end_date
-                }
-            }
-        },
-        {
-            '$group': {
-                '_id': None,
-                'total': {'$sum': '$amount'}
-            }
-        }
-    ]
-    
-    result = list(expenses_collection.aggregate(pipeline))
-    return result[0]['total'] if result else 0
-
 @app.route('/api/expense_data/<date_range>', methods=['GET'])
 def get_expense_data(date_range):
     if 'username' not in session:
@@ -267,6 +238,35 @@ def get_date_range(date_range):
         start_date = end_date = today
 
     return start_date, end_date
+
+# Helper function to calculate monthly total
+def get_monthly_total(username, year, month):
+    start_date = datetime(year, month, 1)
+    if month == 12:
+        end_date = datetime(year + 1, 1, 1)
+    else:
+        end_date = datetime(year, month + 1, 1)
+
+    pipeline = [
+        {
+            '$match': {
+                'username': username,
+                'date': {
+                    '$gte': start_date,
+                    '$lt': end_date
+                }
+            }
+        },
+        {
+            '$group': {
+                '_id': None,
+                'total': {'$sum': '$amount'}
+            }
+        }
+    ]
+    
+    result = list(expenses_collection.aggregate(pipeline))
+    return result[0]['total'] if result else 0
 
 if __name__ == '__main__':
     app.run(debug=True)

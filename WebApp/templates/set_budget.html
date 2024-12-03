@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set Monthly Budget</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <nav>
+        <a href="/profile">Check user profile</a>
+        <a href="/set_budget">Set monthly budget</a>
+        <a href="/add">Create new spent</a>
+    </nav>
+
+    <h1>Set Monthly Budget</h1>
+    
+    <h2>Current Monthly Budget</h2>
+    <div>
+        {% if current_budget %}
+            ${{ "%.2f"|format(current_budget.amount) }}
+        {% else %}
+            No budget set
+        {% endif %}
+    </div>
+
+    <form method="POST">
+        <label for="budget_amount">New Monthly Budget ($):</label>
+        <input type="text" 
+               id="budget_amount" 
+               name="budget_amount" 
+               placeholder="Enter budget amount">
+        <button type="submit">Update Budget</button>
+    </form>
+</body>
+</html>
