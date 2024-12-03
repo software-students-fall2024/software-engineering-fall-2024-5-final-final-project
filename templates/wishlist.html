@@ -1,0 +1,29 @@
+{% extends 'nav-base.html' %}
+
+{% block inner_content %}
+    <!-- Wishlist Owner's Name -->
+    <h1>{{ user['username'] }}'s Wishlist</h1>
+    <!-- Wishlist Items -->
+    {% if wishes %}
+        <ul class="wishlist">
+            {% for wish in wishes %}
+                <li class="wish">
+                    <img src="{{ wish['image'] }}" alt="item image">
+                    <div>
+                        <b>{{ wish['name'] }}</b>
+                        <p>${{ wish['price'] }}</p>
+                    </div>
+                    <a target="_blank" href="{{ wish['link'] }}"><button role="link">Item link</button></a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No items in this wishlist.</p>
+    {% endif %}
+    <!-- Logout Button -->
+    {% if current_user.is_authenticated %}
+        <form method="POST" action="{{ url_for('logout') }}">
+            <button type="submit">Logout</button>
+        </form>
+    {% endif %}
+{% endblock %}
