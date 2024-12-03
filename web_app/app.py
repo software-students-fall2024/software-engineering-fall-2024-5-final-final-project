@@ -21,16 +21,21 @@ def home():
 def search_recipes():
     query = request.args.get("query")
     if not query:
-        return jsonify({"error": "Query parameter is required"}), 400
+        return render_template("recipes.html", recipes=[], query="", page=1, total_pages=1, has_next=False)
 
     page = request.args.get("page", 1, type=int)
     recipes_per_page = 10
+
+    from_index = (page - 1) * recipes_per_page
+    to_index = from_index + recipes_per_page
 
     params = {
         "type": "public",
         "q": query,
         "app_id": EDAMAM_APP_ID,
-        "app_key": EDAMAM_APP_KEY
+        "app_key": EDAMAM_APP_KEY,
+        "from": from_index,
+        "to": to_index,
     }
 
     try:
@@ -38,39 +43,33 @@ def search_recipes():
         response.raise_for_status()
 
         recipes = response.json().get("hits", [])
-        if not recipes:
-            return jsonify({"error": "No recipes found"}), 404
+        total_recipes = response.json().get("count", 0)
 
-        # Extract recipes for the current page
-        total_recipes = len(recipes)
-        start_index = (page - 1) * recipes_per_page
-        end_index = start_index + recipes_per_page
-        paginated_recipes = recipes[start_index:end_index]
+        total_pages = min((total_recipes + recipes_per_page - 1) // recipes_per_page, 10)
 
-        # Format recipes
-        formatted_recipes = []
-        for recipe in paginated_recipes:
-            recipe_data = recipe.get("recipe", {})
-            formatted_recipes.append({
-                "name": recipe_data.get("label", "N/A"),
-                "image": recipe_data.get("image", ""),
-                "source": recipe_data.get("source", "N/A"),
-                "url": recipe_data.get("url", "#")
-            })
+        formatted_recipes = [
+            {
+                "name": recipe["recipe"].get("label", "N/A"),
+                "image": recipe["recipe"].get("image", ""),
+                "source": recipe["recipe"].get("source", "Unknown"),
+                "url": recipe["recipe"].get("url", "#"),
+            }
+            for recipe in recipes
+        ]
 
-        # Determine if there's a next page
-        has_next = end_index < total_recipes
+        has_next = page < total_pages
 
-        # Render template with paginated recipes
         return render_template(
             "recipes.html",
             recipes=formatted_recipes,
+            query=query,
             page=page,
+            total_pages=total_pages,
             has_next=has_next,
-            query=query
         )
     except requests.exceptions.RequestException as e:
-        return jsonify({"error": str(e)}), 500
+        return render_template("recipes.html", recipes=[], query=query, page=1, total_pages=1, has_next=False, error=str(e))
+
     
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
