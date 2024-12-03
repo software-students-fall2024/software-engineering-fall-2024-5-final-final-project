@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">Welcome to the Bar Finder</h1>
+        <p class="text-center">Explore and save your favorite bars.</p>
+
+        <!-- Navigation Buttons -->
+        <div class="nav-links">
+            <a href="{{ url_for('home') }}" class="btn">Home</a>
+            <a href="{{ url_for('search_saved') }}" class="btn">Search Saved Bars</a>
+            <a href="{{ url_for('findbar') }}" class="btn">Find a Bar</a>
+        </div>
+    </div>
+</body>
+</html>
