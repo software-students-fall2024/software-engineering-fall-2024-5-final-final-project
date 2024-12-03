@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Public Files</title>
+</head>
+
+<body>
+  <h1>Public Files</h1>
+  <ul>
+    {% for file in files %}
+    <li>
+      <strong>{{ file.name }}</strong> -
+      <p>Transcription: {{ file.transcription or "Not processed yet" }}</p>
+    </li>
+    {% else %}
+    <p>No public files available.</p>
+    {% endfor %}
+  </ul>
+  <a href="{{ url_for('index') }}">Back to Home</a>
+</body>
+
+</html>

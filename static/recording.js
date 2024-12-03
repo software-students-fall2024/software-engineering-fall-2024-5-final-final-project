@@ -1,6 +1,9 @@
 const recordButton = document.getElementById("recordButton");
 const nameInput = document.getElementById("nameInput");
 const statusText = document.getElementById("status");
+const successContainer = document.getElementById("successContainer");
+const editButtonContainer = document.getElementById("editButtonContainer");
+const privateCheckbox = document.getElementById("private");
 
 let mediaRecorder;
 let audioChunks = [];
@@ -12,33 +15,32 @@ recordButton.addEventListener("click", async () => {
     statusText.textContent = "Recording...";
     isRecording = true;
 
-    // Get the audio stream
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     mediaRecorder = new MediaRecorder(stream);
 
-    // Push binary data chunks to `audioChunks` array
     mediaRecorder.ondataavailable = (event) => {
       audioChunks.push(event.data);
     };
 
-    // When recording stops, process the binary data
     mediaRecorder.onstop = async () => {
-      const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType }); // Use native mimeType
-      console.log(mediaRecorder.mimeType);
-      audioChunks = []; // Clear chunks
+      const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType });
+      audioChunks = [];
 
-      // Send the binary data to the server
       const formData = new FormData();
-      formData.append("audio", audioBlob); // Raw binary audio data
+      formData.append("audio", audioBlob);
       formData.append("name", nameInput.value);
+      formData.append("private", privateCheckbox.checked); // Include checkbox value
 
       try {
         const response = await fetch(UPLOAD_URL, {
           method: "POST",
           body: formData,
         });
+
         if (response.ok) {
+          const responseData = await response.json();
           statusText.textContent = "Audio uploaded successfully!";
+          showSuccessButtons(responseData);
         } else {
           statusText.textContent = "Failed to upload audio.";
         }
@@ -54,9 +56,19 @@ recordButton.addEventListener("click", async () => {
     statusText.textContent = "Processing...";
     isRecording = false;
 
-    // Stop recording
     if (mediaRecorder) {
       mediaRecorder.stop();
     }
   }
 });
+
+function showSuccessButtons(responseData) {
+  recordButton.style.display = "none";
+  statusText.style.display = "none";
+
+  successContainer.style.display = "block";
+
+  const fileId = responseData.file_id;
+  document.getElementById("fileListButton").onclick = () => window.location.href = `/user-files`;
+  document.getElementById("editButton").onclick = () => window.location.href = `/edit-transcription/${fileId}`;
+}

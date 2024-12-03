@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Files</title>
+</head>
+
+<body>
+  <h1>Your Files</h1>
+  <ul>
+    {% for file in files %}
+    <li>
+      <strong>{{ file.name }}</strong> -
+      <p>Transcription: {{ file.transcription or "Not processed yet" }}</p>
+      <p>Status: {% if file.is_private %} Private {% else %} Public {% endif %}</p>
+      <a href="{{ url_for('edit_transcription', file_id=file.file_id) }}">Edit</a>
+    </li>
+    {% else %}
+    <p>No files found.</p>
+    {% endfor %}
+  </ul>
+  <a href="{{ url_for('index') }}">Back to Home</a>
+</body>
+
+</html>

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Transcription</title>
+</head>
+
+<body>
+  <h1>Edit Transcription for {{ file_metadata.name }}</h1>
+  <form method="POST">
+    <label for="title">File Title:</label>
+    <input type="text" id="title" name="title" value="{{ file_metadata.name }}" required><br><br>
+
+    <label for="transcription">Transcription:</label>
+    <textarea id="transcription" name="transcription" rows="10" cols="50" required>{{ file_metadata.transcription
+      }}</textarea><br><br>
+
+    <label for="private">Private:</label>
+    <input type="checkbox" id="private" name="private" {% if file_metadata.is_private %}checked{% endif %}><br><br>
+
+    <button type="submit">Save Changes</button>
+  </form>
+</body>
+
+</html>

@@ -37,6 +37,10 @@ grid_fs = GridFS(db)
 metadata_collection = db["audio_metadata"]
 users_collection = db["users"]
 
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+login_manager.login_view = "login"  
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -114,15 +118,22 @@ class User(UserMixin):
     """
     User class
     """
-
     def __init__(self, username):
-        self.id = username
+            self.id = username
 
+    @staticmethod
+    def from_db(username):
+        """Load a User object from the database."""
+        user_data = users_collection.find_one({"username": username})
+        if user_data:
+            return User(username=user_data["username"])
+        return None
+
+@login_manager.user_loader
+def load_user(username):
+    return User.from_db(username)
 
 def fetch_and_convert_to_wav(file_id):
-    """
-    Fetch binary audio from GridFS and convert it to WAV format.
-    """
     grid_file = grid_fs.get(file_id)
     content_type = grid_file.content_type
 
@@ -232,6 +243,7 @@ def index():
 
 
 @app.route("/record")
+@login_required
 def record():
     """
     Record route
@@ -240,6 +252,7 @@ def record():
 
 
 @app.route("/upload-audio", methods=["POST"])
+@login_required  
 def upload_audio():
     """
     Endpoint to upload files and store raw binary in GridFS with metadata.
@@ -250,6 +263,7 @@ def upload_audio():
 
     audio_file = request.files["audio"]
     file_name = request.form["name"]
+    is_private = request.form.get("private", "false") == "true"  
 
     gridfs_id = grid_fs.put(
         audio_file,
@@ -265,6 +279,8 @@ def upload_audio():
         "name": file_name,
         "upload_time": datetime.utcnow(),
         "transcription": "",
+        "user": current_user.id,
+        "is_private": is_private
     }
 
     metadata_result = metadata_collection.insert_one(metadata)
@@ -274,6 +290,66 @@ def upload_audio():
 
     print("File successfully uploaded with GridFS ID:", gridfs_id)
     return transcribe(gridfs_id)
+
+@app.route("/user-files")
+@login_required
+def user_files():
+    username = session.get("username")
+    user = users_collection.find_one({"username": username})
+
+    if not user:
+        flash("User not found.", "error")
+        return redirect(url_for("login"))
+
+    files = metadata_collection.find({"user": username})
+    return render_template("user_files.html", files=files)
+
+
+@app.route("/public-files")
+def public_files():
+    files = metadata_collection.find({"is_private": {"$ne": True}})
+    print(files)
+    return render_template("public_files.html", files=files)
+
+@app.route("/edit-transcription/<file_id>", methods=["GET", "POST"])
+@login_required
+def edit_transcription(file_id):
+    file_metadata = metadata_collection.find_one({"file_id": file_id, "user": current_user.id})
+
+    if not file_metadata:
+        flash("File not found or you don't have permission to edit it.", "error")
+        return redirect(url_for("user_files"))
+
+    if request.method == "POST":
+        new_title = request.form["title"]
+        new_transcription = request.form["transcription"]
+        
+        is_private = "private" in request.form  
+
+        result = metadata_collection.update_one(
+            {"file_id": file_id, "user": current_user.id},
+            {"$set": {
+                "name": new_title,
+                "transcription": new_transcription,
+                "is_private": is_private
+            }}
+        )
+
+        if result.modified_count > 0:
+            flash("File updated successfully.", "success")
+        else:
+            flash("No changes were made.", "warning")
+        
+        return redirect(url_for("user_files"))
+
+    return render_template("edit_transcription.html", file_metadata=file_metadata)
+
+
+
+
+
+
+
 
 
 if __name__ == "__main__":
