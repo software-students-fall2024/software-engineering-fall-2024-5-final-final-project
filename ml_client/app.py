@@ -15,7 +15,7 @@ app = Flask(__name__)
 LOG_CALLBACK = None
 
 # Suppress llama cpp logging
-suppress_llama_cpp_logging()
+# suppress_llama_cpp_logging()
 
 
 # Initialize the LLM globally
