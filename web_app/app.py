@@ -1,11 +1,12 @@
 import os
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, redirect, url_for, session
 import requests
 from dotenv import load_dotenv
 
 load_dotenv()
 
 app = Flask(__name__)
+app.secret_key = '7southfrogs' 
 
 EDAMAM_APP_ID = os.getenv("EDAMAM_APP_ID")
 EDAMAM_APP_KEY = os.getenv("EDAMAM_APP_KEY")
@@ -14,7 +15,9 @@ EDAMAM_BASE_URL = "https://api.edamam.com/api/recipes/v2"
 @app.route("/")
 def home():
     """Render the homepage."""
-    return render_template("home.html")
+    user = session.get("user") 
+    return render_template("home.html", user=user)
+
 
 
 @app.route("/search", methods=["GET"])
@@ -71,6 +74,36 @@ def search_recipes():
         )
     except requests.exceptions.RequestException as e:
         return jsonify({"error": str(e)}), 500
+    
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    """Render the login page and handle login logic."""
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+        # Placeholder for actual login logic (e.g., checking with MongoDB)
+        session["user"] = username  # Save the username in session
+        return redirect(url_for("home"))  # Redirect to homepage on successful login
+    return render_template("login.html")
+
+@app.route("/logout")
+def logout():
+    """Log out the user by clearing the session."""
+    session.pop("user", None)  # Remove user from session
+    return redirect(url_for("home"))
+
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    """Render the register page and handle user registration."""
+    if request.method == "POST":
+        username = request.form["username"]
+        email = request.form["email"]
+        password = request.form["password"]
+        # Handle registration logic here (e.g., save user to the database)
+        return redirect(url_for("login"))  # Redirect to login page on successful registration
+    return render_template("register.html")
+
     
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
