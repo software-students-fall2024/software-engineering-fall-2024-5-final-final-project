@@ -1,26 +1,103 @@
 import os
-from flask import Flask, request, jsonify, render_template, redirect, url_for, session
-import requests
+import logging
+from flask import (
+    Flask,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    flash,
+    session,
+    jsonify,
+)
+from pymongo import MongoClient
 from dotenv import load_dotenv
+
+import bcrypt
+import requests
 
 load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = '7southfrogs' 
+app.secret_key = os.getenv("SECRET_KEY", "SECRET_KEY")
+app.config["SESSION_PERMANENT"] = False
+
+mongo_uri = os.getenv("MONGO_URI", "mongodb://mongodb:27017/")
+client = MongoClient(mongo_uri)
+db = client["whatscookin"]
+users_collection = db["users"]
 
 EDAMAM_APP_ID = os.getenv("EDAMAM_APP_ID")
 EDAMAM_APP_KEY = os.getenv("EDAMAM_APP_KEY")
 EDAMAM_BASE_URL = "https://api.edamam.com/api/recipes/v2"
 
+logging.basicConfig(level=logging.INFO)
+
+
+def login_required(func):
+    """Decorator to ensure the user is logged in before accessing a route."""
+    def wrapper(*args, **kwargs):
+        if "username" not in session:
+            flash("Please log in to access this page.")
+            return redirect(url_for("login"))
+        return func(*args, **kwargs)
+    wrapper.__name__ = func.__name__
+    return wrapper
+
+
 @app.route("/")
 def home():
-    """Render the homepage."""
-    user = session.get("user") 
-    return render_template("home.html", user=user)
+    """Render the main home page."""
+    if "username" in session:
+        return render_template("home.html", username=session["username"])
+    return redirect(url_for("login"))
 
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    """Log in page for registered users."""
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"].encode("utf-8")
+
+        user = users_collection.find_one({"username": username})
+        if user and bcrypt.checkpw(password, user["password"]):
+            session["username"] = username
+            session.permanent = False
+            return redirect(url_for("home"))
+        flash("Invalid username or password. Please try again.")
+        return redirect(url_for("login"))
+    return render_template("login.html")
+
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    """Registration page for new users."""
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"].encode("utf-8")
+
+        if users_collection.find_one({"username": username}):
+            flash("Username already exists. Please choose a different one.")
+        else:
+            hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
+            users_collection.insert_one(
+                {"username": username, "password": hashed_password}
+            )
+            flash("Registration successful! Please log in.")
+            return redirect(url_for("login"))
+    return render_template("register.html")
+
+
+@app.route("/logout")
+def logout():
+    """Logs user out and clears session."""
+    session.clear()
+    return redirect(url_for("login"))
 
 
 @app.route("/search", methods=["GET"])
+@login_required
 def search_recipes():
     query = request.args.get("query")
     if not query:
@@ -73,36 +150,6 @@ def search_recipes():
     except requests.exceptions.RequestException as e:
         return render_template("recipes.html", recipes=[], query=query, page=1, total_pages=1, has_next=False, error=str(e))
 
-    
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    """Render the login page and handle login logic."""
-    if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
-        # Placeholder for actual login logic (e.g., checking with MongoDB)
-        session["user"] = username  # Save the username in session
-        return redirect(url_for("home"))  # Redirect to homepage on successful login
-    return render_template("login.html")
 
-@app.route("/logout")
-def logout():
-    """Log out the user by clearing the session."""
-    session.pop("user", None)  # Remove user from session
-    return redirect(url_for("home"))
-
-
-@app.route("/register", methods=["GET", "POST"])
-def register():
-    """Render the register page and handle user registration."""
-    if request.method == "POST":
-        username = request.form["username"]
-        email = request.form["email"]
-        password = request.form["password"]
-        # Handle registration logic here (e.g., save user to the database)
-        return redirect(url_for("login"))  # Redirect to login page on successful registration
-    return render_template("register.html")
-
-    
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
