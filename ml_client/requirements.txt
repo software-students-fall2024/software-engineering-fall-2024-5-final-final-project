@@ -1,0 +1,4 @@
+Flask
+llama-cpp-python
+langchain-community
+pylint
