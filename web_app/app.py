@@ -161,6 +161,7 @@ def profile():
 
 @app.route("/search", methods=["GET"])
 def search_recipes():
+    """Search for recipes based on user's dietary restrictions."""
     query = request.args.get("query")
     if not query:
         return render_template("recipes.html", recipes=[], query="")
@@ -213,6 +214,45 @@ def search_recipes():
             query=query,
             error=str(e)
         )
+
+@app.route("/pantry", methods=["GET", "POST"])
+@login_required
+def pantry():
+    """Render and update the user's pantry."""
+    username = session["username"]
+
+    if request.method == "POST":
+        # Add new ingredient to the pantry
+        ingredient = request.form.get("ingredient")
+        if ingredient:
+            users_collection.update_one(
+                {"username": username},
+                {"$addToSet": {"pantry": ingredient}}
+            )
+        return redirect(url_for("pantry"))
+    
+    # Retrieve current pantry items from the database
+    user = users_collection.find_one({"username": username})
+    pantry_items = user.get("pantry", []) if user else []
+
+    return render_template(
+        "pantry.html",
+        pantry_items=pantry_items
+    )
+
+@app.route("/pantry/delete", methods=["POST"])
+@login_required
+def delete_pantry_item():
+    """Remove an ingredient from the pantry."""
+    username = session["username"]
+    ingredient = request.form.get("ingredient")
+    if ingredient:
+        users_collection.update_one(
+            {"username": username},
+            {"$pull": {"pantry": ingredient}}
+        )
+        flash(f"Removed '{ingredient}' from your pantry.")
+    return redirect(url_for("pantry"))
 
 
 if __name__ == "__main__":

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Pantry</title>
+</head>
+<body>
+    <h1>Your Pantry</h1>
+    <form action="{{ url_for('pantry') }}" method="post">
+        <input type="text" name="ingredient" placeholder="Add an ingredient" required>
+        <button type="submit">Add</button>
+    </form>
+
+    {% if pantry_items %}
+        <ul>
+            {% for item in pantry_items %}
+                <li>
+                    {{ item }}
+                    <form action="{{ url_for('delete_pantry_item') }}" method="post" style="display:inline;">
+                        <input type="hidden" name="ingredient" value="{{ item }}">
+                        <button type="submit">Delete</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Your pantry is empty.</p>
+    {% endif %}
+
+    <a href="{{ url_for('home') }}">Back to Home</a>
+</body>
+</html>
