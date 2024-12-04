@@ -4,7 +4,7 @@ services:
       context: ./web-app
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "5001:5001"
     env_file:
       - .env 
     environment:
@@ -19,7 +19,7 @@ services:
       context: ./ml_client
       dockerfile: Dockerfile
     ports:
-      - "5000:5000"
+      - "5002:5002"
 
   mongodb:
     image: mongo:6.0
