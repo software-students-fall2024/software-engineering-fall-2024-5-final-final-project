@@ -11,5 +11,5 @@ class Config:
 
 class TestConfig(Config):
     # 测试数据库配置
-    MONGO_URI = f"mongodb://{os.getenv('MONGO_ROOT_USERNAME')}:{os.getenv('MONGO_ROOT_PASSWORD')}@mongodb:27017/test_db?authSource=admin"
+    MONGO_URI = f"mongodb://{os.getenv('MONGO_ROOT_USERNAME')}:{os.getenv('MONGO_ROOT_PASSWORD')}@localhost:27017/test_db?authSource=admin"
     TESTING = True
