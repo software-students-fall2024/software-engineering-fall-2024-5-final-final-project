@@ -162,7 +162,7 @@ def profile():
 @app.route("/search", methods=["GET"])
 @login_required
 def search_recipes():
-    """Search for recipes strictly based on pantry items and dietary restrictions."""
+    """Search for recipes based on pantry items and dietary restrictions."""
     username = session["username"]
 
     # Retrieve user's pantry and dietary restrictions from the database
@@ -174,53 +174,52 @@ def search_recipes():
         flash("Your pantry is empty. Add items to your pantry to search recipes.")
         return render_template("recipes.html", recipes=[], query="")
 
-    # Construct API parameters
-    params = {
+    # Initialize a dictionary to store recipes to avoid duplicates
+    recipes_dict = {}
+
+    # Construct common API parameters
+    common_params = {
         "type": "public",
         "app_id": EDAMAM_APP_ID,
         "app_key": EDAMAM_APP_KEY,
         "from": 0,
-        "to": 20,
+        "to": 10,  # Adjust as needed to limit API usage
     }
-
-    # Add ingredients to the search query by joining pantry items
-    params["q"] = " ".join(pantry_items)
 
     # Add dietary restrictions to the API call
     for restriction in dietary_restrictions:
-        params.setdefault("health", []).append(restriction)
+        common_params.setdefault("health", []).append(restriction)
 
     try:
-        response = requests.get(EDAMAM_BASE_URL, params=params)
-        response.raise_for_status()
+        # For each pantry item, make an API call
+        for item in pantry_items:
+            params = common_params.copy()
+            params["q"] = item
+            response = requests.get(EDAMAM_BASE_URL, params=params)
+            response.raise_for_status()
+            # Parse the recipes returned by the API
+            hits = response.json().get("hits", [])
 
-        # Parse the recipes returned by the API
-        recipes = response.json().get("hits", [])
+            for recipe_data in hits:
+                recipe = recipe_data["recipe"]
+                recipe_url = recipe.get("uri", "")
+                if recipe_url not in recipes_dict:
+                    recipe_health_labels = recipe.get("healthLabels", [])
 
-        # Filter recipes to ensure all pantry items are at least partially matched in recipe ingredients
-        filtered_recipes = []
-        for recipe in recipes:
-            recipe_ingredients = [
-                ingredient["text"] for ingredient in recipe["recipe"].get("ingredients", [])
-            ]
-            recipe_health_labels = recipe["recipe"].get("healthLabels", [])
+                    recipes_dict[recipe_url] = {
+                        "name": recipe.get("label", "N/A"),
+                        "image": recipe.get("image", ""),
+                        "source": recipe.get("source", "Unknown"),
+                        "url": recipe.get("url", "#"),
+                        "dietary_restrictions": recipe_health_labels,
+                    }
 
-            # Check if at least one pantry item appears in each ingredient text
-            if all(
-                any(pantry_item.lower() in ingredient.lower() for ingredient in recipe_ingredients)
-                for pantry_item in pantry_items
-            ):
-                filtered_recipes.append({
-                    "name": recipe["recipe"].get("label", "N/A"),
-                    "image": recipe["recipe"].get("image", ""),
-                    "source": recipe["recipe"].get("source", "Unknown"),
-                    "url": recipe["recipe"].get("url", "#"),
-                    "dietary_restrictions": recipe_health_labels,
-                })
+        # Convert recipes_dict to a list
+        recipes = list(recipes_dict.values())
 
         return render_template(
             "recipes.html",
-            recipes=filtered_recipes,
+            recipes=recipes,
             pantry_items=pantry_items
         )
     except requests.exceptions.RequestException as e:
@@ -230,6 +229,7 @@ def search_recipes():
             pantry_items=pantry_items,
             error=str(e)
         )
+
 
 @app.route("/pantry", methods=["GET", "POST"])
 @login_required
