@@ -19,13 +19,11 @@ jobs:
     services:
       mongodb:
         image: mongo:latest
+        env:
+          MONGO_INITDB_ROOT_USERNAME: root
+          MONGO_INITDB_ROOT_PASSWORD: example
         ports:
           - 27017:27017
-        options: >-
-          --health-cmd mongosh
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
 
     steps:
     - uses: actions/checkout@v2
@@ -42,15 +40,6 @@ jobs:
         pip install flake8 pytest pytest-cov
         pip install -r requirements.txt
 
-    - name: Wait for MongoDB
-      run: |
-        timeout 20 bash -c '
-        until mongosh --eval "db.runCommand({ping:1})" > /dev/null 2>&1
-        do
-          echo "Waiting for MongoDB to be ready..."
-          sleep 1
-        done'
-
     - name: Lint with flake8
       working-directory: ./backend
       run: |
@@ -61,6 +50,9 @@ jobs:
       working-directory: ./backend
       env:
         PYTHONPATH: ${{ github.workspace }}/backend
+        MONGO_ROOT_USERNAME: root
+        MONGO_ROOT_PASSWORD: example
+        MONGO_DATABASE: blog
       run: |
         pytest -v --cov=app tests/
 
