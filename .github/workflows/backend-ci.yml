@@ -25,11 +25,6 @@ jobs:
           MONGO_INITDB_DATABASE: test_blog
         ports:
           - 27017:27017
-        options: >-
-          --health-cmd mongosh --eval "db.adminCommand('ping')"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
 
     steps:
     - uses: actions/checkout@v2
@@ -62,7 +57,7 @@ jobs:
         SECRET_KEY: test-secret-key
         CI: true
       run: |
-        sleep 5
+        sleep 10
         pytest -v --cov=app tests/
 
   build-and-push:
