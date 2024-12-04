@@ -1,32 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+{% extends "base.html" %}
 
-    <title>Saved Recipes</title>
-</head>
-<body>
-    <h1>Your Saved Recipes</h1>
-    {% if recipes %}
-        <div class="saved-recipes-list">
-            {% for recipe in recipes %}
-                <div class="saved-recipe">
-                    <h2>{{ recipe.name }}</h2>
-                    <img src="{{ recipe.image }}" alt="Image of {{ recipe.name }}" style="width:150px;height:auto;">
-                    <p><strong>Source:</strong> {{ recipe.source }}</p>
-                    <p><a href="{{ recipe.url }}" target="_blank">View Full Recipe</a></p>
-                    <form action="{{ url_for('unsave_recipe') }}" method="post">
-                        <input type="hidden" name="recipe_id" value="{{ recipe.recipe_id }}">
-                        <button type="submit">Remove</button>
-                    </form>
-                </div>
-            {% endfor %}
+{% block title %}Saved Recipes{% endblock %}
+
+{% block content %}
+<h1>Your Saved Recipes</h1>
+
+{% if recipes %}
+    <div class="grid">
+        {% for recipe in recipes %}
+        <div class="recipe-card">
+            <img src="{{ recipe.image }}" alt="{{ recipe.name }}">
+            <h2>{{ recipe.name }}</h2>
+            <p><strong>Source:</strong> {{ recipe.source }}</p>
+            <p><a href="{{ recipe.url }}" target="_blank">View Full Recipe</a></p>
+            <form action="{{ url_for('unsave_recipe') }}" method="post">
+                <input type="hidden" name="recipe_id" value="{{ recipe.recipe_id }}">
+                <button type="submit">Remove</button>
+            </form>
         </div>
-    {% else %}
-        <p>You have no saved recipes.</p>
-    {% endif %}
-    <a href="{{ url_for('home') }}"><button>Back to Home</button></a>
-</body>
-</html>
+        {% endfor %}
+    </div>
+{% else %}
+    <p>You have no saved recipes.</p>
+{% endif %}
+{% endblock %}

@@ -1,28 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - What's Cookin</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-</head>
-<body>
-    <h1>Welcome to What's Cookin</h1>
+{% block title %}Home - What's Cookin{% endblock %}
 
-    {% if username %}
-        <p>Logged in as {{ username }}</p>
-        <a href="/logout"><button>Logout</button></a>
-        <a href="/profile"><button>Profile</button></a>
-        <a href="/pantry"><button>Pantry</button></a>
-        <a href="/saved_recipes"><button>Saved Recipes</button></a>
-        <p>Search for recipes based on your pantry items and dietary preferences.</p>
-        <form action="/search" method="get">
-            <button type="submit">Find Recipes</button>
-        </form>
-    {% else %}
-        <a href="/login"><button>Login</button></a>
-        <p>Please log in to search for recipes and manage your preferences.</p>
-    {% endif %}
-</body>
-</html>
+{% block content %}
+<h1>Welcome to What's Cookin</h1>
+<p>Search for recipes based on your pantry items and dietary preferences.</p>
+<form action="/search" method="get">
+    <button type="submit">Find Recipes</button>
+</form>
+{% endblock %}

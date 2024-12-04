@@ -318,3 +318,23 @@ def unsave_recipe():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
+
+@app.route("/recipe/<recipe_id>", methods=["GET"])
+@login_required
+def get_recipe_details(recipe_id):
+    """Fetch and return recipe details for the modal."""
+    try:
+        response = requests.get(
+            f"{EDAMAM_BASE_URL}/{recipe_id}",
+            params={
+                "type": "public",
+                "app_id": EDAMAM_APP_ID,
+                "app_key": EDAMAM_APP_KEY,
+            },
+        )
+        response.raise_for_status()
+        recipe = response.json().get("recipe", {})
+        return jsonify(recipe)
+    except requests.exceptions.RequestException as e:
+        return jsonify({"error": str(e)}), 500
+
