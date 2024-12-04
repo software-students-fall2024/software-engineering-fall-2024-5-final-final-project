@@ -10,7 +10,8 @@ class Config:
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
 
 class TestConfig(Config):
-    # 测试数据库配置 - 使用与主应用相同的认证信息，但是不同的数据库
-    MONGO_URI = f"mongodb://{os.getenv('MONGO_ROOT_USERNAME')}:{os.getenv('MONGO_ROOT_PASSWORD')}@mongodb:27017/test_blog?authSource=admin"
+    # 智能判断测试环境：CI环境使用localhost，Docker环境使用mongodb
+    MONGODB_HOST = 'localhost' if os.getenv('CI') else 'mongodb'
+    MONGO_URI = f"mongodb://{os.getenv('MONGO_ROOT_USERNAME')}:{os.getenv('MONGO_ROOT_PASSWORD')}@{MONGODB_HOST}:27017/test_blog?authSource=admin"
     TESTING = True
     JWT_SECRET_KEY = "test-secret-key"
