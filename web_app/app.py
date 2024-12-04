@@ -139,7 +139,6 @@ def profile():
     username = session["username"]
 
     if request.method == "POST":
-        # Save dietary restrictions to the database
         dietary_restrictions = request.form.getlist("restrictions")
         users_collection.update_one(
             {"username": username},
@@ -148,7 +147,6 @@ def profile():
         flash("Dietary restrictions updated successfully.")
         return redirect(url_for("profile"))
 
-    # Retrieve current dietary restrictions from the database
     user = users_collection.find_one({"username": username})
     dietary_restrictions = user.get("dietary_restrictions", []) if user else []
 
@@ -165,7 +163,6 @@ def search_recipes():
     """Search for recipes based on pantry items and dietary restrictions."""
     username = session["username"]
 
-    # Retrieve user's pantry and dietary restrictions from the database
     user = users_collection.find_one({"username": username})
     pantry_items = user.get("pantry", []) if user else []
     dietary_restrictions = user.get("dietary_restrictions", []) if user else []
@@ -174,30 +171,25 @@ def search_recipes():
         flash("Your pantry is empty. Add items to your pantry to search recipes.")
         return render_template("recipes.html", recipes=[], query="")
 
-    # Initialize a dictionary to store recipes to avoid duplicates
     recipes_dict = {}
 
-    # Construct common API parameters
     common_params = {
         "type": "public",
         "app_id": EDAMAM_APP_ID,
         "app_key": EDAMAM_APP_KEY,
         "from": 0,
-        "to": 10,  # Adjust as needed to limit API usage
+        "to": 10, 
     }
 
-    # Add dietary restrictions to the API call
     for restriction in dietary_restrictions:
         common_params.setdefault("health", []).append(restriction)
 
     try:
-        # For each pantry item, make an API call
         for item in pantry_items:
             params = common_params.copy()
             params["q"] = item
             response = requests.get(EDAMAM_BASE_URL, params=params)
             response.raise_for_status()
-            # Parse the recipes returned by the API
             hits = response.json().get("hits", [])
 
             for recipe_data in hits:
@@ -214,7 +206,6 @@ def search_recipes():
                         "dietary_restrictions": recipe_health_labels,
                     }
 
-        # Convert recipes_dict to a list
         recipes = list(recipes_dict.values())
 
         return render_template(
@@ -238,7 +229,6 @@ def pantry():
     username = session["username"]
 
     if request.method == "POST":
-        # Add new ingredient to the pantry
         ingredient = request.form.get("ingredient")
         if ingredient:
             users_collection.update_one(
@@ -247,7 +237,6 @@ def pantry():
             )
         return redirect(url_for("pantry"))
     
-    # Retrieve current pantry items from the database
     user = users_collection.find_one({"username": username})
     pantry_items = user.get("pantry", []) if user else []
 
@@ -269,6 +258,58 @@ def delete_pantry_item():
         )
         flash(f"Removed '{ingredient}' from your pantry.")
     return redirect(url_for("pantry"))
+
+
+@app.route("/saved_recipes")
+@login_required
+def saved_recipes():
+    """Render all saved recipes."""
+    username = session["username"]
+    user = users_collection.find_one({"username": username})
+
+    if user:
+        saved_recipes = user.get("saved_recipes", [])
+        return render_template("saved_recipes.html", recipes=saved_recipes)
+    else:
+        flash("User not found.")
+        return redirect(url_for("home"))
+
+
+@app.route("/save_recipe", methods=["POST"])
+@login_required
+def save_recipe():
+    """Saves a recipe to the user's saved_recipes list."""
+    username = session["username"]
+    recipe_data = request.json
+
+    user = users_collection.find_one({"username": username})
+
+    if user:
+        if any(recipe["recipe_id"] == recipe_data["recipe_id"] for recipe in user.get("saved_recipes", [])):
+            return jsonify({"message": "Recipe already saved."}), 400
+
+        users_collection.update_one(
+            {"username": username},
+            {"$push": {"saved_recipes": recipe_data}}
+        )
+        return jsonify({"message": "Recipe saved successfully."}), 200
+    else:
+        return jsonify({"message": "User not found."}), 404
+    
+
+@app.route("/unsave_recipe", methods=["POST"])
+@login_required
+def unsave_recipe():
+    """Unsaves a recipe from the user's saved_recipes list."""
+    username = session["username"]
+    recipe_id = request.form.get("recipe_id")
+
+    users_collection.update_one(
+        {"username": username},
+        {"$pull": {"saved_recipes": {"recipe_id": recipe_id}}}
+    )
+    flash("Recipe removed from saved list.")
+    return redirect(url_for("saved_recipes"))
 
 
 if __name__ == "__main__":

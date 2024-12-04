@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saved Recipes</title>
+</head>
+<body>
+    <h1>Your Saved Recipes</h1>
+    {% if recipes %}
+        <ul>
+            {% for recipe in recipes %}
+                <li>
+                    <h2>{{ recipe.name }}</h2>
+                    <img src="{{ recipe.image }}" alt="Image of {{ recipe.name }}" style="width:150px;height:auto;">
+                    <p><strong>Source:</strong> {{ recipe.source }}</p>
+                    <p><a href="{{ recipe.url }}" target="_blank">View Full Recipe</a></p>
+                    <form action="{{ url_for('unsave_recipe') }}" method="post">
+                        <input type="hidden" name="recipe_id" value="{{ recipe.recipe_id }}">
+                        <button type="submit">Remove</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>You have no saved recipes.</p>
+    {% endif %}
+    <a href="{{ url_for('home') }}"><button>Back to Home</button></a>
+</body>
+</html>
