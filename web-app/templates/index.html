@@ -2,19 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- Title of the web page -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome to SipCity</title>
-    
-    <!-- Link to the CSS stylesheet for styling the page -->
+    <!-- Link to the CSS stylesheet -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <!-- Main Heading -->
-    <h1>Welcome to SipCity</h1>
-
-    <!-- Navigation links for Login and Sign Up -->
-    <!-- 'url_for' dynamically generates the URL for the corresponding Flask route -->
-    <a href="{{ url_for('login') }}">Login</a> <!-- Link to the Login page -->
-    <a href="{{ url_for('signup') }}">Sign Up</a> <!-- Link to the Sign-Up page -->
+    <!-- Welcome Section -->
+    <section class="welcome-section">
+        <div class="container">
+            <h1>Welcome to <span class="brand">HomeBrewed</span></h1>
+            <p>Personalized Bar & Speakeasy Picks</p>
+            <div class="cta-buttons">
+                <a href="{{ url_for('login') }}" class="btn btn-primary">Login</a>
+                <a href="{{ url_for('signup') }}" class="btn btn-secondary">Sign Up</a>
+            </div>
+        </div>
+    </section>
 </body>
 </html>
