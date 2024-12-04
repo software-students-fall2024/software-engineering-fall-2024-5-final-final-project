@@ -22,8 +22,14 @@ jobs:
         env:
           MONGO_INITDB_ROOT_USERNAME: root
           MONGO_INITDB_ROOT_PASSWORD: example
+          MONGO_INITDB_DATABASE: test_blog
         ports:
           - 27017:27017
+        options: >-
+          --health-cmd mongosh --eval "db.adminCommand('ping')"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
     - uses: actions/checkout@v2
@@ -52,8 +58,11 @@ jobs:
         PYTHONPATH: ${{ github.workspace }}/backend
         MONGO_ROOT_USERNAME: root
         MONGO_ROOT_PASSWORD: example
-        MONGO_DATABASE: blog
+        MONGO_DATABASE: test_blog
+        SECRET_KEY: test-secret-key
+        CI: true
       run: |
+        sleep 5
         pytest -v --cov=app tests/
 
   build-and-push:
