@@ -8,7 +8,5 @@ pytest-cov
 pytest-flask
 flask-cors
 pydub
-flask
-pymongo
 python-dateutil
 python-dotenv

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Planner</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .stat {
+            margin: 10px 0;
+            font-size: 1.2em;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 100px auto;
+            padding: 20px;
+            width: 300px;
+            border-radius: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .expenses-list {
+            margin-top: 20px;
+        }
+
+        .expense-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .error {
+            color: red;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Login Form -->
+    <div id="loginContainer" class="login-container">
+        <h2>Login</h2>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="login()">Login</button>
+        <div id="loginError" class="error"></div>
+    </div>
+
+    <!-- Main App -->
+    <div id="appContainer" class="container" style="display: none;">
+        <div class="header">
+            <div class="stat">Budget: $<span id="budget">0.00</span></div>
+            <div class="stat">Total Expenses: $<span id="expenses">0.00</span></div>
+            <div class="stat">Remaining: $<span id="remaining">0.00</span></div>
+        </div>
+
+        <div class="buttons">
+            <button onclick="showBudgetModal()">Update Budget</button>
+            <button onclick="showExpenseModal()">Add Expense</button>
+            <button onclick="toggleExpensesList()">View Expenses</button>
+            <button onclick="logout()">Logout</button>
+        </div>
+
+        <div id="expensesList" class="expenses-list" style="display: none;"></div>
+    </div>
+
+    <!-- Budget Modal -->
+    <div id="budgetModal" class="modal">
+        <div class="modal-content">
+            <h3>Update Budget</h3>
+            <input type="number" id="budgetAmount" placeholder="Enter new budget amount" min="0" step="0.01" required>
+            <button onclick="updateBudget()">Update</button>
+            <button onclick="closeBudgetModal()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Expense Modal -->
+    <div id="expenseModal" class="modal">
+        <div class="modal-content">
+            <h3>Add Expense</h3>
+            <input type="number" id="expenseAmount" placeholder="Amount" min="0" step="0.01" required>
+            <input type="text" id="expenseDescription" placeholder="Description">
+            <button onclick="addExpense()">Add</button>
+            <button onclick="closeExpenseModal()">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        // Utility functions
+        const formatMoney = (amount) => parseFloat(amount).toFixed(2);
+
+        async function fetchJSON(url, options = {}) {
+            const response = await fetch(url, {
+                ...options,
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                }
+            });
+            return response.json();
+        }
+
+        // Authentication
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const data = await fetchJSON('/api/login', {
+                    method: 'POST',
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (data.success) {
+                    document.getElementById('loginContainer').style.display = 'none';
+                    document.getElementById('appContainer').style.display = 'block';
+                    updateDisplay();
+                } else {
+                    document.getElementById('loginError').textContent = 'Invalid credentials';
+                }
+            } catch (error) {
+                document.getElementById('loginError').textContent = 'Login failed';
+            }
+        }
+
+        async function logout() {
+            await fetchJSON('/api/logout', { method: 'POST' });
+            document.getElementById('loginContainer').style.display = 'block';
+            document.getElementById('appContainer').style.display = 'none';
+        }
+
+        // Display updates
+        async function updateDisplay() {
+            const data = await fetchJSON('/api/user-data');
+            document.getElementById('budget').textContent = formatMoney(data.budget);
+            document.getElementById('expenses').textContent = formatMoney(data.total_expenses);
+            document.getElementById('remaining').textContent = formatMoney(data.remaining);
+        }
+
+        // Budget operations
+        function showBudgetModal() {
+            document.getElementById('budgetModal').style.display = 'block';
+        }
+
+        function closeBudgetModal() {
+            document.getElementById('budgetModal').style.display = 'none';
+        }
+
+        async function updateBudget() {
+            const amount = document.getElementById('budgetAmount').value;
+            await fetchJSON('/api/update-budget', {
+                method: 'POST',
+                body: JSON.stringify({ budget: amount })
+            });
+            closeBudgetModal();
+            updateDisplay();
+        }
+
+        // Expense operations
+        function showExpenseModal() {
+            document.getElementById('expenseModal').style.display = 'block';
+        }
+
+        function closeExpenseModal() {
+            document.getElementById('expenseModal').style.display = 'none';
+        }
+
+        async function addExpense() {
+            const amount = document.getElementById('expenseAmount').value;
+            const description = document.getElementById('expenseDescription').value;
+
+            await fetchJSON('/api/add-expense', {
+                method: 'POST',
+                body: JSON.stringify({ amount, description })
+            });
+
+            closeExpenseModal();
+            updateDisplay();
+            if (document.getElementById('expensesList').style.display === 'block') {
+                loadExpenses();
+            }
+        }
+
+        async function removeExpense(expenseId) {
+            await fetchJSON('/api/remove-expense', {
+                method: 'POST',
+                body: JSON.stringify({ expense_id: expenseId })
+            });
+            loadExpenses();
+            updateDisplay();
+        }
+
+        async function loadExpenses() {
+            const expenses = await fetchJSON('/api/expenses');
+            const expensesList = document.getElementById('expensesList');
+            expensesList.innerHTML = expenses.map(expense => `
+                <div class="expense-item">
+                    <div>
+                        <strong>$${formatMoney(expense.amount)}</strong> - ${expense.description}
+                        <br>
+                        <small>${new Date(expense.date).toLocaleDateString()}</small>
+                    </div>
+                    <button onclick="removeExpense('${expense.id}')">Remove</button>
+                </div>
+            `).join('');
+        }
+
+        function toggleExpensesList() {
+            const expensesList = document.getElementById('expensesList');
+            if (expensesList.style.display === 'none') {
+                expensesList.style.display = 'block';
+                loadExpenses();
+            } else {
+                expensesList.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+
+</html>
