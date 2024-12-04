@@ -1,6 +1,16 @@
+"""
+Tests for ml-client flask app
+"""
+
 import pytest
 from app import create_app
 
+
+@pytest.fixture
+def app():
+    """Fixture for creating and configuring the Flask app."""
+    test_app = create_app()
+    return test_app
 
 
 class Tests:
@@ -14,9 +24,8 @@ class Tests:
         actual = True
         assert actual == expected, "Expected True to be equal to True!"
 
-
     def model(self):
-        """Provide a simple CNN model instance."""
-        return CNNModel()
-        
+        """Provide a simple model instance."""
+        return True
+
     # write more tests here...

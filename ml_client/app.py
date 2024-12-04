@@ -2,7 +2,7 @@
 Loads flask app for ml-client
 """
 
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, Blueprint
 from helpers.respond import (
     initialize_llm,
     suppress_llama_cpp_logging,
@@ -11,11 +11,11 @@ from helpers.respond import (
 from helpers.loader import Loader
 
 # Flask app initialization
-app = Flask(__name__)
+app = Blueprint("main", __name__)
 LOG_CALLBACK = None
 
 # Suppress llama cpp logging
-# suppress_llama_cpp_logging()
+suppress_llama_cpp_logging()
 
 
 # Initialize the LLM globally
@@ -32,6 +32,13 @@ try:
 finally:
     loader.stop()  # Stop the loading spinner when the task completes
 
+def create_app():
+    """
+    Generate test app
+    """
+    test_app = Flask(__name__)
+    test_app.register_blueprint(app)
+    return test_app
 
 @app.route("/")
 def index():
@@ -69,6 +76,7 @@ def handle_user_input():
 
 
 if __name__ == "__main__":
+    app = create_app()
     app.run(host="0.0.0.0", port=5002, debug=True)
 
-#docker build -t ml-component .
+# docker build -t ml-component .

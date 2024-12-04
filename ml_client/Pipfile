@@ -8,6 +8,7 @@ flask = "*"
 llama-cpp-python = "*"
 langchain-community = "*"
 pylint = "*"
+pytest = "*"
 
 [dev-packages]
 ipykernel = "*"
