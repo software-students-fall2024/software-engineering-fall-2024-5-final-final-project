@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+</head>
+<body>
+    <h1>Your Profile</h1>
+    <p>Manage your dietary restrictions below:</p>
+    <form action="/profile" method="post">
+        <h2>Select Dietary Restrictions:</h2>
+        {% for label in health_labels %}
+        <div>
+            <input type="checkbox" id="{{ label.api_param }}" name="restrictions" value="{{ label.api_param }}"
+                {% if label.api_param in dietary_restrictions %}checked{% endif %}>
+            <label for="{{ label.api_param }}">{{ label.web_label }}</label>
+        </div>
+        {% endfor %}
+        <button type="submit">Save Preferences</button>
+    </form>
+    <a href="/"><button>Back to Home</button></a>
+</body>
+</html>
