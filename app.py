@@ -126,6 +126,18 @@ def create_app():
         wishes = db.wishes.find({}).sort("created_at", -1)
         return render_template("index.html", wishes=wishes)
     
+    @app.route("/wishlist/<username>")
+    def wishlist(username):
+        #view specific users wishlist
+        user = db.users.find_one({"username": username})
+        if not user:
+            flash("user not found")
+            return redirect(url_for("home"))
+        
+        wishes = db.wishes.find({"user_id": str(user["_id"])}).sort("created_at", -1)
+        return render_template("wishlist.html", wishes=wishes, user=user)
+
+    
     @app.route("/add",methods=["GET","POST"])
     @login_required
     def add():
@@ -133,6 +145,7 @@ def create_app():
         itemName=request.form.get("item_name")
         itemPrice=request.form.get("item_price")
         itemLink=request.form.get("item_link")
+        comments=request.form.get("item_comments")
         
         if itemName and itemPrice and itemLink: #validate
             db.wishes.insert_one({ #insert into db
@@ -140,6 +153,7 @@ def create_app():
                 "name":itemName,
                 "price":itemPrice,
                 "link":itemLink,
+                "comments":comments,
                 "user_id":current_user.id
             })
             flash("Item added!")
