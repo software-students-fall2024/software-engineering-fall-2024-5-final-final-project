@@ -1,22 +1,24 @@
 import eventlet
 eventlet.monkey_patch()
+import logging
 
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 from flask import Flask, render_template, request, jsonify
-from flask_socketio import SocketIO, emit, disconnect
+from flask_socketio import SocketIO, emit, disconnect, join_room
 from uuid import uuid4
 import random
 from threading import Lock
 
 # Initialize Flask and Socket.IO
 app = Flask(__name__, template_folder="../templates", static_folder="../static")
-app.secret_key = "your_secret_key"  # Replace with a secure key in production
 socketio = SocketIO(app)
 
 # In-memory data
 waiting_players = []
 active_games = {}
 matchmaking_lock = Lock()
-
+player_stats = {"wins": 0, "losses": 0, "ties": 0} 
 # ----------- ROUTES -----------
 
 @app.route('/')
@@ -39,31 +41,48 @@ def real_person_page():
 
 @app.route('/play/ai', methods=['POST'])
 def play_against_ai():
-    """Handle the game logic for playing against AI."""
+    """
+    Handle the game logic for playing against AI.
+    """
     data = request.json
+    player_name = data.get('player_name', 'Player') 
     player_choice = data.get('choice')
 
     if player_choice not in ['rock', 'paper', 'scissor']:
         return jsonify({"error": "Invalid choice"}), 400
-
     ai_choice = random.choice(['rock', 'paper', 'scissor'])
     result = determine_ai_winner(player_choice, ai_choice)
+    update_player_stats(result)
 
     return jsonify({
+        "player_name": player_name,
         "player_choice": player_choice,
         "ai_choice": ai_choice,
-        "result": result
+        "result": result,
+        "stats": player_stats
     })
 
-
 def determine_ai_winner(player_choice, ai_choice):
-    """Determine the winner for AI games."""
+    """
+    Determine the winner for AI games.
+    """
     outcomes = {
         "rock": {"rock": "tie", "paper": "lose", "scissor": "win"},
         "paper": {"rock": "win", "paper": "tie", "scissor": "lose"},
         "scissor": {"rock": "lose", "paper": "win", "scissor": "tie"}
     }
     return outcomes[player_choice][ai_choice]
+
+def update_player_stats(result):
+    """
+    Update the player's stats based on the result of the game.
+    """
+    if result == 'win':
+        player_stats['wins'] += 1
+    elif result == 'lose':
+        player_stats['losses'] += 1
+    elif result == 'tie':
+        player_stats['ties'] += 1
 
 # ----------- MATCHMAKING -----------
 
@@ -117,24 +136,26 @@ def handle_join_game(data):
         return
 
     game = active_games[game_id]
-
+    
     if game["player1_id"] == player_id:
-        game["player1_sid"] = sid
+        game["player1_sid"] = sid  # Update session ID
+        join_room(game_id)
         emit("start_game", {"player_role": "player1"}, to=sid)
     elif game["player2_id"] == player_id:
-        game["player2_sid"] = sid
+        game["player2_sid"] = sid  # Update session ID
+        join_room(game_id)
         emit("start_game", {"player_role": "player2"}, to=sid)
     else:
         emit("error", {"message": "You are not part of this game."})
 
-
+# ----------- GAMEPLAY -----------
 @socketio.on("submit_choice")
 def handle_submit_choice(data):
     """Handle a player's choice submission."""
     game_id = data.get("game_id")
     player_id = data.get("player_id")
     choice = data.get("choice")
-
+    
     if game_id not in active_games:
         emit("error", {"message": "Invalid game ID."})
         return
@@ -151,31 +172,24 @@ def handle_submit_choice(data):
 
     # Check if both players have made their choices
     if game["player1_choice"] and game["player2_choice"]:
+        print(f"Choices: {game['player1_choice']}, {game['player2_choice']}")  # Debugging
         result = determine_winner(
-            game["player1_choice"], 
-            game["player2_choice"], 
-            game["player1_name"], 
+            game["player1_choice"],
+            game["player2_choice"],
+            game["player1_name"],
             game["player2_name"]
         )
 
-        # Send the result to both players
+        # Send the result to both players in the game room
         socketio.emit("game_result", {
             "player1_name": game["player1_name"],
             "player2_name": game["player2_name"],
             "player1_choice": game["player1_choice"],
             "player2_choice": game["player2_choice"],
             "result": result,
-        }, to=game["player1_sid"])
+        }, room=game_id)
 
-        socketio.emit("game_result", {
-            "player1_name": game["player1_name"],
-            "player2_name": game["player2_name"],
-            "player1_choice": game["player1_choice"],
-            "player2_choice": game["player2_choice"],
-            "result": result,
-        }, to=game["player2_sid"])
-
-        # Reset game state
+        # Reset the game
         reset_game(game_id)
 
 
@@ -212,4 +226,4 @@ def handle_disconnect():
 
 # ----------- START THE SERVER -----------
 if __name__ == '__main__':
-    socketio.run(app, host="0.0.0.0", port=5000, debug=True)
+    socketio.run(app, host="0.0.0.0", port=5000, debug=True, use_reloader=True)
