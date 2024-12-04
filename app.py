@@ -78,7 +78,7 @@ def create_app():
                 flash('Log in success!')
                 return redirect(url_for('home'))
             
-            flash('Invalid username or password')
+            flash('Invalid username or password', 'error')
 
         return render_template('login.html')
     
