@@ -178,7 +178,7 @@ def search_recipes():
         "app_id": EDAMAM_APP_ID,
         "app_key": EDAMAM_APP_KEY,
         "from": 0,
-        "to": 10, 
+        "to": 10,
     }
 
     for restriction in dietary_restrictions:
@@ -194,16 +194,17 @@ def search_recipes():
 
             for recipe_data in hits:
                 recipe = recipe_data["recipe"]
-                recipe_url = recipe.get("uri", "")
-                if recipe_url not in recipes_dict:
-                    recipe_health_labels = recipe.get("healthLabels", [])
+                recipe_uri = recipe.get("uri", "")
+                recipe_id = recipe_uri.split("#")[-1]
 
-                    recipes_dict[recipe_url] = {
+                if recipe_id not in recipes_dict:
+                    recipes_dict[recipe_id] = {
+                        "recipe_id": recipe_id,
                         "name": recipe.get("label", "N/A"),
                         "image": recipe.get("image", ""),
                         "source": recipe.get("source", "Unknown"),
                         "url": recipe.get("url", "#"),
-                        "dietary_restrictions": recipe_health_labels,
+                        "dietary_restrictions": recipe.get("healthLabels", []),
                     }
 
         recipes = list(recipes_dict.values())
@@ -220,6 +221,7 @@ def search_recipes():
             pantry_items=pantry_items,
             error=str(e)
         )
+
 
 
 @app.route("/pantry", methods=["GET", "POST"])
@@ -274,18 +276,21 @@ def saved_recipes():
         flash("User not found.")
         return redirect(url_for("home"))
 
-
 @app.route("/save_recipe", methods=["POST"])
 @login_required
 def save_recipe():
     """Saves a recipe to the user's saved_recipes list."""
     username = session["username"]
-    recipe_data = request.json
+    recipe_data = request.json 
+
+    if not recipe_data or "recipe_id" not in recipe_data:
+        return jsonify({"message": "Invalid recipe data."}), 400
 
     user = users_collection.find_one({"username": username})
 
     if user:
-        if any(recipe["recipe_id"] == recipe_data["recipe_id"] for recipe in user.get("saved_recipes", [])):
+        saved_recipes = user.get("saved_recipes", [])
+        if any(recipe["recipe_id"] == recipe_data["recipe_id"] for recipe in saved_recipes):
             return jsonify({"message": "Recipe already saved."}), 400
 
         users_collection.update_one(
@@ -293,9 +298,9 @@ def save_recipe():
             {"$push": {"saved_recipes": recipe_data}}
         )
         return jsonify({"message": "Recipe saved successfully."}), 200
-    else:
-        return jsonify({"message": "User not found."}), 404
-    
+
+    return jsonify({"message": "User not found."}), 404
+
 
 @app.route("/unsave_recipe", methods=["POST"])
 @login_required
@@ -310,7 +315,6 @@ def unsave_recipe():
     )
     flash("Recipe removed from saved list.")
     return redirect(url_for("saved_recipes"))
-
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)

@@ -8,9 +8,9 @@
 <body>
     <h1>Your Saved Recipes</h1>
     {% if recipes %}
-        <ul>
+        <div class="saved-recipes-list">
             {% for recipe in recipes %}
-                <li>
+                <div class="saved-recipe">
                     <h2>{{ recipe.name }}</h2>
                     <img src="{{ recipe.image }}" alt="Image of {{ recipe.name }}" style="width:150px;height:auto;">
                     <p><strong>Source:</strong> {{ recipe.source }}</p>
@@ -19,9 +19,9 @@
                         <input type="hidden" name="recipe_id" value="{{ recipe.recipe_id }}">
                         <button type="submit">Remove</button>
                     </form>
-                </li>
+                </div>
             {% endfor %}
-        </ul>
+        </div>
     {% else %}
         <p>You have no saved recipes.</p>
     {% endif %}
