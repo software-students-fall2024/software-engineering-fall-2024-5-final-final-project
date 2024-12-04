@@ -1,6 +1,92 @@
+@font-face {
+  font-family: 'poppins';
+  src: url('/static/Poppins-Regular.ttf');
+}
+/*Welcome Page*/
+body {
+  height: 100%; 
+  margin: 0;
+  padding: 0;
+  font-family: "poppins", sans-serif;
+  color: #3a383d;
+  background: linear-gradient(to bottom, #fdecf8, #d2fdd1);
+  display: flex;
+  flex-direction: column;
+  background-attachment: fixed;
+}
 .div{
   display: flex;
   justify-content: center; 
   align-items: center;
   flex-direction: column;
+  padding: 50px;
 }
+.welcome {
+  max-width: 90%;
+  max-height: 50vh;
+  object-fit: contain;
+  margin-bottom: 20px;
+  display: block;
+  height: auto;
+}
+.logo {
+  max-width: 200%;
+  max-height: 90vh;
+  object-fit: contain;
+  margin-bottom: 20px;
+  display: block;
+}
+h1 {
+  font-size: 40px;
+  font-weight: bold;
+}
+.start{
+  width: 50%;
+}
+button {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-evenly;
+  padding: 10px 20px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  border: none;
+  border-radius: 20px;
+  background: linear-gradient(to bottom, #f7fdd6, #8fda8c);
+  display: flex;
+  color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  align-items: center;
+  transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+button:hover {
+  opacity: 70%;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+  transform: translateY(-5px);    
+}
+/*Login Page*/
+.frame{
+  display: flex;
+  justify-content: center; 
+  align-items: center;
+  flex-direction: column;
+  padding: 50px;
+}
+.submit {
+  margin-top: 20px;
+  width: 10%;
+  display: flex;
+  justify-content: space-evenly;
+  padding: 10px 20px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Adds space between fields */
+
+}
+
+
+
+

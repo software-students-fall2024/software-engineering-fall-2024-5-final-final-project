@@ -10,9 +10,11 @@
 
 <body>
   <div class="div">
-    <h1>Welcome</h1>
-    <p>This is a simple Flask app with an index page.</p>
-  </div>
+    <img src="{{ url_for('static', filename='Welcome.png') }}" class="Welcome"/>
+    <p>Let's Record what's new! </p>
+    <img src="{{ url_for('static', filename='record-player.png') }}" class="logo"/
+    <div class="start"></div>
+  <button onclick="window.location.href='/login'">Start</button>
+</div>
+</div>
 </body>
-
-</html>
