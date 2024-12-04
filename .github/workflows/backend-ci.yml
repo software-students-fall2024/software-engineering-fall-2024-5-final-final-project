@@ -55,6 +55,7 @@ jobs:
         MONGO_ROOT_PASSWORD: adminpassword
         MONGO_DATABASE: blogdb
         SECRET_KEY: test-secret-key
+        PYTHONPATH: ${{ github.workspace }}/backend
       run: |
         pytest
 
