@@ -143,33 +143,33 @@ def home():
 
 @app.route("/findbar", methods=["GET", "POST"])
 def findbar():
-    """Render the find bar page."""
     if request.method == "POST":
-        # Handle the search functionality for bars
+        filter_type = request.form.get("filter_type")  # Get the selected filter
         search_query = request.form.get("search_query", "").strip()
-        if not search_query:
-            flash("Please enter a search term.", "error")
-            return redirect(url_for("findbar"))
+        location_query = request.form.getlist("location_query")  # Get multiple neighborhoods
+        price_query = request.form.get("price_query")  # Get price range
 
-        # Simulated search results (replace with database logic)
-        search_results = [
-            #need to change
-            {"name": "The Happy Hour Bar", "location": "Midtown", "description": "Best happy hour in town!"},
-            {"name": "The Chill Spot", "location": "Downtown", "description": "A relaxing lounge with great vibes."}
-        ]
-        return render_template("findbar.html", search_results=search_results, search_query=search_query)
+        query = {}
+
+        if filter_type == "name" and search_query:
+            query = {"name": {"$regex": search_query, "$options": "i"}}
+        elif filter_type == "location" and location_query:
+            query = {"location": {"$in": location_query}}
+        elif filter_type == "price" and price_query:
+            query = {"price": price_query}
+
+        # Fetch results from the database
+        search_results = list(bar_data_collection.find(query))
+
+        return render_template(
+            "findbar.html",
+            search_results=search_results,
+            search_query=search_query or ", ".join(location_query) or price_query,
+        )
 
     return render_template("findbar.html", search_results=None)
 
-@app.route("/findbar", methods=["GET", "POST"])
-def savedbars():
-    """Render the saved bar page."""
-    username = session.get("username", "User")
-    if not username:
-        return redirect(url_for('login'))
-    bar_list = list(bar_data_collection.find({'username': username}))
 
-    return render_template('search_edit.html', bar_list=bar_list)
 
 # Delete bar route
 @app.route('/delete/<bar_id>', methods=['POST'])
@@ -182,6 +182,13 @@ def delete_transaction(bar_id):
     bar_data_collection.delete_one({'_id': ObjectId(bar_id), 'username': username})  # Delete only the user's transaction
     return redirect(url_for('savedbar'))
 
+
+@app.route('/savedbar', methods=['GET'])
+def savedbar():
+    username = session.get('username')
+    # Fetch saved bars from the database
+    bars = bar_data_collection.find({"username": username})
+    return render_template('savedbar.html', bars=bars)
 
 
 # Application entry point

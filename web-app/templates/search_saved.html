@@ -7,6 +7,28 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
+    <nav class="navbar" id="navbar">
+        <ul class="nav-links" id="nav-links">
+            <!-- Home Link -->
+            <li>
+                <a href="{{ url_for('dashboard', username=session.get('username', '')) }}" class="active">Home</a>
+            </li>
+            <!-- Find a Bar Link -->
+            <li>
+                <a href="{{ url_for('findbar') }}">Find a Bar</a>
+            </li>
+            <!-- Saved Bars Link -->
+            <li>
+                <a href="{{ url_for('savedbar', username=session.get('username', '')) }}">Saved Bars</a>
+            </li>
+            <li><a href="{{ url_for('search_saved', username=session['username']) }}">Search Saved</a></li>
+            <!-- Logout Link -->
+            <li>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            </li>
+        </ul>
+    </nav>
+    
     <div class="container">
         <h2 class="text-center">Search Your Saved Bars</h2>
 

@@ -20,8 +20,9 @@
             </li>
             <!-- Saved Bars Link -->
             <li>
-                <a href="{{ url_for('savedbars', username=session.get('username', '')) }}">Saved Bars</a>
+                <a href="{{ url_for('savedbar', username=session.get('username', '')) }}">Saved Bars</a>
             </li>
+            <li><a href="{{ url_for('search_saved', username=session['username']) }}">Search Saved</a></li>
             <!-- Logout Link -->
             <li>
                 <a href="{{ url_for('logout') }}">Logout</a>
