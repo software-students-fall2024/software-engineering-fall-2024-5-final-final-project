@@ -70,16 +70,24 @@ h2 {
     z-index: 5;
 }
 .navbar {
-    display: flex;  /* Display the navbar by default on larger screens */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(135deg, #553c9a, #b393d3); /* Beautiful gradient */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    display: flex;
     justify-content: center;
     align-items: center;
-    background-color: rgba(87, 49, 176, 0.8); /* Match the background color of the header */
+    padding: 10px 0; /* Slight padding for better spacing */
+    z-index: 5;
+    transition: all 0.3s ease; /* Smooth transitions */
 }
 
 .nav-links {
     list-style: none;
     display: flex;
-    gap: 18px;
+    gap: 25px; /* Wider spacing for a cleaner look */
 }
 
 .nav-links li {
@@ -87,31 +95,31 @@ h2 {
 }
 
 .nav-links li a {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
+    font-weight: 600; /* Slightly bolder for emphasis */
     color: white;
-    padding: 10px;
+    padding: 8px 15px; /* Added padding for clickable area */
     text-decoration: none;
-    transition: color 0.3s ease;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .nav-links li a:hover, 
 .nav-links li a.active {
-    color: #f5f5f5;
-    background-color: rgba(255, 255, 255, 0.2);
-    border-radius: 5px;
-    border-bottom: 3px solid var(--icon-color);
+    background-color: rgba(255, 255, 255, 0.2); /* Subtle hover effect */
+    color: #ffe58a; /* Softer yellow for hover color */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* Slight shadow for emphasis */
+    border-radius: 8px;
+    transform: scale(1.1); /* Slight zoom-in effect */
 }
-/* Menu icon visibility for mobile */
+
+
+
 #menu-icon {                    /* Dropdown menu icon */
     font-size: 3.6rem; 
     color: var(--icon-color);
     display: none;              /* Doesn't display yet */
     cursor: pointer;
-}
-.navbar.active {display: block;}
-section {
-    min-height: 100vh;
-    padding: 10rem 12%;
 }
 
 /* Summary styling for balance */
