@@ -46,6 +46,32 @@
         }
     </script>
 </head>
+
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar" id="navbar">
+        <ul class="nav-links" id="nav-links">
+            <!-- Home Link -->
+            <li>
+                <a href="{{ url_for('dashboard', username=session.get('username', '')) }}">Home</a>
+            </li>
+            <!-- Find a Bar Link -->
+            <li><a href="{{ url_for('findbar') }}" class="active">Find Bar</a></li>
+            <!-- Saved Bars Link -->
+            <li>
+                <a href="{{ url_for('savedbar', username=session.get('username', '')) }}">Saved Bars</a>
+            </li>
+            <li><a href="{{ url_for('search_saved', username=session['username']) }}">Search Saved</a></li>
+            <!-- Logout Link -->
+            <li>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            </li>
+        </ul>
+    </nav>
+</body>
+
+
 <body>
     <div class="container">
         <h2 class="text-center">Find a Bar</h2>
