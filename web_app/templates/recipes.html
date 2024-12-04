@@ -9,7 +9,6 @@
 <body>
     <div class="container">
         <h1>Recipes for "{{ query }}"</h1>
-        <p>Page {{ page }} of {{ total_pages }}</p>
 
         {% if recipes %}
             <div class="grid">
@@ -25,23 +24,6 @@
         {% else %}
             <p>No recipes found for "{{ query }}".</p>
         {% endif %}
-
-        <nav class="pagination">
-            {% if page > 1 %}
-                <a href="{{ url_for('search_recipes', query=query, page=1) }}">First</a>
-                <a href="{{ url_for('search_recipes', query=query, page=page-1) }}">Previous</a>
-            {% endif %}
-            {% for p in range(1, total_pages + 1) %}
-                <a href="{{ url_for('search_recipes', query=query, page=p) }}" 
-                   class="{% if page == p %}current{% endif %}">
-                    {{ p }}
-                </a>
-            {% endfor %}
-            {% if has_next %}
-                <a href="{{ url_for('search_recipes', query=query, page=page+1) }}">Next</a>
-                <a href="{{ url_for('search_recipes', query=query, page=total_pages) }}">Last</a>
-            {% endif %}
-        </nav>
 
         <div class="back-button">
             <a href="/" class="back-home">Back to Search</a>

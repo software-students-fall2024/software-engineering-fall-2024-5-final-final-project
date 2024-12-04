@@ -97,25 +97,20 @@ def logout():
 
 
 @app.route("/search", methods=["GET"])
-@login_required
 def search_recipes():
     query = request.args.get("query")
     if not query:
-        return render_template("recipes.html", recipes=[], query="", page=1, total_pages=1, has_next=False)
+        return render_template("recipes.html", recipes=[], query="")
 
-    page = request.args.get("page", 1, type=int)
-    recipes_per_page = 10
-
-    from_index = (page - 1) * recipes_per_page
-    to_index = from_index + recipes_per_page
+    recipes_limit = 20
 
     params = {
         "type": "public",
         "q": query,
         "app_id": EDAMAM_APP_ID,
         "app_key": EDAMAM_APP_KEY,
-        "from": from_index,
-        "to": to_index,
+        "from": 0,
+        "to": recipes_limit,
     }
 
     try:
@@ -123,9 +118,6 @@ def search_recipes():
         response.raise_for_status()
 
         recipes = response.json().get("hits", [])
-        total_recipes = response.json().get("count", 0)
-
-        total_pages = min((total_recipes + recipes_per_page - 1) // recipes_per_page, 10)
 
         formatted_recipes = [
             {
@@ -137,18 +129,18 @@ def search_recipes():
             for recipe in recipes
         ]
 
-        has_next = page < total_pages
-
         return render_template(
             "recipes.html",
             recipes=formatted_recipes,
-            query=query,
-            page=page,
-            total_pages=total_pages,
-            has_next=has_next,
+            query=query
         )
     except requests.exceptions.RequestException as e:
-        return render_template("recipes.html", recipes=[], query=query, page=1, total_pages=1, has_next=False, error=str(e))
+        return render_template(
+            "recipes.html",
+            recipes=[],
+            query=query,
+            error=str(e)
+        )
 
 
 if __name__ == "__main__":

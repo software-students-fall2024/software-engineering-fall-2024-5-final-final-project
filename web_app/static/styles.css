@@ -119,3 +119,24 @@ h1 {
 .back-home:hover {
     background-color: #333;
 }
+
+.flashes {
+    list-style-type: none;
+    padding: 0;
+}
+
+.flashes li {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.flashes .error {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.flashes .success {
+    background-color: #d4edda;
+    color: #155724;
+}
