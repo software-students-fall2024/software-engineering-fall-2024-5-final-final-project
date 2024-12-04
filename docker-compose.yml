@@ -33,6 +33,24 @@ services:
     networks:
       - blog-network
 
+  backend:
+    build: ./backend
+    container_name: blog-backend
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGO_ROOT_USERNAME=${MONGO_ROOT_USERNAME}
+      - MONGO_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
+      - MONGO_DATABASE=${MONGO_DATABASE}
+      - SECRET_KEY=${SECRET_KEY}
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - mongodb
+    networks:
+      - blog-network
+
 networks:
   blog-network:
     driver: bridge
