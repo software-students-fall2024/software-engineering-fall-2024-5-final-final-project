@@ -160,29 +160,33 @@ def profile():
 
 
 @app.route("/search", methods=["GET"])
+@login_required
 def search_recipes():
-    """Search for recipes based on user's dietary restrictions."""
-    query = request.args.get("query")
-    if not query:
-        return render_template("recipes.html", recipes=[], query="")
-
-    recipes_limit = 20
-
-    # Retrieve dietary restrictions from the database
+    """Search for recipes strictly based on pantry items and dietary restrictions."""
     username = session["username"]
+
+    # Retrieve user's pantry and dietary restrictions from the database
     user = users_collection.find_one({"username": username})
+    pantry_items = user.get("pantry", []) if user else []
     dietary_restrictions = user.get("dietary_restrictions", []) if user else []
 
+    if not pantry_items:
+        flash("Your pantry is empty. Add items to your pantry to search recipes.")
+        return render_template("recipes.html", recipes=[], query="")
+
+    # Construct API parameters
     params = {
         "type": "public",
-        "q": query,
         "app_id": EDAMAM_APP_ID,
         "app_key": EDAMAM_APP_KEY,
         "from": 0,
-        "to": recipes_limit,
+        "to": 20,
     }
 
-    # Include dietary restrictions in the API call
+    # Add ingredients to the search query by joining pantry items
+    params["q"] = " ".join(pantry_items)
+
+    # Add dietary restrictions to the API call
     for restriction in dietary_restrictions:
         params.setdefault("health", []).append(restriction)
 
@@ -190,28 +194,40 @@ def search_recipes():
         response = requests.get(EDAMAM_BASE_URL, params=params)
         response.raise_for_status()
 
+        # Parse the recipes returned by the API
         recipes = response.json().get("hits", [])
 
-        formatted_recipes = [
-            {
-                "name": recipe["recipe"].get("label", "N/A"),
-                "image": recipe["recipe"].get("image", ""),
-                "source": recipe["recipe"].get("source", "Unknown"),
-                "url": recipe["recipe"].get("url", "#"),
-            }
-            for recipe in recipes
-        ]
+        # Filter recipes to ensure all pantry items are at least partially matched in recipe ingredients
+        filtered_recipes = []
+        for recipe in recipes:
+            recipe_ingredients = [
+                ingredient["text"] for ingredient in recipe["recipe"].get("ingredients", [])
+            ]
+            recipe_health_labels = recipe["recipe"].get("healthLabels", [])
+
+            # Check if at least one pantry item appears in each ingredient text
+            if all(
+                any(pantry_item.lower() in ingredient.lower() for ingredient in recipe_ingredients)
+                for pantry_item in pantry_items
+            ):
+                filtered_recipes.append({
+                    "name": recipe["recipe"].get("label", "N/A"),
+                    "image": recipe["recipe"].get("image", ""),
+                    "source": recipe["recipe"].get("source", "Unknown"),
+                    "url": recipe["recipe"].get("url", "#"),
+                    "dietary_restrictions": recipe_health_labels,
+                })
 
         return render_template(
             "recipes.html",
-            recipes=formatted_recipes,
-            query=query
+            recipes=filtered_recipes,
+            pantry_items=pantry_items
         )
     except requests.exceptions.RequestException as e:
         return render_template(
             "recipes.html",
             recipes=[],
-            query=query,
+            pantry_items=pantry_items,
             error=str(e)
         )
 

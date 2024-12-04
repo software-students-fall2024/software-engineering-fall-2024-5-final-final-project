@@ -140,3 +140,29 @@ h1 {
     background-color: #d4edda;
     color: #155724;
 }
+
+.ingredients-list {
+    list-style-type: disc;
+    padding-left: 20px;
+    text-align: left;
+    margin: 10px 0;
+    font-size: 14px;
+    color: #555;
+}
+
+.ingredients-list li {
+    margin-bottom: 5px;
+}
+
+.dietary-restrictions {
+    list-style-type: disc;
+    padding-left: 20px;
+    text-align: left;
+    margin: 10px 0;
+    font-size: 14px;
+    color: #555;
+}
+
+.dietary-restrictions li {
+    margin-bottom: 5px;
+}
