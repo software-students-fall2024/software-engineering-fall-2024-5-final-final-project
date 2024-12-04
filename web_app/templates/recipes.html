@@ -5,6 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recipes</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script>
+        function saveRecipe(recipeId, recipeName, recipeImage, recipeSource, recipeUrl) {
+            fetch('/save_recipe', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    recipe_id: recipeId,
+                    name: recipeName,
+                    image: recipeImage,
+                    source: recipeSource,
+                    url: recipeUrl
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
 </head>
 <body>
     <div class="container">
@@ -24,6 +48,13 @@
                                 <li>{{ restriction }}</li>
                             {% endfor %}
                         </ul>
+                        <button onclick="saveRecipe(
+                            '{{ recipe.recipe_id }}',
+                            '{{ recipe.name }}',
+                            '{{ recipe.image }}',
+                            '{{ recipe.source }}',
+                            '{{ recipe.url }}'
+                        )">Save Recipe</button>
                     </div>
                 {% endfor %}
             </div>
