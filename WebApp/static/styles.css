@@ -151,6 +151,7 @@ a {
 a:hover {
     color: #388E3C;
 }
+
 /* Login/Signup Divider */
 .divider {
     text-align: center;
@@ -168,33 +169,6 @@ a:hover {
     border-radius: 50%;
     object-fit: cover;
     border: 3px solid #4CAF50;
-}
-
-/* Form Groups */
-.form-group {
-    margin-bottom: 20px;
-}
-
-.form-group p {
-    font-size: 16px;
-}
-
-/* Display Tables */
-.table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-.table th, .table td {
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: center;
-}
-
-.table th {
-    background-color: #4CAF50;
-    color: white;
 }
 
 /* Budget Alert */
