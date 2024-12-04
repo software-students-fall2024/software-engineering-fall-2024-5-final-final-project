@@ -9,6 +9,8 @@ services:
       - FLASK_ENV=development
       - FLASK_RUN_PORT=5001
       - FLASK_DEBUG=1
+      - MONGO_URI=mongodb://mongodb:27017
+      - MONGO_DBNAME=your_database_name
     volumes:
       - .:/app
     env_file:
@@ -19,7 +21,7 @@ services:
       - app-network
   
   mongodb:
-    image: mongo
+    image: mongo:latest
     container_name: mongodb
     ports:
       - "27017:27017"

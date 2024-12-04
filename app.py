@@ -9,31 +9,29 @@ from bson.objectid import ObjectId
 
 load_dotenv()
 
-def create_app():
+def create_app(test_config=None):
     
-    app = Flask(__name__, static_url_path='/static')
-
-    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'defaultsecretkey')
-
-    cxn = pymongo.MongoClient(os.getenv("MONGO_URI"))
-    db = cxn[os.getenv("MONGO_DBNAME")]
+    app = Flask(__name__)
+    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your_temporary_secret_key')
+    app.config['MONGO_URI'] = os.getenv('MONGO_URI', 'mongodb://localhost:27017')
+    app.config['MONGO_DBNAME'] = os.getenv('MONGO_DBNAME', 'test_db')
 
     try:
+        cxn = pymongo.MongoClient(app.config["MONGO_URI"])
+        db = cxn[app.config["MONGO_DBNAME"]]
         cxn.admin.command("ping")
-        print(" *", "Connected to MongoDB!")
+        print("MongoDB connection successful.")
     except Exception as e:
-        print(" * MongoDB connection error:", e)
+        print(f"MongoDB connection error: {e}")
+        raise
     
-    #Login manager
     manager = LoginManager()
     manager.init_app(app)
     manager.login_view = 'login'
 
-    #Get user info using mongo
     users=db.UserData.find()
     userList=list(users)
 
-    #User class
     class User(UserMixin):
         def __init__(self, user_data):
             self.id = str(user_data['_id'])
@@ -215,4 +213,4 @@ def create_app():
 if __name__ =="__main__":
     FLASK_PORT = os.getenv("FLASK_PORT", 5001)
     app = create_app()
-    app.run(port=FLASK_PORT)
+    app.run(host="0.0.0.0", port=FLASK_PORT, debug=True)
