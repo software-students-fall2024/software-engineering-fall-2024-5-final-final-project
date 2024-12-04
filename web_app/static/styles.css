@@ -152,6 +152,58 @@ h1 {
 
 .ingredients-list li {
     margin-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ingredients-list li form {
+    margin: 0;
+}
+
+.ingredients-list li button {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.ingredients-list li button:hover {
+    background-color: #cc0000;
+}
+
+.pantry-form {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.pantry-form input[type="text"] {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-right: 10px;
+    flex: 1;
+}
+
+.pantry-form button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.pantry-form button:hover {
+    background-color: #0056b3;
 }
 
 .dietary-restrictions {

@@ -3,30 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <title>Your Pantry</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>Your Pantry</h1>
-    <form action="{{ url_for('pantry') }}" method="post">
-        <input type="text" name="ingredient" placeholder="Add an ingredient" required>
-        <button type="submit">Add</button>
-    </form>
+    <div class="container">
+        <h1>Your Pantry</h1>
+        <form action="{{ url_for('pantry') }}" method="post" class="pantry-form">
+            <input type="text" name="ingredient" placeholder="Add an ingredient" required>
+            <button type="submit">Add</button>
+        </form>
 
-    {% if pantry_items %}
-        <ul>
-            {% for item in pantry_items %}
-                <li>
-                    {{ item }}
-                    <form action="{{ url_for('delete_pantry_item') }}" method="post" style="display:inline;">
-                        <input type="hidden" name="ingredient" value="{{ item }}">
-                        <button type="submit">Delete</button>
-                    </form>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>Your pantry is empty.</p>
-    {% endif %}
+        {% if pantry_items %}
+            <ul class="ingredients-list">
+                {% for item in pantry_items %}
+                    <li>
+                        {{ item }}
+                        <form action="{{ url_for('delete_pantry_item') }}" method="post" class="delete-form">
+                            <input type="hidden" name="ingredient" value="{{ item }}">
+                            <button type="submit">Delete</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Your pantry is empty.</p>
+        {% endif %}
 
-    <a href="{{ url_for('home') }}">Back to Home</a>
+        <div class="back-button">
+            <a href="{{ url_for('home') }}" class="back-home">Back to Home</a>
+        </div>
+    </div>
 </body>
 </html>
