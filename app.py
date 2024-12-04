@@ -148,6 +148,54 @@ def create_app():
             flash("Missing information")
         return render_template("add.html")
     
+    #Edit route
+    @app.route("/edit/<wish_id>", methods=["GET", "POST"])
+    @login_required
+    def edit(wish_id):
+    #get the gift id
+        wish = db.wishes.find_one({"_id": ObjectId(wish_id), "user_id": current_user.id})
+        if not wish:
+            flash("Wish not found or you are not authorized to edit it.")
+            return redirect(url_for('home'))
+
+        if request.method == "POST":
+            itemImage = request.form.get("item_image")
+            itemName = request.form.get("item_name")
+            itemPrice = request.form.get("item_price")
+            itemLink = request.form.get("item_link")
+
+            #valid input and update
+            if itemName and itemPrice:
+                db.wishes.update_one(
+                    {"_id": ObjectId(wish_id)},
+                    {"$set": {
+                        "image": itemImage,
+                        "name": itemName,
+                        "price": itemPrice,
+                        "link": itemLink
+                    }}
+                )
+                flash("Wish updated successfully!")
+                return redirect(url_for("home"))
+            else:
+                flash("Missing required information.")
+    
+        # Render the edit page with the wish details pre-filled
+        return render_template("edit.html", wish=wish)
+    
+    #Delete Route
+    @app.route("/delete/<wish_id>", methods=["POST"])
+    @login_required
+    def delete(wish_id):
+        # Find and delete the wish if it belongs to the current user
+        result = db.wishes.delete_one({"_id": ObjectId(wish_id), "user_id": current_user.id})
+        if result.deleted_count == 0:
+            flash("Wish not found or you are not authorized to delete it.")
+        else:
+            flash("Wish deleted successfully!")
+        return redirect(url_for('home'))
+
+    
     return app
 
 if __name__ =="__main__":
