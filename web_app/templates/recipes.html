@@ -28,6 +28,22 @@
                 console.error('Error:', error);
             });
         }
+
+        function filterRecipes() {
+            const query = document.getElementById('recipe-filter').value.toLowerCase();
+            const recipes = document.querySelectorAll('.recipe-card');
+            
+            recipes.forEach(recipe => {
+                const recipeName = recipe.querySelector('h2').textContent.toLowerCase();
+                const recipeSource = recipe.querySelector('p strong').nextSibling.textContent.toLowerCase();
+                
+                if (recipeName.includes(query) || recipeSource.includes(query)) {
+                    recipe.style.display = 'block';
+                } else {
+                    recipe.style.display = 'none';
+                }
+            });
+        }
     </script>
 </head>
 <body>
@@ -35,6 +51,17 @@
         <h1>Recipes Based on Your Pantry</h1>
 
         {% if recipes %}
+            <!-- Filter Box -->
+            <div class="filter-box">
+                <label for="recipe-filter">Filter Recipes:</label>
+                <input
+                    type="text"
+                    id="recipe-filter"
+                    placeholder="Search for keywords (e.g., 'Indian', 'vegetarian')"
+                    onkeyup="filterRecipes()"
+                >
+            </div>
+
             <div class="grid">
                 {% for recipe in recipes %}
                     <div class="recipe-card">
