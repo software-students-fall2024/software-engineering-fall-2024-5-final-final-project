@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Saved Bar</title>
+    <title>Delete Bar</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
@@ -31,33 +31,14 @@
 </body>
 
 <div class="container">
-    <h1>Saved Bars</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Location</th>
-                <th>Price</th>
-                <th>Occasion</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for bar in bars %}
-            <tr>
-                <td>{{ bar.name }}</td>
-                <td>${{ bar.location }}</td>
-                <td>{{ bar.price }}</td>
-                <td>{{ bar.occasion }}</td>
-                <td>
-                    <form action="/delete/{{ bar._id }}" method="POST" style="display:inline;">
-                        <button type="submit" class="button">Delete</button>
-                    </form>  
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <h1>Confirm Deletion</h1>
+    <p>Are you sure you want to delete this bar from your list?</p>
+    <div class="actions">
+        <form action="/delete/{{ bar._id }}" method="POST">
+            <button type="submit" class="button">Yes, Delete</button>
+        </form>
+        <a href="/savedbar" class="button cancel">Cancel</a>
+    </div>
 </div>
-
 
 </html>

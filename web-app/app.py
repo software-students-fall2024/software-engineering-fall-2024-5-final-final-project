@@ -8,6 +8,7 @@ from flask import (
     flash,
 )
 from pymongo import MongoClient
+from bson.objectid import ObjectId
 from datetime import datetime
 import os
 import bcrypt
@@ -152,12 +153,34 @@ def findbar():
 
         # Simulated search results (replace with database logic)
         search_results = [
+            #need to change
             {"name": "The Happy Hour Bar", "location": "Midtown", "description": "Best happy hour in town!"},
             {"name": "The Chill Spot", "location": "Downtown", "description": "A relaxing lounge with great vibes."}
         ]
         return render_template("findbar.html", search_results=search_results, search_query=search_query)
 
     return render_template("findbar.html", search_results=None)
+
+@app.route("/findbar", methods=["GET", "POST"])
+def savedbars():
+    """Render the saved bar page."""
+    username = session.get("username", "User")
+    if not username:
+        return redirect(url_for('login'))
+    bar_list = list(bar_data_collection.find({'username': username}))
+
+    return render_template('search_edit.html', bar_list=bar_list)
+
+# Delete bar route
+@app.route('/delete/<bar_id>', methods=['POST'])
+def delete_transaction(bar_id):
+    username = session.get('username')
+    if not username:
+        return redirect(url_for('login'))
+
+    # Ensure the transaction belongs to the logged-in user
+    bar_data_collection.delete_one({'_id': ObjectId(bar_id), 'username': username})  # Delete only the user's transaction
+    return redirect(url_for('savedbar'))
 
 
 

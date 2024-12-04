@@ -6,3 +6,16 @@
     <title>SipCity</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
+
+
+<!-- Navigation Bar -->
+<nav class="navbar" id="navbar">
+    <ul class="nav-links" id="nav-links">
+        <li><a href="{{ url_for('index', username=session['username']) }}" class="active">Home</a></li>
+        <li><a href="{{ url_for('findbar') }}">Find a Bar</a></li>            
+        <li><a href="{{ url_for('savedbar', username=session['username']) }}">Saved Bars</a></li>
+        <li><a href="{{ url_for('search_Saved', username=session['username']) }}">Search Saved</a></li>
+        <li><a href="{{ url_for('logout') }}">Logout</a></li>
+    </ul>
+</nav>
+
