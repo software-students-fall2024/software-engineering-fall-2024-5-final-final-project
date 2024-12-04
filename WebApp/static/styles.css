@@ -32,7 +32,7 @@ h1, h2 {
     color: #4CAF50;
 }
 
-* Navbar */
+/* Navbar */
 .navbar {
     background-color: #4CAF50;
     padding: 15px;
@@ -93,62 +93,12 @@ button:hover {
     background-color: #45a049;
 }
 
-/* Input Focus */
-input:focus, select:focus, textarea:focus {
-    outline: none;
-    border-color: #4CAF50;
-}
-
-/* Links */
-a {
-    color: #4CAF50;
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-a:hover {
-    color: #388E3C;
-}
-/* Login/Signup Divider */
-.divider {
-    text-align: center;
-    margin: 20px 0;
-    color: #777;
-}
-
-
-/* Profile Page */
-.profile-pic {
-    display: block;
-    margin: 0 auto 20px;
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid #4CAF50;
-}
-
-/* Form Groups */
-.form-group {
-    margin-bottom: 20px;
-}
-
-.form-group p {
-    font-size: 16px;
-}
-
-/* Divider for Login and Signup */
-.divider {
-    text-align: center;
-    margin: 20px 0;
-    color: #777;
-}
-
 /* Calculator Buttons */
 .calculator {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 10px;
+    margin-top: 10px;
 }
 
 .calculator button {
@@ -167,22 +117,58 @@ a:hover {
     color: white;
 }
 
-/* Display Tables */
-.table {
+/* Expense Table */
+table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
+    margin: 20px 0;
 }
 
-.table th, .table td {
+table th, table td {
     border: 1px solid #ddd;
     padding: 10px;
     text-align: center;
 }
 
-.table th {
+table th {
     background-color: #4CAF50;
     color: white;
+}
+
+/* Input Focus */
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: #4CAF50;
+}
+
+/* Links */
+a {
+    color: #4CAF50;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #388E3C;
+}
+
+/* Login/Signup Divider */
+.divider {
+    text-align: center;
+    margin: 20px 0;
+    color: #777;
+}
+
+
+/* Profile Page */
+.profile-pic {
+    display: block;
+    margin: 0 auto 20px;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #4CAF50;
 }
 
 /* Budget Alert */
@@ -206,6 +192,43 @@ a:hover {
     background-color: #F44336;
 }
 
+
+/* Divider */
+.divider {
+    text-align: center;
+    margin: 20px 0;
+    color: #777;
+}
+
+/* Action Links */
+.actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.actions a {
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 16px;
+    background-color: #F44336;
+    color: white;
+    text-decoration: none;
+}
+
+.actions a.logout {
+    background-color: #2196F3;
+}
+
+.actions a:hover {
+    background-color: #D32F2F;
+}
+
+.actions a.logout:hover {
+    background-color: #1976D2;
+}
+
 /* Category Tags */
 .category {
     display: inline-block;
@@ -221,33 +244,86 @@ a:hover {
     background-color: #45a049;
 }
 
-/* Actions Section */
-.actions {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
+/* Modal */
+#editModal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    width: 80%;
+    max-width: 500px;
 }
 
-.actions .logout, .actions .delete {
-    padding: 10px 15px;
-    border-radius: 5px;
+#editModal h2 {
+    margin-bottom: 15px;
     text-align: center;
+    color: #4CAF50;
 }
 
-.actions .logout {
-    background-color: #2196F3;
-    color: white;
+#editModal form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
-.actions .delete {
+#editModal button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+#editModal button[type="button"] {
     background-color: #F44336;
-    color: white;
 }
 
-.actions .logout:hover {
-    background-color: #1976D2;
-}
-
-.actions .delete:hover {
+#editModal button[type="button"]:hover {
     background-color: #D32F2F;
+}
+
+/* Overlay */
+#overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+/* Search Bar */
+.search-bar {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.search-bar input {
+    flex: 1;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.search-bar button {
+    padding: 10px 15px;
+    font-size: 16px;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    margin-top: 30px;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    font-size: 14px;
 }
