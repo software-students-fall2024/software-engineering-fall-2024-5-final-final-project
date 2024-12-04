@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Recipes for "{{ query }}"</h1>
+        <h1>Recipes Based on Your Pantry</h1>
 
         {% if recipes %}
             <div class="grid">
@@ -18,15 +18,21 @@
                         <img src="{{ recipe.image }}" alt="Image of {{ recipe.name }}">
                         <p><strong>Source:</strong> {{ recipe.source }}</p>
                         <p><a href="{{ recipe.url }}" target="_blank">View Full Recipe</a></p>
+                        <h3>Dietary Restrictions:</h3>
+                        <ul class="dietary-restrictions">
+                            {% for restriction in recipe.dietary_restrictions %}
+                                <li>{{ restriction }}</li>
+                            {% endfor %}
+                        </ul>
                     </div>
                 {% endfor %}
             </div>
         {% else %}
-            <p>No recipes found for "{{ query }}".</p>
+            <p>No recipes found based on your pantry items.</p>
         {% endif %}
 
         <div class="back-button">
-            <a href="/" class="back-home">Back to Search</a>
+            <a href="/" class="back-home">Back to Home</a>
         </div>
     </div>
 </body>
