@@ -48,9 +48,8 @@ def login_required(func):
 @app.route("/")
 def home():
     """Render the main home page."""
-    if "username" in session:
-        return render_template("home.html", username=session["username"])
-    return redirect(url_for("login"))
+    username = session.get("username")
+    return render_template("home.html", username=username)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -66,7 +65,6 @@ def login():
             session.permanent = False
             return redirect(url_for("home"))
         flash("Invalid username or password. Please try again.")
-        return redirect(url_for("login"))
     return render_template("login.html")
 
 
@@ -96,6 +94,29 @@ def logout():
     return redirect(url_for("login"))
 
 
+@app.route("/profile", methods=["GET", "POST"])
+@login_required
+def profile():
+    """Render and update the user's dietary restrictions."""
+    username = session["username"]
+
+    if request.method == "POST":
+        # Save dietary restrictions to the database
+        dietary_restrictions = request.form.getlist("restrictions")
+        users_collection.update_one(
+            {"username": username},
+            {"$set": {"dietary_restrictions": dietary_restrictions}}
+        )
+        flash("Dietary restrictions updated successfully.")
+        return redirect(url_for("profile"))
+
+    # Retrieve current dietary restrictions from the database
+    user = users_collection.find_one({"username": username})
+    dietary_restrictions = user.get("dietary_restrictions", []) if user else []
+
+    return render_template("profile.html", dietary_restrictions=dietary_restrictions)
+
+
 @app.route("/search", methods=["GET"])
 @login_required
 def search_recipes():
@@ -109,6 +130,11 @@ def search_recipes():
     from_index = (page - 1) * recipes_per_page
     to_index = from_index + recipes_per_page
 
+    # Retrieve dietary restrictions from the database
+    username = session["username"]
+    user = users_collection.find_one({"username": username})
+    dietary_restrictions = user.get("dietary_restrictions", []) if user else []
+
     params = {
         "type": "public",
         "q": query,
@@ -116,6 +142,7 @@ def search_recipes():
         "app_key": EDAMAM_APP_KEY,
         "from": from_index,
         "to": to_index,
+        "health": dietary_restrictions,  # Pass dietary restrictions to API
     }
 
     try:
