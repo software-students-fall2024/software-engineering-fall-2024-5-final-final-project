@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask LLM UI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .response {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Chat with LLM</h1>
+        <textarea id="userInput" placeholder="Type your question here..."></textarea>
+        <button id="submitButton">Submit</button>
+        <div id="response" class="response" style="display: none;"></div>
+    </div>
+
+    <script>
+        document.getElementById("submitButton").addEventListener("click", async () => {
+            const userInput = document.getElementById("userInput").value;
+            const responseDiv = document.getElementById("response");
+
+            if (!userInput.trim()) {
+                responseDiv.style.display = "block";
+                responseDiv.textContent = "Please enter a valid input.";
+                return;
+            }
+
+            responseDiv.style.display = "none";
+
+            try {
+                const response = await fetch("http://127.0.0.1:5000/respond", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ user_input: userInput }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    responseDiv.style.display = "block";
+                    responseDiv.textContent = data.response;
+                } else {
+                    responseDiv.style.display = "block";
+                    responseDiv.textContent = `Error: ${data.error || "Unknown error occurred."}`;
+                }
+            } catch (error) {
+                responseDiv.style.display = "block";
+                responseDiv.textContent = `Error: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>
