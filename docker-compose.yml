@@ -4,22 +4,22 @@ services:
       context: ./web-app
       dockerfile: Dockerfile
     ports:
-      - "5001:5001"
+      - "8080:8080"
     env_file:
       - .env 
     environment:
       - MONGO_CXN_STRING=mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongodb:27017/
-      - ML_CLIENT_PORT=http://ml-client:5002
+      - ML_CLIENT_PORT=http://ml-client:5000
     depends_on:
       - mongodb
       - ml-client
 
   ml-client:
     build:
-      context: ./machine-learning-client
+      context: ./ml_client
       dockerfile: Dockerfile
     ports:
-      - "5002:5002"
+      - "5000:5000"
 
   mongodb:
     image: mongo:6.0
