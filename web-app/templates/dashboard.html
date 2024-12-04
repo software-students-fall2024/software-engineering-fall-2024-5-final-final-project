@@ -6,16 +6,22 @@
     <title>SipCity</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar" id="navbar">
+        <ul class="nav-links" id="nav-links">
+            <li><a href="{{ url_for('index', username=session['username']) }}" class="nav-link active">Home</a></li>
+            <li><a href="{{ url_for('findbar') }}" class="nav-link">Find Bar</a></li>            
+            <li><a href="{{ url_for('savedbar', username=session['username']) }}" class="nav-link">Saved Bar</a></li>
+            <li><a href="{{ url_for('search_saved', username=session['username']) }}" class="nav-link">Search Saved</a></li>
+            <li><a href="{{ url_for('logout') }}" class="nav-link">Logout</a></li>
+        </ul>
+    </nav>
 
-
-<!-- Navigation Bar -->
-<nav class="navbar" id="navbar">
-    <ul class="nav-links" id="nav-links">
-        <li><a href="{{ url_for('index', username=session['username']) }}" class="active">Home</a></li>
-        <li><a href="{{ url_for('findbar') }}">Find Bar</a></li>            
-        <li><a href="{{ url_for('savedbar', username=session['username']) }}">Saved Bar</a></li>
-        <li><a href="{{ url_for('search_saved', username=session['username']) }}">Search Saved</a></li>
-        <li><a href="{{ url_for('logout') }}">Logout</a></li>
-    </ul>
-</nav>
-
+    <!-- Main Content -->
+    <div class="dashboard" style="padding-top: 70px;"> <!-- Added padding to avoid overlap -->
+        <h1>Welcome to SipCity!</h1>
+        <p>Explore the best bars in town.</p>
+    </div>
+</body>
+</html>
