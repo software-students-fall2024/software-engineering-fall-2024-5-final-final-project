@@ -108,7 +108,7 @@
     <div class="modal" id="matchedModal">
         <div class="modal-content">
             <p id="matchedMessage"></p>
-            <button class="btn" id="startGameBtn">Start Game</button>
+            <a id="startGameLink" class="btn">Start Game</a>
             <button class="btn secondary-btn" id="cancelMatchedBtn">Cancel</button>
         </div>
     </div>
@@ -117,105 +117,60 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.0/socket.io.min.js"></script>
     <script>
-        const waitingModal = document.getElementById('waitingModal');
-        const matchedModal = document.getElementById('matchedModal');
-        let playerName = null;
-        let gameId = null;
-        let opponentName = null;
-
+        const waitingModal = document.getElementById("waitingModal");
+        const matchedModal = document.getElementById("matchedModal");
+        const startGameLink = document.getElementById("startGameLink");
         const socket = io();
 
-        document.getElementById('saveSessionBtn').addEventListener('click', saveSession);
-        document.getElementById('inviteFriendBtn').addEventListener('click', inviteFriend);
-        document.getElementById('matchRandomBtn').addEventListener('click', matchRandom);
-        document.getElementById('cancelWaitingBtn').addEventListener('click', cancelWaiting);
-        document.getElementById('cancelMatchedBtn').addEventListener('click', cancelWaiting);
-        document.getElementById('startGameBtn').addEventListener('click', startGame);
+        // Generate or retrieve a unique player ID
+        const playerId = localStorage.getItem("player_id") || crypto.randomUUID();
+        localStorage.setItem("player_id", playerId);
+        let playerName = null;
+        let gameId = null;
 
-        async function saveSession() {
-            playerName = prompt("Enter your name to save your session:");
-            if (!playerName) {
-                alert("Session save canceled.");
-                return;
-            }
-
-            try {
-                const response = await fetch('/save-session', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ player_name: playerName, stats: { wins: 0, losses: 0, ties: 0 } })
-                });
-
-                const data = await response.json();
-                if (data.session_url) {
-                    alert(`Session saved! Continue here: ${data.session_url}`);
-                } else {
-                    alert("Failed to save session.");
-                }
-            } catch (error) {
-                alert("Error while saving session. Try again later.");
-                console.error(error);
-            }
-        }
-
-        async function inviteFriend() {
-            try {
-                const response = await fetch('/create-game', { method: 'POST' });
-                const data = await response.json();
-                if (data.game_id) {
-                    alert(`Share this link: ${data.invite_link}`);
-                } else {
-                    alert("Failed to create a game. Try again.");
-                }
-            } catch (error) {
-                alert("Error creating game. Try again later.");
-                console.error(error);
-            }
-        }
-
-        function matchRandom() {
+        document.getElementById("matchRandomBtn").addEventListener("click", () => {
             playerName = prompt("Enter your name:");
             if (!playerName) {
-                alert("Name required for matching.");
+                alert("Name required for matchmaking.");
                 return;
             }
 
-            socket.emit("random_match", { player_name: playerName });
+            socket.emit("random_match", { player_name: playerName, player_id: playerId });
             waitingModal.style.display = "flex";
 
             socket.on("match_found", (data) => {
                 gameId = data.game_id;
-                opponentName = data.opponent;
+                const opponentName = data.opponent;
                 waitingModal.style.display = "none";
-                document.getElementById('matchedMessage').textContent = `Matched with ${opponentName}! Ready?`;
                 matchedModal.style.display = "flex";
+                document.getElementById("matchedMessage").textContent = `Matched with ${opponentName}! Ready to start?`;
+                startGameLink.href = `/real_person?gameId=${gameId}&playerId=${playerId}&playerName=${encodeURIComponent(playerName)}`;
             });
 
             socket.on("waiting", () => {
-                document.getElementById('waitingMessage').textContent = "Still waiting...";
+                document.getElementById("waitingMessage").textContent = "Still waiting...";
             });
 
             socket.on("error", (error) => {
                 alert(error.message || "Matchmaking error.");
                 waitingModal.style.display = "none";
             });
-        }
+        });
 
-        function cancelWaiting() {
-            socket.emit("cancel_waiting");
+        document.getElementById("cancelWaitingBtn").addEventListener("click", () => {
+            socket.emit("cancel_waiting", { player_id: playerId });
+            waitingModal.style.display = "none";
+        });
+
+        document.getElementById("cancelMatchedBtn").addEventListener("click", () => {
             waitingModal.style.display = "none";
             matchedModal.style.display = "none";
-        }
-
-        function startGame() {
-            matchedModal.style.display = "none";
-            window.location.href = `/real_person?gameId=${gameId}`;
-        }
+        });
 
         socket.on("disconnect", () => {
             waitingModal.style.display = "none";
             matchedModal.style.display = "none";
-            alert("Disconnected. Please refresh.");
+            alert("Disconnected. Please refresh the page.");
         });
     </script>
 </body>

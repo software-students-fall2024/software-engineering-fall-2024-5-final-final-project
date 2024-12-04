@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rock Paper Scissors - Play Against AI</title>
+    <title>Rock Paper scissor - Play Against AI</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -103,7 +103,7 @@
     </style>
 </head>
 <body>
-    <h1>Rock Paper Scissors - Play Against AI</h1>
+    <h1>Rock Paper scissor - Play Against AI</h1>
     <p>Select your choice below to play against the AI:</p>
 
     <div class="choice-container">
@@ -137,40 +137,52 @@
         const aiMoveImg = document.getElementById('aiMove');
 
         async function playGame(playerChoice) {
-            const response = await fetch('/play/ai', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ choice: playerChoice })
-            });
+    try {
+        // Display loading or reset result
+        resultContainer.textContent = "AI is thinking...";
+        resultContainer.style.color = "#666";
 
-            const data = await response.json();
+        const response = await fetch('/play/ai', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ choice: playerChoice })
+        });
 
-            if (data.error) {
-                resultContainer.textContent = `Error: ${data.error}`;
-                return;
-            }
+        const data = await response.json();
 
-            // Set images for player and AI choices
-            playerMoveImg.src = `../static/images/${data.player_choice}.jpg`;
-            aiMoveImg.src = `../static/images/${data.ai_choice}.jpg`;
-
-            battleContainer.style.display = 'block';
-
-            setTimeout(() => {
-                showResult(data);
-            }, 2000); // Wait for the animation to complete
+        if (data.error) {
+            resultContainer.textContent = `Error: ${data.error}`;
+            resultContainer.style.color = "red";
+            return;
         }
 
-        function showResult(data) {
-            battleContainer.style.display = 'none';
-            resultContainer.innerHTML = `
-                You chose <b>${data.player_choice}</b>, AI chose <b>${data.ai_choice}</b>.
-                <br>
-                <b>Result:</b> ${data.result.toUpperCase()}!
-                <br>
-                <b>Your Stats:</b> Wins: ${data.stats.wins}, Losses: ${data.stats.losses}, Ties: ${data.stats.ties}.
-            `;
-        }
+        // Set images for player and AI choices
+        playerMoveImg.src = `../static/images/${data.player_choice}.jpg`;
+        aiMoveImg.src = `../static/images/${data.ai_choice}.jpg`;
+
+        battleContainer.style.display = 'block';
+
+        setTimeout(() => {
+            showResult(data);
+        }, 2000); // Wait for the animation to complete
+    } catch (error) {
+        resultContainer.textContent = "An error occurred while playing. Please try again.";
+        resultContainer.style.color = "red";
+        console.error("Error in playGame:", error);
+    }
+}
+
+function showResult(data) {
+    battleContainer.style.display = 'none';
+    resultContainer.innerHTML = `
+        You chose <b>${data.player_choice}</b>, AI chose <b>${data.ai_choice}</b>.
+        <br>
+        <b>Result:</b> ${data.result.toUpperCase()}!
+        <br>
+        <b>Your Stats:</b> Wins: ${data.stats.wins}, Losses: ${data.stats.losses}, Ties: ${data.stats.ties}.
+    `;
+    resultContainer.style.color = "#333";
+}
     </script>
 </body>
 </html>
