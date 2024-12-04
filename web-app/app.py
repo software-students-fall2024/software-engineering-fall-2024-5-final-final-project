@@ -1,6 +1,7 @@
 """
 Loads flask app for web-app
 """
+
 import logging
 import requests
 from flask import Flask, render_template, Blueprint, request, jsonify
@@ -46,7 +47,7 @@ def call_model():
         response = requests.post(
             "http://127.0.0.1:5002/respond",
             json={"user_input": user_input},  # Sending user input as JSON
-            timeout=15
+            timeout=15,
         )
 
         # Handle response from the /respond endpoint
@@ -57,8 +58,12 @@ def call_model():
             jsonify({"error": f"Failed to call /respond: {response.text}"}),
             response.status_code,
         )
-    except Exception as e: # pylint: disable=broad-exception-caught
-        logging.error("Error in /call_model: %s", e)
+    # NewConnectionError
+    except requests.exceptions.ConnectionError as e:
+        logging.error("error in /call_model: %s", e)
+        return jsonify({"response": "Error connecting to ml-client"})
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        # logging.error("Error in /call_model: %s", e)
         return jsonify({"error": str(e)}), 500
 
 
