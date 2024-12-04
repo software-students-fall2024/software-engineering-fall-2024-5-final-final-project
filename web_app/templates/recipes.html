@@ -49,11 +49,11 @@
                             {% endfor %}
                         </ul>
                         <button onclick="saveRecipe(
-                            '{{ recipe.recipe_id }}',
-                            '{{ recipe.name }}',
-                            '{{ recipe.image }}',
-                            '{{ recipe.source }}',
-                            '{{ recipe.url }}'
+                            '{{ recipe.recipe_id | escape }}',
+                            '{{ recipe.name | escape }}',
+                            '{{ recipe.image | escape }}',
+                            '{{ recipe.source | escape }}',
+                            '{{ recipe.url | escape }}'
                         )">Save Recipe</button>
                     </div>
                 {% endfor %}
