@@ -94,6 +94,44 @@ def logout():
     return redirect(url_for("login"))
 
 
+HEALTH_LABELS = [
+    {"web_label": "Alcohol-Cocktail", "api_param": "alcohol-cocktail"},
+    {"web_label": "Alcohol-Free", "api_param": "alcohol-free"},
+    {"web_label": "Celery-Free", "api_param": "celery-free"},
+    {"web_label": "Crustacean-Free", "api_param": "crustacean-free"},
+    {"web_label": "Dairy-Free", "api_param": "dairy-free"},
+    {"web_label": "DASH", "api_param": "DASH"},
+    {"web_label": "Egg-Free", "api_param": "egg-free"},
+    {"web_label": "Fish-Free", "api_param": "fish-free"},
+    {"web_label": "FODMAP-Free", "api_param": "fodmap-free"},
+    {"web_label": "Gluten-Free", "api_param": "gluten-free"},
+    {"web_label": "Immuno-Supportive", "api_param": "immuno-supportive"},
+    {"web_label": "Keto-Friendly", "api_param": "keto-friendly"},
+    {"web_label": "Kidney-Friendly", "api_param": "kidney-friendly"},
+    {"web_label": "Kosher", "api_param": "kosher"},
+    {"web_label": "Low Potassium", "api_param": "low-potassium"},
+    {"web_label": "Low Sugar", "api_param": "low-sugar"},
+    {"web_label": "Lupine-Free", "api_param": "lupine-free"},
+    {"web_label": "Mediterranean", "api_param": "Mediterranean"},
+    {"web_label": "Mollusk-Free", "api_param": "mollusk-free"},
+    {"web_label": "Mustard-Free", "api_param": "mustard-free"},
+    {"web_label": "No oil added", "api_param": "No-oil-added"},
+    {"web_label": "Paleo", "api_param": "paleo"},
+    {"web_label": "Peanut-Free", "api_param": "peanut-free"},
+    {"web_label": "Pescatarian", "api_param": "pecatarian"},
+    {"web_label": "Pork-Free", "api_param": "pork-free"},
+    {"web_label": "Red-Meat-Free", "api_param": "red-meat-free"},
+    {"web_label": "Sesame-Free", "api_param": "sesame-free"},
+    {"web_label": "Shellfish-Free", "api_param": "shellfish-free"},
+    {"web_label": "Soy-Free", "api_param": "soy-free"},
+    {"web_label": "Sugar-Conscious", "api_param": "sugar-conscious"},
+    {"web_label": "Sulfite-Free", "api_param": "sulfite-free"},
+    {"web_label": "Tree-Nut-Free", "api_param": "tree-nut-free"},
+    {"web_label": "Vegan", "api_param": "vegan"},
+    {"web_label": "Vegetarian", "api_param": "vegetarian"},
+    {"web_label": "Wheat-Free", "api_param": "wheat-free"}
+]
+
 @app.route("/profile", methods=["GET", "POST"])
 @login_required
 def profile():
@@ -114,7 +152,11 @@ def profile():
     user = users_collection.find_one({"username": username})
     dietary_restrictions = user.get("dietary_restrictions", []) if user else []
 
-    return render_template("profile.html", dietary_restrictions=dietary_restrictions)
+    return render_template(
+        "profile.html",
+        dietary_restrictions=dietary_restrictions,
+        health_labels=HEALTH_LABELS
+    )
 
 
 @app.route("/search", methods=["GET"])
@@ -142,8 +184,11 @@ def search_recipes():
         "app_key": EDAMAM_APP_KEY,
         "from": from_index,
         "to": to_index,
-        "health": dietary_restrictions,  # Pass dietary restrictions to API
     }
+
+    # Include dietary restrictions in the API call
+    for restriction in dietary_restrictions:
+        params.setdefault("health", []).append(restriction)
 
     try:
         response = requests.get(EDAMAM_BASE_URL, params=params)
