@@ -10,11 +10,11 @@
     <p>Manage your dietary restrictions below:</p>
     <form action="/profile" method="post">
         <h2>Select Dietary Restrictions:</h2>
-        {% for restriction in ['vegan', 'vegetarian', 'gluten-free', 'dairy-free', 'peanut-free', 'tree-nut-free'] %}
+        {% for label in health_labels %}
         <div>
-            <input type="checkbox" id="{{ restriction }}" name="restrictions" value="{{ restriction }}"
-                {% if restriction in dietary_restrictions %}checked{% endif %}>
-            <label for="{{ restriction }}">{{ restriction.replace('-', ' ').capitalize() }}</label>
+            <input type="checkbox" id="{{ label.api_param }}" name="restrictions" value="{{ label.api_param }}"
+                {% if label.api_param in dietary_restrictions %}checked{% endif %}>
+            <label for="{{ label.api_param }}">{{ label.web_label }}</label>
         </div>
         {% endfor %}
         <button type="submit">Save Preferences</button>
