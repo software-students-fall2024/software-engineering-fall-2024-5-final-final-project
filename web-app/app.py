@@ -25,7 +25,7 @@ app.secret_key = os.getenv("SECRET_KEY")
 
 # MongoDB configuration
 # MongoDB connection URI and database name from environment variables
-MONGO_URI = os.getenv("MONGO_URI")
+MONGO_URI = ("mongodb+srv://eh96:finalfour123@bars.ygsrg.mongodb.net/finalfour?tlsAllowInvalidCertificates=true")
 MONGO_DBNAME = os.getenv("MONGO_DBNAME", "default_db_name")
 
 # Connect to MongoDB
