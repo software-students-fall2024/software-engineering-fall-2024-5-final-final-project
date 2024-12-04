@@ -1,6 +1,7 @@
-from flask import Flask, g;
+from flask import Flask, render_template, g;
 import csv;
 import os;
+import random;
 
 app = Flask(__name__)
 
@@ -15,9 +16,12 @@ def read_movies():
 
 @app.route('/')
 def index():
-    for row in g.all_movies:
-        print(row[1])
-    return 'Hello World'
+    movie_picked = False
+    if not movie_picked:
+        selected_movie = g.all_movies[random.randint(1,1000)]
+    # for row in g.all_movies:
+    #     print(row[1])
+    return render_template("index.html", selectedMovie=selected_movie)
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000)
