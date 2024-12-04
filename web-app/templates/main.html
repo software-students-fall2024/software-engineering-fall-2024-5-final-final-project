@@ -3,9 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Change this title</title>
+    <title>Project 5</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
 <body>
-    <h1>Replace with Project 5 home page</h1>
+    <h1>Project 5</h1>
+    <form id="modelForm">
+        <textarea name="user_input" rows="4" cols="50"></textarea><br>
+        <input type="submit" value="Submit">
+    </form>
+    <div id="response"></div>
+
+    <script>
+        $(document).ready(function() {
+            $('#modelForm').on('submit', function(e) {
+                e.preventDefault();
+                $.ajax({
+                    type: 'POST',
+                    url: '/call_model',
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        $('#response').text(response.response);
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
