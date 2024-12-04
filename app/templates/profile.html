@@ -2,3 +2,4 @@
 {% for wishlist in wishlists %}
     <a href="./wishlist/{{ wishlist['_id']}}">{{ wishlist['name'] }}</a>
 {% endfor %}
+<a href="{{ url_for('add_wishlist', username=username) }}">Add Wishlist</a>
