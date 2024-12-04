@@ -149,6 +149,7 @@ a:hover {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 10px;
+    margin-top: 10px;
 }
 
 .calculator button {
@@ -221,33 +222,3 @@ a:hover {
     background-color: #45a049;
 }
 
-/* Actions Section */
-.actions {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-}
-
-.actions .logout, .actions .delete {
-    padding: 10px 15px;
-    border-radius: 5px;
-    text-align: center;
-}
-
-.actions .logout {
-    background-color: #2196F3;
-    color: white;
-}
-
-.actions .delete {
-    background-color: #F44336;
-    color: white;
-}
-
-.actions .logout:hover {
-    background-color: #1976D2;
-}
-
-.actions .delete:hover {
-    background-color: #D32F2F;
-}
