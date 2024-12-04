@@ -7,9 +7,11 @@
 </head>
 <body>
     <h1>Welcome to What's Cookin</h1>
+
     {% if username %}
         <p>Logged in as {{ username }}</p>
         <a href="/logout"><button>Logout</button></a>
+        <a href="/profile"><button>Profile</button></a>
         <p>Search for your favorite recipes by entering a keyword.</p>
         <form action="/search" method="get">
             <input type="text" name="query" placeholder="Enter a keyword (e.g., chicken)" required>
@@ -17,7 +19,7 @@
         </form>
     {% else %}
         <a href="/login"><button>Login</button></a>
-        <p>Please log in to search for recipes.</p>
+        <p>Please log in to search for recipes and manage your preferences.</p>
     {% endif %}
 </body>
 </html>
