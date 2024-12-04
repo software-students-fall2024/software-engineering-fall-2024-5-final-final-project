@@ -1,0 +1,4 @@
+<p>{{ username }}</p>
+{% for wishlist in wishlists %}
+    <a href="./wishlist/{{ wishlist['_id']}}">{{ wishlist['name'] }}</a>
+{% endfor %}
