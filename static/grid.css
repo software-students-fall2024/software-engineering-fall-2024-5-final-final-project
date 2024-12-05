@@ -1,0 +1,38 @@
+.grid{
+  display: flex;
+  justify-content: space-evenly;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: stretch;
+  width: 100%;
+}
+
+.card{
+  background: linear-gradient(90deg, rgba(226,3,107,1) 0%, rgb(185, 222, 91) 68%);
+  border-radius: 20px;
+  padding: 20px;
+  width: 300px;
+  height: 150px;
+  display: flex;
+  justify-content: center;
+  text-align: left;
+  align-items: center;
+  flex-direction: column;
+  margin: 10px;
+}
+.buttons{
+  width: 300px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.small_buttons{
+  font-size: .7rem;
+  cursor: pointer;
+  border: none;
+  border-radius: 20px;
+  background: linear-gradient(to bottom, #f7fdd6, #8fda8c);
+  color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}

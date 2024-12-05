@@ -10,15 +10,15 @@
 
 <body>
   <h1>Record Voice</h1>
-  <div>
-    <p>Click the button below to begin recording. Once you click again, the recording will stop.</p>
-    <label for="nameInput">Enter file name:</label>
-    <input type="text" id="nameInput" placeholder="File name">
-
+    
+      <label for="nameInput">Enter file name:</label>
+      <input class="textInput" type="text" id="nameInput" placeholder="File name">
+    
     <!-- Private checkbox -->
-    <label for="private">Private:</label>
-    <input type="checkbox" id="private" name="private"><br><br>
-
+    <div>
+      <label for="private">Private:</label>
+      <input type="checkbox" id="private" name="private"><br><br>  
+    </div>
     <button id="recordButton">Record</button>
     <p id="status"></p>
 
@@ -28,7 +28,6 @@
       <button id="fileListButton">Go to File List</button>
       <button id="editButton">Edit Transcription</button>
     </div>
-  </div>
 
   <script>
     const UPLOAD_URL = "{{ url_for('upload_audio') }}";

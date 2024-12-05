@@ -10,6 +10,7 @@ speechrecognition = "*"
 pocketsphinx = "*"
 flask = "*"
 flask-login = "*"
+python-dotenv = "*"
 
 [dev-packages]
 pytest = "*"
