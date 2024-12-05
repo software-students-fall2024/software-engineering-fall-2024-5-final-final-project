@@ -175,6 +175,7 @@ def create_app(test_config=None):
             itemName = request.form.get("item_name")
             itemPrice = request.form.get("item_price")
             itemLink = request.form.get("item_link")
+            itemComments = request.form.get("item_comments")
 
             #valid input and update
             if itemName and itemPrice:
@@ -184,7 +185,8 @@ def create_app(test_config=None):
                         "image": itemImage,
                         "name": itemName,
                         "price": itemPrice,
-                        "link": itemLink
+                        "link": itemLink,
+                        "comments": itemComments
                     }}
                 )
                 flash("Wish updated successfully!")
