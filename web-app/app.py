@@ -23,13 +23,6 @@ app.secret_key = "secret_key" # needed for flask login sessions
 login_manager.init_app(app)
 app.register_blueprint(auth)
 
-@app.route("/")
-def index():
-    """Redirect to right page if logged in or not"""
-    if current_user.is_authenticated:
-        return render_template("calendar.html")
-    return render_template("login.html")
-
 
 # @app.route("/")
 # def home():
@@ -37,9 +30,11 @@ def index():
 #     return render_template("index.html")
 
 @app.route("/")
-def login():
-    """Render login page"""
-    return render_template("Login.html")
+def index():
+    """Redirect to right page if logged in or not"""
+    if current_user.is_authenticated:
+        return render_template("calendar.html")
+    return render_template("login.html")
 
 @app.route("/signup")
 def signup():
