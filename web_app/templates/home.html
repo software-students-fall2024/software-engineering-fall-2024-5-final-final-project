@@ -3,7 +3,7 @@
 {% block title %}Home - What's Cookin{% endblock %}
 
 {% block content %}
-<h1>Welcome to What's Cookin</h1>
+<h1>Welcome to What's Cookin{% if username %}, {{ username }}{% endif %}</h1>
 <p>Search for recipes based on your pantry items and dietary preferences.</p>
 <form action="/search" method="get">
     <button type="submit">Find Recipes</button>

@@ -5,15 +5,34 @@
 {% block content %}
 <h1>Your Saved Recipes</h1>
 
-{% if recipes %}
+{% if saved_recipes or made_recipes %}
     <div class="grid">
-        {% for recipe in recipes %}
+        <!-- Display saved recipes -->
+        {% for recipe in saved_recipes %}
         <div class="recipe-card">
             <img src="{{ recipe.image }}" alt="{{ recipe.name }}">
             <h2>{{ recipe.name }}</h2>
             <p><strong>Source:</strong> {{ recipe.source }}</p>
             <p><a href="{{ recipe.url }}" target="_blank">View Full Recipe</a></p>
             <form action="{{ url_for('unsave_recipe') }}" method="post">
+                <input type="hidden" name="recipe_id" value="{{ recipe.recipe_id }}">
+                <button type="submit">Remove</button>
+            </form>
+            <form action="{{ url_for('made_recipe') }}" method="post">
+                <input type="hidden" name="recipe_id" value="{{ recipe.recipe_id }}">
+                <button type="submit">I made this</button>
+            </form>
+        </div>
+        {% endfor %}
+        <!-- Display made recipes -->
+        {% for recipe in made_recipes %}
+        <div class="recipe-card made">
+            <img src="{{ recipe.image }}" alt="{{ recipe.name }}">
+            <h2>{{ recipe.name }}</h2>
+            <p><strong>Source:</strong> {{ recipe.source }}</p>
+            <p><a href="{{ recipe.url }}" target="_blank">View Full Recipe</a></p>
+            <p><strong>Status:</strong> You've made this!</p>
+            <form action="{{ url_for('unsave_made_recipe') }}" method="post">
                 <input type="hidden" name="recipe_id" value="{{ recipe.recipe_id }}">
                 <button type="submit">Remove</button>
             </form>

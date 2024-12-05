@@ -104,6 +104,10 @@ main {
     background-color: #0056b3;
 }
 
+.recipe-card.made {
+    background-color: #d4edda;
+}
+
 /* Pantry and Saved Recipes */
 .list-container {
     background: white;

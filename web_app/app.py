@@ -261,21 +261,6 @@ def delete_pantry_item():
         flash(f"Removed '{ingredient}' from your pantry.")
     return redirect(url_for("pantry"))
 
-
-@app.route("/saved_recipes")
-@login_required
-def saved_recipes():
-    """Render all saved recipes."""
-    username = session["username"]
-    user = users_collection.find_one({"username": username})
-
-    if user:
-        saved_recipes = user.get("saved_recipes", [])
-        return render_template("saved_recipes.html", recipes=saved_recipes)
-    else:
-        flash("User not found.")
-        return redirect(url_for("home"))
-
 @app.route("/save_recipe", methods=["POST"])
 @login_required
 def save_recipe():
@@ -337,4 +322,71 @@ def get_recipe_details(recipe_id):
         return jsonify(recipe)
     except requests.exceptions.RequestException as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route("/made_recipes", methods=["POST"])
+@login_required
+def made_recipe():
+    """Mark a recipe as made."""
+    username = session["username"]
+    recipe_id = request.form.get("recipe_id")
+
+    user = users_collection.find_one({"username": username})
+
+    # Find the recipe in the user's saved_recipes list
+    saved_recipes = user.get("saved_recipes", [])
+    recipe_to_move = None
+    for recipe in saved_recipes:
+        if recipe["recipe_id"] == recipe_id:
+            recipe_to_move = recipe
+            break
+    
+    if recipe_to_move:
+        # Remove from saved_recipes
+        users_collection.update_one(
+            {"username": username},
+            {"$pull": {"saved_recipes": {"recipe_id": recipe_id}}}
+        )
+        # Add to made_recipes
+        users_collection.update_one(
+            {"username": username},
+            {"$addToSet": {"made_recipes": recipe_to_move}}
+        )
+        flash("Recipe marked as made.")
+    else:
+        flash("Recipe not found in saved_recipes.")
+
+    return redirect(url_for("saved_recipes"))
+
+@app.route("/unmade_made_recipe", methods=["POST"])
+@login_required
+def unsave_made_recipe():
+    """Remove a recipe from made_recipes."""
+    username = session["username"]
+    recipe_id = request.form.get("recipe_id")
+
+    users_collection.update_one(
+        {"username": username},
+        {"$pull": {"made_recipes": {"recipe_id": recipe_id}}}
+    )
+    flash("Recipe removed from made_recipes.")
+    return redirect(url_for("saved_recipes"))
+
+@app.route("/saved_recipes")
+@login_required
+def saved_recipes():
+    """Render all saved and made recipes."""
+    username = session["username"]
+    user = users_collection.find_one({"username": username})
+
+    if user:
+        saved_recipes = user.get("saved_recipes", [])
+        made_recipes = user.get("made_recipes", [])
+        return render_template(
+            "saved_recipes.html",
+            saved_recipes=saved_recipes,
+            made_recipes=made_recipes
+        )
+    else:
+        flash("User not found.")
+        return redirect(url_for("home"))
 
