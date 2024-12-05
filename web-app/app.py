@@ -9,6 +9,10 @@ from user.auth import auth, login_manager
 app = Flask(__name__)
 app.secret_key = ""
 
+login_manager.init_app(app)
+app.register_blueprint(auth, url_prefix="/auth")  # routes that need auth prefixed with /auth
+
+
 @app.route("/")
 def home():
     """Render main page"""
