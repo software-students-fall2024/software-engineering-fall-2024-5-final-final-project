@@ -27,7 +27,7 @@ def create_app(test_config=None):
     
     manager = LoginManager()
     manager.init_app(app)
-    manager.login_view = 'login'
+    manager.login_view = 'createAccount'
 
     users=db.UserData.find()
     userList=list(users)
@@ -121,7 +121,7 @@ def create_app(test_config=None):
         """
         Route for the home page
         """
-        wishes = db.wishes.find({}).sort("created_at", -1)
+        wishes = db.wishes.find({"user_id": current_user.id}).sort("created_at", -1)
         return render_template("index.html", wishes=wishes)
     
     @app.route("/wishlist/<username>")

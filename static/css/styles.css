@@ -154,10 +154,11 @@ a {
 }
 
 .wishlist {
+    margin-top: 24px;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 16px;
     margin-bottom: 24px;
 }
 
@@ -165,7 +166,7 @@ a {
     list-style: none;
     width: 224px;
     border-radius: 8px;
-    background-color: var(--beige-lightest);
+    background-color: var(--white);
     border: 1px solid var(--beige);
     padding: 12px;
     box-sizing: border-box;
@@ -204,6 +205,7 @@ a {
     gap: 24px;
     border-radius: 8px;
     width: 224px;
+    min-height: 224px;
 }
 
 #add-wish > * {
@@ -222,7 +224,7 @@ nav ul {
     list-style: none;
     display: flex;
     flex-direction: row;
-    gap: 12px;
+    gap: 16px;
 }
 
 .logo {
@@ -238,4 +240,25 @@ nav ul {
 
 .container {
     width: 100%;
+}
+
+.icon-button {
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    margin-bottom: 8px;
+    cursor: pointer;
+}
+
+.icon-button button {
+    background-color: transparent;
+    color: var(--beige-darkest);
+    padding: 0;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+#danger-button {
+    color: rgb(194, 52, 52) !important;
+    border: 1px solid rgb(194, 52, 52) !important;
 }
