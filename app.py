@@ -99,7 +99,7 @@ def login():
     login_user(User(user["username"]))
     session["username"] = username
     print("Login successful.", "success")
-    return redirect(url_for("index"))
+    return redirect(url_for("public_files"))
 
 
 @app.route("/logout")
