@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: black;
+            color: white;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+        }
+        .menu-container {
+            margin: 20px;
+            background-color: #1e1e1e;
+            padding: 30px;
+            border-radius: 10px;
+            width: 360px; /* Matches the calendar container width */
+            height: 600px; /* Maintains vertical layout */
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .hamburger-menu {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            cursor: pointer;
+            font-size: 24px;
+            color: #6CB873;
+            text-decoration: none;
+        }
+        .app-logo {
+            width: 100%;
+            height: 150px;
+            background-color: #d3d3d3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            margin-bottom: 40px; /* Spacing below the logo */
+        }
+        .app-logo span {
+            font-size: 1.2rem;
+            color: black;
+        }
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Horizontally center buttons */
+            gap: 15px; /* Spacing between buttons */
+            flex-grow: 1; /* Push buttons to the middle */
+            justify-content: center; /* Vertically center buttons */
+            width: 100%;
+        }
+        .menu-button {
+            width: 80%; /* Adjust width of the buttons */
+            padding: 15px;
+            background-color: black;
+            color: white;
+            border: 2px solid white;
+            border-radius: 5px;
+            font-size: 1rem;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .menu-button:hover {
+            background-color: #6CB873;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <div class="menu-container">
+        <!-- Hamburger Menu -->
+        <a href="/" class="hamburger-menu">&#9776;</a>
+
+        <!-- App Logo -->
+        <div class="app-logo">
+            <span>App Logo</span>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="menu-buttons">
+            <a href="/calendar" class="menu-button">Calendar</a>
+            <a href="/analytics" class="menu-button">Analytics</a>
+            <a href="/settings" class="menu-button">Settings</a>
+        </div>
+    </div>
+</body>
+</html>
