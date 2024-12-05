@@ -2,8 +2,8 @@
 Web app frontend
 """
 
-from flask import Flask, render_template
-from flask_login import current_user, login_required
+from flask import Flask, render_template, redirect, url_for
+from flask_login import current_user, login_required, logout_user
 import os
 from pymongo.mongo_client import MongoClient
 from user.auth import auth, login_manager
@@ -62,6 +62,13 @@ def analytics():
 def search():
     """Render Search page"""
     return render_template("Search.html")
+
+@app.route("/logout")
+@login_required
+def logout():
+    "Logout route"
+    logout_user()
+    return redirect(url_for("index"))
 
 # write new functions here
 if __name__ == "__main__":

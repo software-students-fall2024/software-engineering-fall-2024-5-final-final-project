@@ -28,7 +28,7 @@ def login():
         if user:
             login_user(user)
             flash("Logged in successfully!", "success")
-            return redirect(url_for("home"))
+            return redirect(url_for("index"))
         else:
             flash("Invalid username or password", "danger")
     return render_template("Login.html")
