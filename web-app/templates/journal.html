@@ -1,23 +1,19 @@
-<h1>Your Dream Journal</h1>
-<a href="{{ url_for('entry') }}">Add New Entry</a>
-<table>
-    <tr>
-        <th>Date</th>
-        <th>Dream</th>
-        <th>Analysis</th>
-        <th>Actions</th>
-    </tr>
-    {% for entry in journal_entries %}
-    <tr>
-        <td>{{ entry.timestamp }}</td>
-        <td>{{ entry.dream_description }}</td>
-        <td>{{ entry.analysis }}</td>
-        <td>
-            <a href="{{ url_for('entry', entry_id=entry._id) }}">Edit</a>
-            <form action="{{ url_for('delete_entry', entry_id=entry._id) }}" method="POST">
-                <button type="submit">Delete</button>
-            </form>
-        </td>
-    </tr>
-    {% endfor %}
-</table>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Journal</title>
+</head>
+<body>
+    <h1>Journal Entry for {{ date }}</h1>
+    <form method="POST">
+        <textarea name="content" rows="10" cols="50">{{ entry.content if entry else "" }}</textarea>
+        <button type="submit">Save</button>
+    </form>
+    {% if entry %}
+    <form method="POST" action="{{ url_for('delete_entry', entry_id=entry._id) }}">
+        <button type="submit">Delete Entry</button>
+    </form>
+    {% endif %}
+    <a href="{{ url_for('calendar_') }}">Back to Calendar</a>
+</body>
+</html>
