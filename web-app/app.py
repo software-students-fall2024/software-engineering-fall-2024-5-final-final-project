@@ -30,7 +30,7 @@ def home():
     """
     Return default web page
     """
-    return render_template("main.html")
+    return render_template("index.html")
 
 
 @app.route("/call_model", methods=["POST"])
@@ -55,7 +55,7 @@ def call_model():
             return jsonify(response.json())  # Forward the successful response
         # Handle error responses from the /respond endpoint
         return (
-            jsonify({"error": f"Failed to call /respond: {response.text}"}),
+            jsonify({"response": f"Failed to call /respond: {response.text}"}),
             response.status_code,
         )
     # NewConnectionError
@@ -64,7 +64,7 @@ def call_model():
         return jsonify({"response": "Error connecting to ml-client"})
     except Exception as e:  # pylint: disable=broad-exception-caught
         # logging.error("Error in /call_model: %s", e)
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"response": str(e)}), 500
 
 
 if __name__ == "__main__":

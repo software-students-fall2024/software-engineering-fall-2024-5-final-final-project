@@ -64,7 +64,7 @@ def handle_user_input():
         user_input = data.get("user_input", "")
 
         if not user_input:
-            return jsonify({"error": "No user input provided"}), 400
+            return jsonify({"response": "No user input provided"}), 400
 
         # Generate response using the LLM
         response = respond_to_user_input(user_input, llm)
@@ -72,7 +72,7 @@ def handle_user_input():
         # Return the response as JSON
         return jsonify({"response": response})
     except Exception as e:  # pylint: disable=broad-exception-caught
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"response": str(e)}), 500
 
 
 if __name__ == "__main__":
