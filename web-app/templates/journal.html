@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <title>Journal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <h1>Journal Entry for {{ date }}</h1>
@@ -11,7 +12,7 @@
     </form>
     {% if entry %}
     <form method="POST" action="{{ url_for('delete_entry', entry_id=entry._id) }}">
-        <button type="submit">Delete Entry</button>
+        <button type="submit" class="delete">Delete Entry</button>
     </form>
     {% endif %}
     <a href="{{ url_for('calendar_') }}">Back to Calendar</a>
