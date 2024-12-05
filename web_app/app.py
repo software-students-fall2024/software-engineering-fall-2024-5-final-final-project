@@ -1,5 +1,6 @@
 import os
-from flask import Flask, render_template, request, flash, redirect, url_for, session
+import subprocess
+from flask import Flask, render_template, request, flash, redirect, send_file, url_for, session
 from pymongo import MongoClient
 
 def create_app():
@@ -11,6 +12,7 @@ def create_app():
     client = MongoClient("mongodb://mongodb:27017/")
     db = client["resume_db"]
     users_collection = db["users"]
+    resumes_collection = db["resumes"]
 
     # home
     @app.route("/")
@@ -53,17 +55,18 @@ def create_app():
     def dashboard():
         if "email" in session:
             email = session["email"]
-            return render_template("dashboard.html", email=email)
+            resumes = resumes_collection.find({"email": email})
+            return render_template("dashboard.html", email=email, resumes=resumes)
         else:
             flash("You must be logged in to access the dashboard.", "danger")
             return redirect(url_for("login"))
-
+    
     @app.route("/logout")
     def logout():
         session.pop("email", None)
         flash("You have been logged out.", "success")
         return redirect(url_for("login"))
-
+    
     return app
 
 if __name__ == "__main__":
