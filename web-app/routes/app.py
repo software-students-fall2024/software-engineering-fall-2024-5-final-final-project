@@ -85,10 +85,8 @@ def update_player_stats(result):
         player_stats['ties'] += 1
 
 # ----------- MATCHMAKING -----------
-
 @socketio.on("random_match")
 def handle_random_match(data):
-    """Handle random matchmaking."""
     player_name = data.get("player_name")
     player_id = data.get("player_id")
     sid = request.sid
@@ -99,7 +97,7 @@ def handle_random_match(data):
 
     with matchmaking_lock:
         if waiting_players:
-            # Match with an opponent
+            # Match found
             opponent = waiting_players.pop(0)
             game_id = str(uuid4())
             active_games[game_id] = {
@@ -107,46 +105,162 @@ def handle_random_match(data):
                 "player2_id": player_id,
                 "player1_sid": opponent["sid"],
                 "player2_sid": sid,
-                "player1_choice": None,
-                "player2_choice": None,
                 "player1_name": opponent["player_name"],
                 "player2_name": player_name,
+                "ready": {"player1": False, "player2": False},
             }
+
+            # Notify both players about the match
             emit("match_found", {"game_id": game_id, "opponent": opponent["player_name"]}, to=sid)
             emit("match_found", {"game_id": game_id, "opponent": player_name}, to=opponent["sid"])
+
+            # Start the countdown
+            socketio.start_background_task(countdown_timer, game_id)
         else:
-            # Add to waiting queue
+            # Add the player to the waiting queue
             waiting_players.append({"player_id": player_id, "player_name": player_name, "sid": sid})
             emit("waiting", {"message": "Waiting for an opponent..."}, to=sid)
 
-
-@socketio.on("join_game")
-def handle_join_game(data):
-    """Handle a player joining a specific game."""
-    game_id = data.get("game_id")
+@socketio.on("cancel_waiting")
+def handle_cancel_waiting(data):
+    """Handle player canceling waiting for a match."""
     player_id = data.get("player_id")
     sid = request.sid
+
+    with matchmaking_lock:
+        # Find and remove the player from the waiting queue
+        for player in waiting_players:
+            if player["player_id"] == player_id and player["sid"] == sid:
+                waiting_players.remove(player)
+                break
+
+    # Notify the player that the waiting has been canceled
+    emit("waiting_cancelled", {"message": "You canceled waiting for an opponent."})
+    
+@socketio.on("cancel_match")
+def handle_cancel_match(data):
+    """Handle a player canceling the match."""
+    game_id = data.get("game_id")
+    player_id = data.get("player_id")
 
     if not game_id or not player_id:
         emit("error", {"message": "Game ID and Player ID are required."})
         return
 
-    if game_id not in active_games:
+    # Fetch the game from active games
+    game = active_games.pop(game_id, None)
+    if game:
+        # Determine who canceled the match
+        canceling_player = (
+            game["player1_name"] if game["player1_id"] == player_id else game["player2_name"]
+        )
+
+        # Notify all players in the room about the cancellation
+        socketio.emit(
+            "match_cancelled",
+            {"message": f"Match canceled by {canceling_player}."},
+            room=game_id,
+        )
+
+    # Ensure all game states are cleared after cancellation
+    reset_game_state(game_id)
+    
+def countdown_timer(game_id):
+    """Countdown timer for players to start the game."""
+    game = active_games.get(game_id)
+    if not game:
+        return  # Exit if the game no longer exists
+
+    for remaining in range(10, -1, -1):
+        socketio.sleep(1)  # Emit countdown every second
+        socketio.emit("countdown", {"game_id": game_id, "countdown": remaining}, room=game_id)
+
+        # Stop countdown if both players are ready
+        game = active_games.get(game_id)  # Re-fetch to ensure game is still valid
+        if game and all(game["ready"].values()):
+            return
+
+    # Cancel match if players aren't ready
+    game = active_games.pop(game_id, None)
+    if game:
+        socketio.emit(
+            "match_cancelled",
+            {"message": "Match canceled due to timeout."},
+            room=game_id,
+        )
+        reset_game_state(game_id)
+
+def reset_game_state(game_id):
+    """Reset game-related states for a clean slate."""
+    if game_id in active_games:
+        del active_games[game_id]
+
+@socketio.on("start_game")
+def handle_start_game(data):
+    """Handle a player clicking 'Start Game'."""
+    game_id = data.get("game_id")
+    player_id = data.get("player_id")
+    sid = request.sid
+
+    # Validate game ID and player ID
+    if not game_id or not player_id:
+        emit("error", {"message": "Game ID and Player ID are required."})
+        return
+
+    # Fetch the game
+    game = active_games.get(game_id)
+    if not game:
         emit("error", {"message": "Invalid game ID."})
         return
 
-    game = active_games[game_id]
-    
-    if game["player1_id"] == player_id:
+    # Update player's readiness and ensure they are in the room
+    if player_id == game["player1_id"]:
         game["player1_sid"] = sid  # Update session ID
         join_room(game_id)
-        emit("start_game", {"player_role": "player1"}, to=sid)
-    elif game["player2_id"] == player_id:
+        game["ready"]["player1"] = True
+        
+    elif player_id == game["player2_id"]:
         game["player2_sid"] = sid  # Update session ID
         join_room(game_id)
-        emit("start_game", {"player_role": "player2"}, to=sid)
+        game["ready"]["player2"] = True
+        
+    else:
+        emit("error", {"message": "Invalid player ID."})
+        return
+
+    # Check if both players are ready
+    if all(game["ready"].values()):
+        socketio.emit("proceed_to_game", {"message": "Both players are ready! Starting the game..."}, room=game_id)
+    
+@socketio.on("join_game")
+def handle_join_game(data):
+    game_id = data.get("game_id")
+    player_id = data.get("player_id")
+
+    if not game_id or not player_id:
+        emit("error", {"message": "Game ID and Player ID are required."})
+        return
+
+    game = active_games.get(game_id)
+    if not game:
+        emit("error", {"message": "Invalid game ID."})
+        return
+
+    sid = request.sid
+
+    if player_id == game["player1_id"]:
+        game["player1_sid"] = sid
+    elif player_id == game["player2_id"]:
+        game["player2_sid"] = sid
     else:
         emit("error", {"message": "You are not part of this game."})
+        return
+
+    join_room(game_id)
+
+    # Notify both players about readiness and ensure the game starts
+    socketio.emit("start_game", {"message": "Game starting soon!"}, room=game_id)
+
 
 # ----------- GAMEPLAY -----------
 @socketio.on("submit_choice")

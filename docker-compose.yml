@@ -12,3 +12,4 @@ services:
     working_dir: /web-app/routes
     environment:
       - FLASK_ENV=development
+      - FLASK_DEBUG=1

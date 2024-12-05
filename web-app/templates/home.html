@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,17 +12,21 @@
             background-color: #f9f9f9;
             padding: 20px;
         }
+
         h1 {
             font-size: 3rem;
             color: #333;
         }
+
         p {
             font-size: 1.2rem;
             color: #666;
         }
+
         .button-container {
             margin-top: 50px;
         }
+
         .btn {
             display: inline-block;
             padding: 15px 30px;
@@ -36,22 +41,33 @@
             text-decoration: none;
             transition: background-color 0.3s ease;
         }
+
         .btn:hover {
             background-color: #0056b3;
         }
+
+        .btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
         .secondary-btn {
             background-color: #28a745;
         }
+
         .secondary-btn:hover {
             background-color: #1e7e34;
         }
+
         .info-btn {
             background-color: #ffc107;
             color: #333;
         }
+
         .info-btn:hover {
             background-color: #e0a800;
         }
+
         .modal {
             display: none;
             position: fixed;
@@ -64,6 +80,7 @@
             justify-content: center;
             align-items: center;
         }
+
         .modal-content {
             background-color: #fff;
             padding: 20px;
@@ -71,20 +88,30 @@
             text-align: center;
             width: 300px;
         }
+
         .modal-content p {
             font-size: 1.2rem;
             margin-bottom: 20px;
         }
+
         .modal-content .btn {
             margin: 10px;
         }
+
         #loadingMessage {
             color: #007BFF;
             font-size: 1.5rem;
             margin-top: 30px;
         }
+
+        #countdownMessage {
+            font-size: 1.5rem;
+            color: red;
+            margin-top: 20px;
+        }
     </style>
 </head>
+
 <body>
     <h1>Welcome to Rock Paper Scissors!</h1>
     <p>Choose your game mode, invite a friend, match with a random player, or view rankings:</p>
@@ -108,7 +135,8 @@
     <div class="modal" id="matchedModal">
         <div class="modal-content">
             <p id="matchedMessage"></p>
-            <a id="startGameLink" class="btn">Start Game</a>
+            <p id="countdownMessage"></p>
+            <button id="startGameBtn" class="btn">Start Game</button>
             <button class="btn secondary-btn" id="cancelMatchedBtn">Cancel</button>
         </div>
     </div>
@@ -119,59 +147,135 @@
     <script>
         const waitingModal = document.getElementById("waitingModal");
         const matchedModal = document.getElementById("matchedModal");
-        const startGameLink = document.getElementById("startGameLink");
+        const startGameBtn = document.getElementById("startGameBtn");
+        const cancelMatchedBtn = document.getElementById("cancelMatchedBtn");
+        const cancelWaitingBtn = document.getElementById("cancelWaitingBtn");
+        const countdownMessage = document.getElementById("countdownMessage");
         const socket = io();
 
-        // Generate or retrieve a unique player ID
         const playerId = localStorage.getItem("player_id") || crypto.randomUUID();
         localStorage.setItem("player_id", playerId);
+
         let playerName = null;
         let gameId = null;
+        let countdownInterval;
 
+        // Reset matchmaking state
+        function resetMatchmaking() {
+            clearInterval(countdownInterval);
+            waitingModal.style.display = "none";
+            matchedModal.style.display = "none";
+            countdownMessage.textContent = "";
+            cancelMatchedBtn.disabled = false;
+            cancelMatchedBtn.style.opacity = "1";
+            cancelMatchedBtn.style.cursor = "pointer";
+            gameId = null;
+        }
+
+        // Start countdown dynamically
+        function startCountdown(initialValue) {
+            let timeLeft = initialValue || 10;
+            countdownMessage.textContent = `Time left: ${timeLeft} seconds`;
+
+            clearInterval(countdownInterval);
+            countdownInterval = setInterval(() => {
+                timeLeft--;
+                countdownMessage.textContent = `Time left: ${timeLeft} seconds`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    alert("Match canceled due to timeout.");
+                    resetMatchmaking();
+                }
+            }, 1000);
+        }
+
+        // Match Randomly
         document.getElementById("matchRandomBtn").addEventListener("click", () => {
             playerName = prompt("Enter your name:");
             if (!playerName) {
                 alert("Name required for matchmaking.");
                 return;
             }
-
-            socket.emit("random_match", { player_name: playerName, player_id: playerId });
+            resetMatchmaking();
             waitingModal.style.display = "flex";
+            document.getElementById("waitingMessage").textContent = "Waiting for an opponent...";
+            socket.emit("random_match", { player_name: playerName, player_id: playerId });
 
+            socket.off("match_found");
+            socket.off("countdown");
+            socket.off("match_cancelled");
+
+            // Match Found Listener
             socket.on("match_found", (data) => {
                 gameId = data.game_id;
                 const opponentName = data.opponent;
+
                 waitingModal.style.display = "none";
                 matchedModal.style.display = "flex";
                 document.getElementById("matchedMessage").textContent = `Matched with ${opponentName}! Ready to start?`;
-                startGameLink.href = `/real_person?gameId=${gameId}&playerId=${playerId}&playerName=${encodeURIComponent(playerName)}`;
+
+                startCountdown(10);
             });
 
-            socket.on("waiting", () => {
-                document.getElementById("waitingMessage").textContent = "Still waiting...";
+            // Countdown Listener
+            socket.on("countdown", (data) => {
+                if (data.game_id === gameId) {
+                    countdownMessage.textContent = `Time left: ${data.countdown} seconds`;
+                    if (data.countdown <= 0) resetMatchmaking();
+                }
             });
 
-            socket.on("error", (error) => {
-                alert(error.message || "Matchmaking error.");
-                waitingModal.style.display = "none";
+            // Match Cancelled Listener
+            socket.on("match_cancelled", (data) => {
+                alert(data.message);
+                resetMatchmaking();
             });
         });
 
-        document.getElementById("cancelWaitingBtn").addEventListener("click", () => {
+        // Cancel Waiting Button
+        cancelWaitingBtn.addEventListener("click", () => {
             socket.emit("cancel_waiting", { player_id: playerId });
-            waitingModal.style.display = "none";
+            resetMatchmaking();
         });
 
-        document.getElementById("cancelMatchedBtn").addEventListener("click", () => {
-            waitingModal.style.display = "none";
-            matchedModal.style.display = "none";
+        // Cancel Matched Button
+        cancelMatchedBtn.addEventListener("click", () => {
+            if (!gameId) {
+                alert("No game ID found. Please retry matchmaking.");
+                return;
+            }
+            socket.emit("cancel_match", { game_id: gameId, player_id: playerId });
+            resetMatchmaking();
         });
 
+        // Start Game Button
+        startGameBtn.addEventListener("click", () => {
+            if (!gameId) {
+                alert("No game ID found. Please retry matchmaking.");
+                return;
+            }
+            socket.emit("start_game", { game_id: gameId, player_id: playerId });
+            cancelMatchedBtn.disabled = true;
+            cancelMatchedBtn.style.opacity = "0.5";
+            cancelMatchedBtn.style.cursor = "not-allowed";
+            alert("Waiting for the other player to make a choice...");
+        });
+
+        // Proceed to Game Listener
+        socket.on("proceed_to_game", () => {
+            cancelMatchedBtn.disabled = true;
+            cancelMatchedBtn.style.opacity = "0.5";
+            cancelMatchedBtn.style.cursor = "not-allowed";
+            window.location.href = `/real_person?gameId=${gameId}&playerId=${playerId}`;
+        });
+
+        // Handle Disconnect
         socket.on("disconnect", () => {
-            waitingModal.style.display = "none";
-            matchedModal.style.display = "none";
             alert("Disconnected. Please refresh the page.");
+            resetMatchmaking();
         });
     </script>
 </body>
+
 </html>
