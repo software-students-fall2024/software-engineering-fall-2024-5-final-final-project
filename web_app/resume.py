@@ -1,21 +1,24 @@
-import os
-from pylatex import Document, Section, Subsection, Command, Itemize, NewLine
+from flask import Blueprint, request, send_file
+from pylatex import Document, Section, Subsection, Command, Itemize
 from pylatex.utils import NoEscape
-from flask import Flask, request, render_template, send_file
+import os
 
 TEMP_LATEX_FILE = 'temp'
 TEMP_PDF_FILE = 'temp.pdf'
 
-@app.route('/generate_resume', methods=['POST'])
+# Create a Blueprint instance
+resume_bp = Blueprint('resume', __name__)
+
+@resume_bp.route('/generate_resume', methods=['POST'])
 def generate_resume():
-    # Get form data
+    # get form data
     name = request.form['name']
     phone = request.form['phone']
     email = request.form['email']
     linkedin = request.form['linkedin']
     github = request.form['github']
 
-    # Education Section
+    # education info
     education_data = []
     i = 1
     while f'institution{i}' in request.form:
@@ -27,7 +30,7 @@ def generate_resume():
         })
         i += 1
 
-    # Experience Section
+    # experience info
     experience_data = []
     i = 1
     while f'company{i}' in request.form:
@@ -40,7 +43,7 @@ def generate_resume():
         })
         i += 1
 
-    # Projects Section
+    # projects info
     project_data = []
     i = 1
     while f'projectName{i}' in request.form:
@@ -52,19 +55,19 @@ def generate_resume():
         })
         i += 1
 
-    # Technical Skills
+    # technical info
     languages = request.form['languages']
     frameworks = request.form['frameworks']
     tools = request.form['tools']
     libraries = request.form['libraries']
 
-    # Create LaTeX document
+    # create latex doc
     doc = Document()
     doc.preamble.append(Command('title', 'Resume'))
     doc.preamble.append(Command('author', name))
     doc.append(NoEscape(r'\maketitle'))
 
-    # Set up LaTeX packages and formatting for the style
+    # set up latex packages
     doc.preamble.append(NoEscape(r'''
 \usepackage{latexsym}
 \usepackage[empty]{fullpage}
@@ -134,7 +137,7 @@ def generate_resume():
 \newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
 '''))
 
-    # Personal Info
+    # personal info
     with doc.create(Section('Personal Information')):
         doc.append(f"Phone: {phone}\n")
         doc.append(f"Email: {email}\n")
@@ -143,7 +146,7 @@ def generate_resume():
         if github:
             doc.append(f"GitHub: {github}\n")
 
-    # Education Section
+    # education section
     with doc.create(Section('Education')):
         for edu in education_data:
             with doc.create(Subsection(edu['institution'])):
@@ -151,7 +154,7 @@ def generate_resume():
                 doc.append(f"Location: {edu['location']}\n")
                 doc.append(f"Date: {edu['date']}\n")
 
-    # Experience Section
+    # experience section
     with doc.create(Section('Experience')):
         for exp in experience_data:
             with doc.create(Subsection(exp['company'])):
@@ -162,7 +165,7 @@ def generate_resume():
                 with doc.create(Itemize()) as itemize:
                     itemize.add_item(exp['responsibilities'])
 
-    # Projects Section
+    # projects section
     with doc.create(Section('Projects')):
         for project in project_data:
             with doc.create(Subsection(project['name'])):
@@ -170,18 +173,18 @@ def generate_resume():
                 doc.append(f"Date: {project['date']}\n")
                 doc.append(f"Details: {project['details']}\n")
 
-    # Technical Skills Section
+    # technical skills section
     with doc.create(Section('Technical Skills')):
         doc.append(f"Languages: {languages}\n")
         doc.append(f"Frameworks: {frameworks}\n")
         doc.append(f"Developer Tools: {tools}\n")
         doc.append(f"Libraries: {libraries}\n")
 
-    # Save the LaTeX file as "temp.tex"
+    # save the LaTeX file as "temp.tex"
     doc.generate_tex(TEMP_LATEX_FILE)
 
-    # Compile LaTeX to PDF (overwrite temp.pdf)
+    # compile LaTeX to PDF (overwrite temp.pdf)
     os.system(f"pdflatex {TEMP_LATEX_FILE}")
 
-    # Provide the generated PDF to the user
+    # provide the generated PDF to the user
     return send_file(TEMP_PDF_FILE, as_attachment=True)

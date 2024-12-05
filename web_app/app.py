@@ -2,6 +2,7 @@ import os
 import subprocess
 from flask import Flask, render_template, request, flash, redirect, send_file, url_for, session
 from pymongo import MongoClient
+from resume import resume_bp
 
 def create_app():
     # app initialization
@@ -67,6 +68,8 @@ def create_app():
         flash("You have been logged out.", "success")
         return redirect(url_for("login"))
     
+    app.register_blueprint(resume_bp)
+
     return app
 
 if __name__ == "__main__":
