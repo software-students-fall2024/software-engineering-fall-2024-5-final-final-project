@@ -98,6 +98,13 @@
             cursor: pointer;
         }
 
+        #menu-container .menu-button.logout {
+            margin-top: 60px;
+            background-color: #ff4d4d;
+            border: 1px solid ##ff4d4d;
+            color: white;
+        }
+
         {% block styles %}
         {% endblock %}
 
@@ -123,6 +130,7 @@
                 <a href="/analytics" class="menu-button">Analytics</a>
                 <a href="/search" class="menu-button">Search Record</a>
                 <a href="/settings" class="menu-button">Settings</a>
+                <a href="/logout" class="menu-button logout">Log Out</a>
             </div>
         </div>
 

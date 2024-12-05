@@ -2,15 +2,26 @@
 Web app frontend
 """
 
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, url_for
+from flask_login import current_user, login_required, logout_user
 import os
 from pymongo.mongo_client import MongoClient
+from user.auth import auth, login_manager
+
+# MongoDB connection
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
+client = MongoClient(MONGO_URI)
+db = client['theonepiece']
 
 # MongoDB connection
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
 client = MongoClient(MONGO_URI)
 db = client['theonepiece']
 app = Flask(__name__)
+app.secret_key = "secret_key" # needed for flask login sessions
+
+login_manager.init_app(app)
+app.register_blueprint(auth)
 
 
 # @app.route("/")
@@ -19,9 +30,11 @@ app = Flask(__name__)
 #     return render_template("index.html")
 
 @app.route("/")
-def login():
-    """Render login page"""
-    return render_template("Login.html")
+def index():
+    """Redirect to right page if logged in or not"""
+    if current_user.is_authenticated:
+        return render_template("calendar.html")
+    return render_template("login.html")
 
 @app.route("/signup")
 def signup():
@@ -39,15 +52,23 @@ def calendar():
     return render_template("Calendar.html")
 
 @app.route("/analytics")
+@login_required
 def analytics():
     """Render Analytics page"""
     return render_template("Analytics.html")
 
 @app.route("/search")
+@login_required
 def search():
     """Render Search page"""
     return render_template("Search.html")
 
+@app.route("/logout")
+@login_required
+def logout():
+    "Logout route"
+    logout_user()
+    return redirect(url_for("index"))
 
 # write new functions here
 if __name__ == "__main__":
