@@ -57,11 +57,13 @@ def calendar():
     return render_template("Calendar.html")
 
 @app.route("/analytics")
+@login_required
 def analytics():
     """Render Analytics page"""
     return render_template("Analytics.html")
 
 @app.route("/search")
+@login_required
 def search():
     """Render Search page"""
     return render_template("Search.html")
