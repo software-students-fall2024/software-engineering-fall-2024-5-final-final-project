@@ -22,7 +22,7 @@ load_dotenv()
 # Flask configuration
 app = Flask(__name__)
 # Get the secret key for session management from the environment variable
-app.secret_key = os.getenv("SECRET_KEY")
+app.secret_key = ("this_is_my_random_secret_key_987654321")
 
 # MongoDB configuration
 # MongoDB connection URI and database name from environment variables
