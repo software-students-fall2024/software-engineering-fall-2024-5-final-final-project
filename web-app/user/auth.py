@@ -1,6 +1,6 @@
 from flask import Blueprint, request, redirect, url_for, flash, render_template
-from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-from models import User
+from flask_login import LoginManager, login_user, logout_user, login_required
+from user.models import User
 from pymongo import MongoClient
 
 client = MongoClient("mongodb://localhost:27017/")
