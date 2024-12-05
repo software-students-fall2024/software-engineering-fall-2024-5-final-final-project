@@ -3,7 +3,8 @@ version: '3.10'
 services:
   webapp:
     build:
-      context: ./web-app
+      context: .
+      dockerfile: web-app/Dockerfile  # Ensure you are using the right Dockerfile
     ports:
       - "5001:5001"
     environment:
@@ -11,22 +12,21 @@ services:
       - MONGO_DBNAME=${MONGO_DBNAME}
     depends_on:
       - mongo
-      - bar-recs
-    command: ["pipenv", "run", "python", "app.py"] 
+      - bar_recs
+    command: ["python", "app.py"]  # Change this if needed for the specific app entry point
 
-  machine_learning_client:
+  bar_recs:
     build:
-      context: ./bar-recs
+      context: .
+      dockerfile: bar_recs/Dockerfile  # Ensure you are using the right Dockerfile
     ports:
       - "5002:5000"
     environment:
       - MONGO_URI=${MONGO_URI}
       - MONGO_DBNAME=${MONGO_DBNAME}
-    # environment:
-    #   - MONGO_URI=mongodb://mongo:27017/${SWE_Project_4}
     depends_on:
       - mongo
-    command: ["pipenv", "run", "python", "bar-recs.py"]  
+    command: ["python", "bar_recs.py"]  # Change this if needed for the specific app entry point
 
   mongo:
     image: mongo:latest

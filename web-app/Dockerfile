@@ -1,28 +1,29 @@
-# Use an official Python image as the base
-FROM python:3.10-slim
+FROM python:3.10
 
-# Set the working directory
-WORKDIR /web-app
-
-# Install necessary system dependencies for OpenCV
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
-    libgl1-mesa-glx \
-    libglib2.0-0  # Add libglib2.0-0 to fix libgthread-2.0.so.0 issue
+    build-essential \
+    gcc \
+    g++ \
+    gfortran \
+    libopenblas-dev \
+    liblapack-dev \
+    python3-dev
 
-# Upgrade pip and install pipenv
-RUN python -m pip install --upgrade pip && pip install pipenv
+# Upgrade pip
+RUN python -m pip install --upgrade pip
 
-# Copy Pipfile and Pipfile.lock
-COPY Pipfile Pipfile.lock ./
+# Install dependencies in specific order
+RUN pip install numpy scipy cython
 
-# Install dependencies with pipenv
-RUN pipenv install --python $(which python3) --deploy --ignore-pipfile
 
-# Copy the rest of the application code
+# Install scikit-surprise with verbose output and force compilation
+RUN pip install --verbose --no-binary :all: scikit-surprise
+
+# Rest of your Dockerfile remains the same
+WORKDIR /web-app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
-
-# Expose the port
 EXPOSE 5000
-
-# Set the command to run the web app
-CMD ["pipenv", "run", "python", "app.py"]
+CMD ["python", "app.py"]
