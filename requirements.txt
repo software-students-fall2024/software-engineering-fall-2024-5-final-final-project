@@ -4,3 +4,4 @@ python-dotenv
 flask
 flask_login
 werkzeug
+pytest
