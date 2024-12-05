@@ -17,7 +17,11 @@
     </div>
     <div class="labeled-input">
         <label for="item_link">Item link</label>
-        <input type="url" id="item_link" name="item_link" value="{{ wish.link }}" placeholder="Enter item link">
+        <input type="url" id="item_link" name="item_link" value="{{ wish.link }}" placeholder="Enter item link" required>
+    </div>
+    <div class="labeled-input">
+        <label for="item_comments">Additional Info</label>
+        <input type="text" id="item_comments" name="item_comments" value="{{ wish.comments }}" placeholder="Add any extra info about the item">
     </div>
     <button type="submit">Update Wish</button>
 </form>
