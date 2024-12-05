@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}
-Calendar
+Analytics
 {% endblock %}
 {% block styles %}
     {{ super() }} 
@@ -89,47 +89,13 @@ Calendar
 {% endblock %}
 {% block content %}
     <div class="calendar-container">
+        <!-- Hamburger Menu -->
         <div class="calendar-header">
-            <span class="navigation">&#9664;</span>
-            <h2>December 2024</h2>
-            <span class="navigation">&#9654;</span>
+            <h2>Monthly Expenses</h2>
         </div>
-        <div class="calendar-grid">
-            <!-- Calendar days -->
-            <div class="calendar-day">1</div>
-            <div class="calendar-day selected">2</div>
-            <div class="calendar-day">3</div>
-            <div class="calendar-day">4</div>
-            <div class="calendar-day">5</div>
-            <div class="calendar-day">6</div>
-            <div class="calendar-day">7</div>
-            <div class="calendar-day">8</div>
-            <div class="calendar-day">9</div>
-            <div class="calendar-day">10</div>
-            <div class="calendar-day">11</div>
-            <div class="calendar-day">12</div>
-            <div class="calendar-day">13</div>
-            <div class="calendar-day">14</div>
-            <div class="calendar-day">15</div>
-            <div class="calendar-day">16</div>
-            <div class="calendar-day">17</div>
-            <div class="calendar-day">18</div>
-            <div class="calendar-day">19</div>
-            <div class="calendar-day">20</div>
-            <div class="calendar-day">21</div>
-            <div class="calendar-day">22</div>
-            <div class="calendar-day">23</div>
-            <div class="calendar-day">24</div>
-            <div class="calendar-day">25</div>
-            <div class="calendar-day">26</div>
-            <div class="calendar-day">27</div>
-            <div class="calendar-day">28</div>
-            <div class="calendar-day">29</div>
-            <div class="calendar-day">30</div>
-            <div class="calendar-day">31</div>
-        </div>
+        <canvas id="chart"></canvas>
         <div class="expense-summary">
-            <h3>Selected Day: December 2</h3>
+            <h3>December 1-31</h3>
             <div class="expense-item">
                 <span>Transportation</span>
                 <span>-$79.50</span>
@@ -147,4 +113,34 @@ Calendar
             </div>
         </div>
     </div>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+    const ctx = document.getElementById('chart');
+
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: [
+            'Red',
+            'Blue',
+            'Yellow'
+          ],
+          datasets: [{
+            label: 'My First Dataset',
+            data: [300, 50, 100],
+            backgroundColor: [
+              'rgb(255, 99, 132)',
+              'rgb(54, 162, 235)',
+              'rgb(255, 205, 86)'
+            ],
+            hoverOffset: 4
+          }]
+        }
+    });
+    </script>
 {% endblock %}

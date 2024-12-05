@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}
+Analytics
+{% endblock %}
+{% block styles %}
+    {{ super() }} 
+    <style>
+
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="calendar-container">
+        <!-- Hamburger Menu -->
+        <div class="calendar-header">
+            <h2>Search</h2>
+        </div>
+
+        <div class="search-bar">
+            <input type="text" id="search-word" name="search-word" placeholder="Search for a word" {% if searchVal %} value="{{ searchVal }}"{% endif %} required>
+            <button class="search-btn" onclick="search()">Search</button>
+            <a class="x-btn" href="/search">x</a>
+        </div>
+
+        <div class="word-bank" id="word-bank">
+            {% if searchVal %}
+                {% for word in search_list %}
+                <div class="word-box">
+                    <div class="word" id="word-{{ loop.index }}">{{ word.word }}</div>
+                    <div class="definition" id="definition-{{ loop.index }}">{{ word.definition }}</div>
+                    <div class="buttons">
+                        <!--<button class="edit-button" onclick="editVocab('{{ loop.index }}', '{{ word.word }}', '{{ word.definition }}')">Edit</button>-->
+                        <button class="delete-button" onclick="deleteWord('{{ word.word }}')">x</button>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                {% for word in vocab_list %}
+                <div class="word-box" id="word-box-{{ loop.index }}">
+                    <div class="word" id="word-{{ loop.index }}">{{ word.word }}</div>
+                    <div class="definition" id="definition-{{ loop.index }}">{{ word.definition }}</div>
+                    <div class="buttons">
+                        <button class="edit-button" onclick="editVocab({{ loop.index }}, '{{ word.word }}', '{{ word.definition }}')">Edit</button>
+                        <button class="delete-button" onclick="deleteWord('{{ word.word }}')">x</button>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+       
+
+    </div>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        async function search(){
+            const inputElement = document.getElementById('search-word');
+            const inputValue = inputElement.value;
+            window.location.href = `/vocab/${encodeURIComponent(inputValue)}`;
+        }
+    </script>
+{% endblock %}
