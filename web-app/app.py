@@ -37,6 +37,11 @@ def analytics():
     """Render Analytics page"""
     return render_template("Analytics.html")
 
+@app.route("/search")
+def search():
+    """Render Search page"""
+    return render_template("Search.html")
+
 
 # write new functions here
 if __name__ == "__main__":
