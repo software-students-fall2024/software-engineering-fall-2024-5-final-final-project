@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Calendar</title>
+</head>
+<body>
+    <h1>Calendar for {{ month }}/{{ year }}</h1>
+    <table>
+        {% for week in month_days %}
+        <tr>
+            {% for day in week %}
+            <td>
+                {% if day != 0 %}
+                    {% if day in journal_entries %}
+                        <a href="{{ url_for('journal', year=year, month=month, day=day) }}">
+                            <button>{{ day }}</button>
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('journal', year=year, month=month, day=day) }}">
+                            <button style="background-color: lightgray;">{{ day }}</button>
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <span></span>
+                {% endif %}
+            </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+    <a href="{{ url_for('logout') }}">Logout</a>
+</body>
+</html>

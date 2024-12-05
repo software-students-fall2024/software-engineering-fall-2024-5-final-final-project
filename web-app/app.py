@@ -1,45 +1,16 @@
-from flask import (
-    Flask,
-    render_template,
-    Response,
-    request,
-    redirect,
-    url_for,
-    session,
-    flash,
-)
+"""
+This module contains the web application for the journal app using Flask and MongoDB.
+"""
+
+import os
+import calendar
+from datetime import datetime
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
-from datetime import datetime
-import os
-import bcrypt
 from dotenv import load_dotenv
-from dream_analysis import analyze_dream
-import nltk
-
-load_dotenv()
-uri = os.getenv("MONGODB_URI")
-client = MongoClient(uri, server_api=ServerApi('1'))
-
-nltk.download('punkt')
-nltk.download('stopwords')  # Download stopwords resource
-
-# Set a custom nltk_data directory (e.g., inside your project folder)
-nltk_data_path = os.path.expanduser('~/nltk_data')
-if not os.path.exists(nltk_data_path):
-    os.makedirs(nltk_data_path)
-
-# Add the path to NLTK's search paths
-nltk.data.path.append(nltk_data_path)
-
-# Ensure stopwords resource is available
-try:
-    nltk.download("stopwords", download_dir=nltk_data_path)
-except Exception as e:
-    print(f"Error downloading NLTK resources: {e}")
-
-
-# pylint: disable=all
+from werkzeug.security import generate_password_hash, check_password_hash
+from bson.objectid import ObjectId
 
 # Load environment variables
 load_dotenv()
@@ -51,148 +22,145 @@ app.secret_key = os.getenv("SECRET_KEY", "test_secret_key")
 # MongoDB configuration
 MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DBNAME = os.getenv("MONGO_DBNAME", "default_db_name")
-client = MongoClient(MONGO_URI)
+client = MongoClient(MONGO_URI, server_api=ServerApi("1"))
 db = client[MONGO_DBNAME]
-dream_data_collection = db["dream_data"]
 users_collection = db["users"]
-
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"].encode("utf-8")
-
-        user = users_collection.find_one({"username": username})
-        if user and bcrypt.checkpw(password, user["password"]):
-            session["user_id"] = str(user["_id"])
-            session["username"] = username
-            session.permanent = False
-            return redirect(url_for("dashboard"))
-        else:
-            flash("Invalid username or password.", "error")
-            return redirect(url_for("login"))
-
-    return render_template("login.html")
-
-
-@app.route("/signup", methods=["GET", "POST"])
-def signup():
-    if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"].encode("utf-8")
-
-        if users_collection.find_one({"username": username}):
-            flash("Username already exists. Please choose a different one.", "error")
-            return redirect(url_for("signup"))
-
-        hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
-        users_collection.insert_one({"username": username, "password": hashed_password})
-        flash("Account created successfully. Please log in.", "success")
-        return redirect(url_for("login"))
-
-    return render_template("signup.html")
+journal_collection = db["journals"]
 
 @app.route("/")
 def index():
-    """Render welcome page."""
-    return render_template("index.html")
+    """
+    Redirect to the login page.
+    """
+    return redirect(url_for("login"))
 
-@app.route("/dashboard", methods=["GET", "POST"])
-def dashboard():
-    if "user_id" not in session:
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    """
+    User registration page.
+    """
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+
+        # Check if username already exists
+        if users_collection.find_one({"username": username}):
+            flash("Username already exists. Please choose another.", "error")
+            return redirect(url_for("register"))
+
+        try:
+            # Create new user with hashed password
+            hashed_password = generate_password_hash(password, method="pbkdf2:sha256")
+            users_collection.insert_one({"username": username, "password": hashed_password})
+            flash("Registration successful. Please log in.", "success")
+            return redirect(url_for("login"))
+        except Exception as e:
+            flash(f"An error occurred: {e}", "error")
+            return redirect(url_for("register"))
+
+    return render_template("register.html")
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    """
+    User login page.
+    """
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+
+        user = users_collection.find_one({"username": username})
+        if user and check_password_hash(user["password"], password):
+            session["user_id"] = str(user["_id"])
+            session["username"] = username
+            return redirect(url_for("calendar_"))
+
+        flash("Invalid username or password.", "error")
         return redirect(url_for("login"))
 
-    username = session.get("username", "User")
-    dream_interpretation = None
+    return render_template("login.html")
 
-    if request.method == "POST":
-        # Get the dream description from the form
-        dream_description = request.form.get("dream_description", "")
-        
-        # Analyze the dream using the dream_analysis module
-        dream_interpretation = analyze_dream(dream_description)
-        
-        # Save the dream and interpretation to the database
-        dream_data_collection.insert_one({
-            "user_id": session["user_id"],
-            "dream_description": dream_description,
-            "dream_interpretation": dream_interpretation,
-            "timestamp": datetime.utcnow()
-        })
-
-    # Fetch the last dream interpretation for the user
-    last_dream = dream_data_collection.find_one(
-        {"user_id": session["user_id"]}, sort=[("timestamp", -1)]
-    )
-
-    return render_template(
-        "dashboard.html", 
-        username=username, 
-        last_dream=last_dream, 
-        dream_interpretation=dream_interpretation
-    )
-
-@app.route("/logout", methods=["GET", "POST"])
+@app.route("/logout")
 def logout():
     """
-    Clear the user's session and redirect them to the index page.
+    Logout the current user.
     """
-    session.clear()  
-    return redirect(url_for("index"))
+    session.clear()
+    flash("You have been logged out.", "success")
+    return redirect(url_for("login"))
 
-@app.route("/journal", methods=["GET"])
-def journal():
+@app.route("/calendar", methods=["GET"])
+def calendar_():
+    """
+    Calendar page displaying the current month with journal entry buttons.
+    """
     if "user_id" not in session:
         return redirect(url_for("login"))
 
-    # Fetch all dreams for the logged-in user
-    journal_entries = list(dream_data_collection.find({"user_id": session["user_id"]}).sort("timestamp", -1))
-    return render_template("journal.html", journal_entries=journal_entries)
+    # Get the current month and year
+    now = datetime.utcnow()
+    year, month = now.year, now.month
+    month_days = calendar.monthcalendar(year, month)
 
+    # Fetch existing journal entries for the user
+    user_id = session["user_id"]
+    journal_entries = {
+        entry["date"]: entry["_id"]
+        for entry in journal_collection.find({"user_id": user_id, "month": month, "year": year})
+    }
 
-@app.route("/entry", methods=["GET", "POST"])
-@app.route("/entry/<entry_id>", methods=["GET", "POST"])
-def entry(entry_id=None):
+    return render_template(
+        "calendar.html",
+        year=year,
+        month=month,
+        month_days=month_days,
+        journal_entries=journal_entries,
+    )
+
+@app.route("/journal/<int:year>/<int:month>/<int:day>", methods=["GET", "POST"])
+def journal(year, month, day):
+    """
+    Add, edit, or delete a journal entry for a specific day.
+    """
     if "user_id" not in session:
         return redirect(url_for("login"))
 
-    entry = None
-    if entry_id:
-        entry = dream_data_collection.find_one({"_id": ObjectId(entry_id)})
+    user_id = session["user_id"]
+    date = f"{year}-{month:02d}-{day:02d}"
+    entry = journal_collection.find_one({"user_id": user_id, "date": date})
 
     if request.method == "POST":
-        dream_description = request.form["dream_description"]
-        analysis = analyze_dream(dream_description)
-
+        content = request.form.get("content")
         if entry:
             # Update existing entry
-            dream_data_collection.update_one(
-                {"_id": ObjectId(entry_id)},
-                {"$set": {"dream_description": dream_description, "analysis": analysis}}
-            )
+            journal_collection.update_one({"_id": entry["_id"]}, {"$set": {"content": content}})
+            flash("Journal entry updated.", "success")
         else:
-            # Add a new entry
-            dream_data_collection.insert_one({
-                "user_id": session["user_id"],
-                "dream_description": dream_description,
-                "analysis": analysis,
-                "timestamp": datetime.utcnow()
+            # Create new entry
+            journal_collection.insert_one({
+                "user_id": user_id,
+                "date": date,
+                "content": content,
+                "year": year,
+                "month": month,
+                "day": day,
             })
+            flash("Journal entry added.", "success")
+        return redirect(url_for("calendar_"))
 
-        return redirect(url_for("journal"))
-
-    return render_template("entry.html", entry=entry)
+    return render_template("journal.html", date=date, entry=entry)
 
 @app.route("/delete/<entry_id>", methods=["POST"])
 def delete_entry(entry_id):
+    """
+    Delete a journal entry.
+    """
     if "user_id" not in session:
         return redirect(url_for("login"))
 
-    dream_data_collection.delete_one({"_id": ObjectId(entry_id), "user_id": session["user_id"]})
-    return redirect(url_for("journal"))
-
-
-
+    journal_collection.delete_one({"_id": ObjectId(entry_id)})
+    flash("Journal entry deleted.", "success")
+    return redirect(url_for("calendar_"))
 
 if __name__ == "__main__":
     app.run(
@@ -200,5 +168,3 @@ if __name__ == "__main__":
         port=int(os.getenv("FLASK_PORT", 5001)),
         debug=bool(int(os.getenv("FLASK_DEBUG", 0))),
     )
-    
-    
