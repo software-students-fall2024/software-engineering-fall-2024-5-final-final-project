@@ -3,24 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Details</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Resume Generator</title>
 </head>
 <body>
-    <div class="form-container">
-        <h2>Add Details</h2>
-        <form action="/add-details" method="POST">
-            <label for="extracurriculars">Extracurricular Activities:</label>
-            <textarea id="extracurriculars" name="extracurriculars" rows="4" required></textarea>
-            
-            <label for="projects">Projects:</label>
-            <textarea id="projects" name="projects" rows="4" required></textarea>
 
-            <label for="experience">Projects:</label>
-            <textarea id="experience" name="experience" rows="4" required></textarea>
-            
-            <button type="submit">Save Details</button>
-        </form>
-    </div>
+    <h1>Resume Information Form</h1>
+    
+    <form id="resumeForm" method="POST" action="/generate_resume">
+        <!-- Personal Info -->
+        <h2>Personal Information</h2>
+        <label for="name">Full Name:</label>
+        <input type="text" id="name" name="name" required><br>
+
+        <label for="phone">Phone Number:</label>
+        <input type="text" id="phone" name="phone" required><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br>
+
+        <label for="linkedin">LinkedIn URL:</label>
+        <input type="url" id="linkedin" name="linkedin"><br>
+
+        <label for="github">GitHub URL:</label>
+        <input type="url" id="github" name="github"><br><br>
+
+        <!-- Education Section -->
+        <h2>Education</h2>
+        <div id="educationFields">
+            <h3>Education 1</h3>
+            <label for="institution1">Institution:</label>
+            <input type="text" id="institution1" name="institution1" required><br>
+
+            <label for="degree1">Degree:</label>
+            <input type="text" id="degree1" name="degree1" required><br>
+
+            <label for="location1">Location:</label>
+            <input type="text" id="location1" name="location1" required><br>
+
+            <label for="date1">Date Range:</label>
+            <input type="text" id="date1" name="date1" required><br><br>
+        </div>
+        <button type="button" id="addEducation">Add Another Education</button><br><br>
+
+        <!-- Experience Section -->
+        <h2>Experience</h2>
+        <div id="experienceFields">
+            <h3>Experience 1</h3>
+            <label for="company1">Company Name:</label>
+            <input type="text" id="company1" name="company1" required><br>
+
+            <label for="role1">Role:</label>
+            <input type="text" id="role1" name="role1" required><br>
+
+            <label for="expLocation1">Location:</label>
+            <input type="text" id="expLocation1" name="expLocation1" required><br>
+
+            <label for="expDate1">Date Range:</label>
+            <input type="text" id="expDate1" name="expDate1" required><br>
+
+            <label for="responsibilities1">Responsibilities:</label>
+            <textarea id="responsibilities1" name="responsibilities1" required></textarea><br><br>
+        </div>
+        <button type="button" id="addExperience">Add Another Experience</button><br><br>
+
+        <!-- Projects Section -->
+        <h2>Projects</h2>
+        <div id="projectFields">
+            <h3>Project 1</h3>
+            <label for="projectName1">Project Name:</label>
+            <input type="text" id="projectName1" name="projectName1" required><br>
+
+            <label for="projectTech1">Technologies Used:</label>
+            <input type="text" id="projectTech1" name="projectTech1" required><br>
+
+            <label for="projectDate1">Date Range:</label>
+            <input type="text" id="projectDate1" name="projectDate1" required><br>
+
+            <label for="projectDetails1">Details:</label>
+            <textarea id="projectDetails1" name="projectDetails1" required></textarea><br><br>
+        </div>
+        <button type="button" id="addProject">Add Another Project</button><br><br>
+
+        <!-- Technical Skills Section -->
+        <h2>Technical Skills</h2>
+        <label for="languages">Languages (comma-separated):</label>
+        <input type="text" id="languages" name="languages" required><br>
+
+        <label for="frameworks">Frameworks (comma-separated):</label>
+        <input type="text" id="frameworks" name="frameworks" required><br>
+
+        <label for="tools">Developer Tools (comma-separated):</label>
+        <input type="text" id="tools" name="tools" required><br>
+
+        <label for="libraries">Libraries (comma-separated):</label>
+        <input type="text" id="libraries" name="libraries" required><br><br>
+
+        <button type="submit">Generate Resume</button>
+    </form>
+
+    <script>
+        // JavaScript to dynamically add more fields for Education, Experience, and Projects
+        let educationCount = 1;
+        document.getElementById('addEducation').addEventListener('click', function() {
+            educationCount++;
+            let newEducationField = `
+                <h3>Education ${educationCount}</h3>
+                <label for="institution${educationCount}">Institution:</label>
+                <input type="text" id="institution${educationCount}" name="institution${educationCount}" required><br>
+
+                <label for="degree${educationCount}">Degree:</label>
+                <input type="text" id="degree${educationCount}" name="degree${educationCount}" required><br>
+
+                <label for="location${educationCount}">Location:</label>
+                <input type="text" id="location${educationCount}" name="location${educationCount}" required><br>
+
+                <label for="date${educationCount}">Date Range:</label>
+                <input type="text" id="date${educationCount}" name="date${educationCount}" required><br><br>
+            `;
+            document.getElementById('educationFields').insertAdjacentHTML('beforeend', newEducationField);
+        });
+
+        let experienceCount = 1;
+        document.getElementById('addExperience').addEventListener('click', function() {
+            experienceCount++;
+            let newExperienceField = `
+                <h3>Experience ${experienceCount}</h3>
+                <label for="company${experienceCount}">Company Name:</label>
+                <input type="text" id="company${experienceCount}" name="company${experienceCount}" required><br>
+
+                <label for="role${experienceCount}">Role:</label>
+                <input type="text" id="role${experienceCount}" name="role${experienceCount}" required><br>
+
+                <label for="expLocation${experienceCount}">Location:</label>
+                <input type="text" id="expLocation${experienceCount}" name="expLocation${experienceCount}" required><br>
+
+                <label for="expDate${experienceCount}">Date Range:</label>
+                <input type="text" id="expDate${experienceCount}" name="expDate${experienceCount}" required><br>
+
+                <label for="responsibilities${experienceCount}">Responsibilities:</label>
+                <textarea id="responsibilities${experienceCount}" name="responsibilities${experienceCount}" required></textarea><br><br>
+            `;
+            document.getElementById('experienceFields').insertAdjacentHTML('beforeend', newExperienceField);
+        });
+
+        let projectCount = 1;
+        document.getElementById('addProject').addEventListener('click', function() {
+            projectCount++;
+            let newProjectField = `
+                <h3>Project ${projectCount}</h3>
+                <label for="projectName${projectCount}">Project Name:</label>
+                <input type="text" id="projectName${projectCount}" name="projectName${projectCount}" required><br>
+
+                <label for="projectTech${projectCount}">Technologies Used:</label>
+                <input type="text" id="projectTech${projectCount}" name="projectTech${projectCount}" required><br>
+
+                <label for="projectDate${projectCount}">Date Range:</label>
+                <input type="text" id="projectDate${projectCount}" name="projectDate${projectCount}" required><br>
+
+                <label for="projectDetails${projectCount}">Details:</label>
+                <textarea id="projectDetails${projectCount}" name="projectDetails${projectCount}" required></textarea><br><br>
+            `;
+            document.getElementById('projectFields').insertAdjacentHTML('beforeend', newProjectField);
+        });
+    </script>
+
 </body>
 </html>
