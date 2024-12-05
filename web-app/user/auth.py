@@ -31,7 +31,7 @@ def login():
             return redirect(url_for("home"))
         else:
             flash("Invalid username or password", "danger")
-    return render_template("login.html")
+    return render_template("Login.html")
 
 
 @auth.route("/signup", methods=["GET", "POST"])
@@ -49,7 +49,7 @@ def signup():
             User.create_user(db, username, password, firstname, lastname)
             flash("Account created successfully! Please log in.", "success")
             return redirect(url_for("auth.login"))
-    return render_template("signup.html")
+    return render_template("Signup.html")
 
 
 @auth.route("/logout")
