@@ -2,9 +2,16 @@
 Web app frontend
 """
 
-from flask import Flask, redirect, render_template, url_for
+from flask import Flask, render_template
 from flask_login import current_user, login_required
+import os
+from pymongo.mongo_client import MongoClient
 from user.auth import auth, login_manager
+
+# MongoDB connection
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
+client = MongoClient(MONGO_URI)
+db = client['theonepiece']
 
 app = Flask(__name__)
 app.secret_key = "secret_key" # needed for flask login sessions
