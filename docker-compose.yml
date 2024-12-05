@@ -1,0 +1,23 @@
+version: "3.9"
+services:
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    networks:
+      - app-network
+
+  web-app:
+    build: ./web-app
+    container_name: theonepiece-web-app
+    depends_on:
+      - mongodb
+    networks:
+      - app-network
+    environment:
+      MONGO_URI: mongodb://mongodb:27017/theonepiece
+
+networks:
+  app-network:
+    driver: bridge
