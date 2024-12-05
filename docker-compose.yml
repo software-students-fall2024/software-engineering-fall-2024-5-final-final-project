@@ -16,7 +16,6 @@ services:
     ports:
       - "5002:5002"
     environment:
-      - MONGO_URI=mongodb://mongodb:27017
-      - ML_CLIENT_URL=http://machine-learning-client:5001/classify
+      - MONGO_URI="mongodb+srv://2236531605wang:EiMcBhDJn0NjOcaE@cluster0.mt65z.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 volumes:
   mongodb_data:
