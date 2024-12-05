@@ -1,35 +1,35 @@
-version: '3.10'
+version: '3'
 
 services:
   webapp:
     build:
-      context: .
-      dockerfile: web-app/Dockerfile  # Ensure you are using the right Dockerfile
+      context: ./web-app
+      dockerfile: Dockerfile  # Ensure you are using the right Dockerfile
     ports:
       - "5001:5001"
     environment:
-      - MONGO_URI=${MONGO_URI}
-      - MONGO_DBNAME=${MONGO_DBNAME}
+      - MONGO_URI=mongodb+srv://eh96:finalfour123@bars.ygsrg.mongodb.net/finalfour?tlsAllowInvalidCertificates=true
+      - MONGO_DBNAME=finalfour
     depends_on:
       - mongo
-      - bar_recs
     command: ["python", "app.py"]  # Change this if needed for the specific app entry point
 
-  bar_recs:
-    build:
-      context: .
-      dockerfile: bar_recs/Dockerfile  # Ensure you are using the right Dockerfile
-    ports:
-      - "5002:5000"
-    environment:
-      - MONGO_URI=${MONGO_URI}
-      - MONGO_DBNAME=${MONGO_DBNAME}
-    depends_on:
-      - mongo
-    command: ["python", "bar_recs.py"]  # Change this if needed for the specific app entry point
+  # bar_recs:
+  #   build:
+  #     context: .
+  #     dockerfile: bar_recs/Dockerfile  # Ensure you are using the right Dockerfile
+  #   ports:
+  #     - "5002:5000"
+  #   environment:
+  #     - MONGO_URI=${MONGO_URI}
+  #     - MONGO_DBNAME=${MONGO_DBNAME}
+  #   depends_on:
+  #     - mongo
+  #   command: ["python", "bar_recs.py"]  # Change this if needed for the specific app entry point
 
   mongo:
     image: mongo:latest
+    container_name: mongodb
     ports:
       - "27017:27017"
     volumes:
