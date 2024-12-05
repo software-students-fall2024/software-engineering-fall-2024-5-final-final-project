@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: black;
+            color: white;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+        }
+        .login-container {
+            margin: 20px;
+            background-color: #1e1e1e;
+            padding: 30px;
+            border-radius: 10px;
+            width: 360px; /* Matches the calendar and menu page width */
+            height: 600px; /* Same height as the menu page */
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .app-logo {
+            width: 100%;
+            height: 150px;
+            background-color: #d3d3d3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            margin-bottom: 30px; /* Reduced spacing below the logo */
+        }
+        .app-logo span {
+            font-size: 1.2rem;
+            color: black;
+        }
+        .login-form {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start; /* Align buttons closer to the top */
+            flex-grow: 1; /* Allow form to take available vertical space */
+            gap: 15px; /* Add spacing between inputs and button */
+        }
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid white;
+            background-color: #333;
+            color: white;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        .form-input::placeholder {
+            color: #999;
+        }
+        .login-button {
+            width: 100%;
+            padding: 15px;
+            background-color: black;
+            color: white;
+            border: 2px solid white;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-align: center;
+        }
+        .login-button:hover {
+            background-color: #6CB873;
+            color: black;
+        }
+        .login-footer {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        .login-footer a {
+            color: #6CB873;
+            text-decoration: none;
+        }
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <!-- App Logo -->
+        <div class="app-logo">
+            <span>App Logo</span>
+        </div>
+
+        <!-- Login Form -->
+        <form class="login-form" action="/login" method="POST">
+            <input
+                type="text"
+                class="form-input"
+                placeholder="Username"
+                name="username"
+                required
+            />
+            <input
+                type="password"
+                class="form-input"
+                placeholder="Password"
+                name="password"
+                required
+            />
+            <button type="submit" class="login-button">Login</button>
+        </form>
+
+        <!-- Footer Links -->
+        <div class="login-footer">
+            <span>Don't have an account? <a href="/signup">Sign Up</a></span>
+        </div>
+    </div>
+</body>
+</html>
