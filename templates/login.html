@@ -5,8 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login Page</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 
 <body>
@@ -19,8 +18,11 @@
 
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" required>
-
-        <button type="submit">Login</button>
+        <div class="submit"></div>
+        <button type="submit">Login but goes back home?</button>
+        <button onclick="window.location.href='/record'">Login but goes to record</button>
+       
+      </div>
       </form>
 
       <div class="link">
