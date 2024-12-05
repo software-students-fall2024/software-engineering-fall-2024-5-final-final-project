@@ -1,0 +1,40 @@
+services:
+  web-app:
+    build: 
+      context: ./web-app
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5001"
+    env_file:
+      - .env 
+    environment:
+      - MONGO_CXN_STRING=mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongodb:27017/
+      - ML_CLIENT_PORT=http://ml-client:5000
+    depends_on:
+      - mongodb
+      - ml-client
+
+  ml-client:
+    build:
+      context: ./ml_client
+      dockerfile: Dockerfile
+    ports:
+      - "5002:5002"
+
+  mongodb:
+    image: mongo:6.0
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+    command: mongod --quiet --logpath /dev/null
+    volumes:
+      - mongodb_data:/data/db
+
+volumes:
+  mongodb_data:
+
+networks:
+  default:
+    driver: bridge
