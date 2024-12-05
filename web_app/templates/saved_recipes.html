@@ -9,24 +9,24 @@
     <div class="grid">
         <!-- Display saved recipes -->
         {% for recipe in saved_recipes %}
-        <div class="recipe-card">
+        <div class="recipe-card" id="recipe-{{ recipe.recipe_id }}">
             <img src="{{ recipe.image }}" alt="{{ recipe.name }}">
             <h2>{{ recipe.name }}</h2>
             <p><strong>Source:</strong> {{ recipe.source }}</p>
             <p><a href="{{ recipe.url }}" target="_blank">View Full Recipe</a></p>
             <form action="{{ url_for('unsave_recipe') }}" method="post">
                 <input type="hidden" name="recipe_id" value="{{ recipe.recipe_id }}">
-                <button type="submit">Remove</button>
+                <button type="submit" class="remove-btn">Remove</button>
             </form>
-            <form action="{{ url_for('made_recipe') }}" method="post">
-                <input type="hidden" name="recipe_id" value="{{ recipe.recipe_id }}">
-                <button type="submit">I made this</button>
-            </form>
+            <button type="button" class="mark-made-btn" onclick="markAsMade(this.closest('.recipe-card'))">
+                I made this
+            </button>
         </div>
         {% endfor %}
+
         <!-- Display made recipes -->
         {% for recipe in made_recipes %}
-        <div class="recipe-card made">
+        <div class="recipe-card made" id="made-recipe-{{ recipe.recipe_id }}">
             <img src="{{ recipe.image }}" alt="{{ recipe.name }}">
             <h2>{{ recipe.name }}</h2>
             <p><strong>Source:</strong> {{ recipe.source }}</p>
@@ -34,7 +34,7 @@
             <p><strong>Status:</strong> You've made this!</p>
             <form action="{{ url_for('unsave_made_recipe') }}" method="post">
                 <input type="hidden" name="recipe_id" value="{{ recipe.recipe_id }}">
-                <button type="submit">Remove</button>
+                <button type="submit" class="remove-btn">Remove</button>
             </form>
         </div>
         {% endfor %}
@@ -42,4 +42,28 @@
 {% else %}
     <p>You have no saved recipes.</p>
 {% endif %}
+
+<script>
+    function markAsMade(cardElement) {
+        // Add the 'made' class to the recipe card
+        cardElement.classList.add("made");
+
+        // Update button state and text
+        const button = cardElement.querySelector(".mark-made-btn");
+        button.textContent = "You've made this!";
+        button.disabled = true;
+
+        // Optionally, send an AJAX request to update the backend
+        const recipeId = cardElement.id.split("-")[1];
+        fetch("/made_recipe", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ recipe_id: recipeId }),
+        }).catch((error) => {
+            console.error("Error updating recipe as made:", error);
+        });
+    }
+</script>
 {% endblock %}
