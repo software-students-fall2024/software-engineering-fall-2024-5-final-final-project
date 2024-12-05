@@ -8,6 +8,16 @@
                     <li><a href="{{ url_for('home') }}">My wishlist</a></li>
                     <!-- TODO: create route for claimed gifts -->
                     <li><a href="">Claimed gifts</a></li>
+                    {% if current_user.is_authenticated %}
+                    <li>
+                        <form method="POST" action="{{ url_for('logout') }}">
+                            <div class="icon-button">
+                                <img src="/static/images/log-out.svg" alt="logout icon">
+                                <button type="submit">Logout</button>
+                            </div>
+                        </form>
+                    </li>
+                    {% endif %}
                 </ul>
             </nav>
             {% block inner_content %}{% endblock %}

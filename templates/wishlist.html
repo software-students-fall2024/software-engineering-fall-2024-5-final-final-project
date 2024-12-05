@@ -19,9 +19,4 @@
     {% else %}
         <p>No items in this wishlist.</p>
     {% endif %}
-    {% if current_user.is_authenticated %}
-        <form method="POST" action="{{ url_for('logout') }}">
-            <button type="submit">Logout</button>
-        </form>
-    {% endif %}
 {% endblock %}
