@@ -12,8 +12,8 @@ An exercise to put to practice software development teamwork, subsystem communic
 
 ## TEAM MEMBERS
 
-- [Tahsin Tawhid] (https://github.com/tahsintawhid)
-- [James Whitten] (https://github.com/jwhit0)
-- [Jack Zhang] (https://github.com/yz6973)
-- [Joseph Hwang] (https://github.com/JosephNYU)
+- [Tahsin Tawhid](https://github.com/tahsintawhid)
+- [James Whitten](https://github.com/jwhit0)
+- [Jack Zhang](https://github.com/yz6973)
+- [Joseph Hwang](https://github.com/JosephNYU)
 
