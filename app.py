@@ -209,6 +209,8 @@ def create_app(test_config=None):
             flash("Wish deleted successfully!")
         return redirect(url_for('home'))
 
+    print(f"URI IS: MONGO_URI: {app.config['MONGO_URI']}")
+    print(f"MONGO_DBNAME: {app.config['MONGO_DBNAME']}")
     
     return app
 
