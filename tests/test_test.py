@@ -32,13 +32,13 @@ def mock_collections(monkeypatch):
     monkeypatch.setattr(pymongo, "MongoClient", MockMongoClient)
 
 
-def test_register_user_success(test_client, mock_collections):
+def test_register(test_client, mock_collections):
     """
     Test successful user registration.
     """
     response = test_client.post(
         "/register",
-        data={"username": "testuser", "password": "password123"},
+        data={"username": "uouvouyoiuoiuj", "password": "bbbbbbbbbbbjhkgviuyig"},
         follow_redirects=True,
     )
     assert response.status_code == 200
