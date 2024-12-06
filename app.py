@@ -118,11 +118,8 @@ def create_app(test_config=None):
     @app.route("/")
     @login_required
     def home():
-        """
-        Route for the home page
-        """
-        wishes = db.wishes.find({"user_id": current_user.id}).sort("created_at", -1)
-        return render_template("index.html", wishes=wishes)
+        wishes = db.wishes.find({"user_id": current_user.id, "claimed_by": None}).sort("created_at", -1)
+        return render_template("index.html", wishes=wishes, user=current_user)
     
     @app.route("/wishlist/<username>")
     def wishlist(username):
@@ -132,7 +129,7 @@ def create_app(test_config=None):
             flash("user not found")
             return redirect(url_for("home"))
         
-        wishes = db.wishes.find({"user_id": str(user["_id"])}).sort("created_at", -1)
+        wishes = db.wishes.find({"user_id": str(user["_id"]), "claimed_by": None}).sort("created_at", -1)
         return render_template("wishlist.html", wishes=wishes, user=user)
 
     
@@ -208,7 +205,38 @@ def create_app(test_config=None):
         else:
             flash("Wish deleted successfully!")
         return redirect(url_for('home'))
+    
+    # Claim gift route
+    @app.route("/claim/<wish_id>", methods=["POST"])
+    @login_required
+    def claim(wish_id):
+        # Find the gift to be claimed
+        wish = db.wishes.find_one({"_id": ObjectId(wish_id), "claimed_by": None})
+        if not wish:
+            flash("Gift not found or already claimed.")
+            return redirect(url_for('home'))
 
+        # Update the wish with the claiming user's ID
+        db.wishes.update_one(
+            {"_id": ObjectId(wish_id)},
+            {"$set": {"claimed_by": current_user.id}}
+        )
+        flash("Gift claimed successfully!")
+        return redirect(url_for('home'))
+
+
+    # Claimed gifts route
+    @app.route("/claimed/<username>")
+    @login_required
+    def claimed(username):
+        user = db.users.find_one({"username": username})
+        if not user:
+            flash("User not found")
+            return redirect(url_for("home"))
+        
+        # Fetch gifts claimed by others from this user's wishlist
+        claimed_wishes = db.wishes.find({"user_id": str(user["_id"]), "claimed_by": {"$ne": None}}).sort("created_at", -1)
+        return render_template("claimed.html", wishes=claimed_wishes, user=user)
     
     return app
 
