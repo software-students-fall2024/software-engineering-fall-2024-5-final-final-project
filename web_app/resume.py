@@ -174,7 +174,7 @@ def generate_resume():
     # education section
     if education_data:
         doc.append(NoEscape(r'\section{Education}'))
-        doc.append(NoEscape(r'\resumeSubHeadingListStart'))  # Start the list
+        doc.append(NoEscape(r'\resumeSubHeadingListStart'))
         for edu in education_data:
             doc.append(NoEscape(r'\resumeSubheading{%s}{%s}{%s}{%s}' % (
                 edu['institution'],

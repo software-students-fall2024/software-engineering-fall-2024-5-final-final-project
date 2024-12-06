@@ -1,3 +1,4 @@
+import base64
 import os
 import subprocess
 from flask import Flask, render_template, request, flash, redirect, send_file, url_for, session
@@ -55,6 +56,7 @@ def create_app():
 
         return render_template("register.html")
 
+    # get user's dashboard
     @app.route("/dashboard")
     def dashboard():
         if "email" in session:
@@ -65,8 +67,14 @@ def create_app():
             flash("You must be logged in to access this.", "danger")
             return redirect(url_for("login"))
 
+    # get generate resume page, use commented out code instead once registration/login is working
     @app.route("/generate_resume")
     def generate_resume():
+        ''' 
+        !!!!
+        !!!! commented out for dev purposes but this is the actual code
+        !!!!
+
         if "email" in session:
             email = session["email"]
             resumes = resumes_collection.find({"email": email})
@@ -74,6 +82,30 @@ def create_app():
         else:
             flash("You must be logged in to access this.", "danger")
             return redirect(url_for("login"))
+        '''
+        return render_template("generate-resume.html")
+
+    # saves resume to the database
+    @app.route("/save_resume", methods=["POST"])
+    def save_resume():
+        if "email" not in session:
+            flash("You must be logged in to save a resume.", "danger")
+            return redirect(url_for("login"))
+
+        resume_data = request.json
+        email = session["email"]
+        resume_title = resume_data["name"]
+        pdf_base64 = resume_data["pdf"]
+        
+        pdf_data = base64.b64decode(pdf_base64.split(",")[1])
+
+        resume = {
+            "email": email,
+            "name": resume_title,
+            "pdf": pdf_data
+        }
+        
+        resumes_collection.insert_one(resume)
 
     @app.route("/logout")
     def logout():

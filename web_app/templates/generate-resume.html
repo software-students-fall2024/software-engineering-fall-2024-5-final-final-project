@@ -104,7 +104,14 @@
     <!-- resume viewer! --> 
     <h2>Your Resume</h2>
     <div id="pdfViewer" style="display:none;">
-        <iframe id="pdfIframe" width="100%" height="600px"></iframe>
+        <iframe id="pdfIframe" width="100%" height="600px"></iframe><br><br>
+        <button id="saveResume" style="display:none;">Save Resume</button>
+        <div id="saveTitleInput" style="display:none;">
+            <label for="resumeTitle">Enter Resume Title:</label>
+            <input type="text" id="resumeTitle" placeholder="Enter your resume title"><br><br>
+            <button id="confirmSaveResume">Save</button>
+        </div>
+        <button id="downloadResume" style="display:none;">Download Resume</button>
     </div>
 
     <script>
@@ -190,6 +197,44 @@
                 const pdfIframe = document.getElementById('pdfIframe');
                 pdfIframe.src = pdfBase64;
                 pdfViewer.style.display = 'block';
+                
+                // Show save and download buttons
+                document.getElementById('saveResume').style.display = 'inline';
+                document.getElementById('downloadResume').style.display = 'inline';
+
+                // Show input for title when saving
+                document.getElementById('saveResume').addEventListener('click', function() {
+                    document.getElementById('saveTitleInput').style.display = 'inline';
+                });
+
+                // Save button functionality with title input
+                document.getElementById('confirmSaveResume').addEventListener('click', function() {
+                    const resumeName = document.getElementById('resumeTitle').value || 'Untitled Resume';
+                    fetch('/save_resume', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            name: resumeName,
+                            pdf: pdfData
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert('Resume saved successfully!');
+                        document.getElementById('saveTitleInput').style.display = 'none'; // Hide title input
+                    })
+                    .catch(error => console.error('Error saving resume:', error));
+                });
+
+                // Download button functionality
+                document.getElementById('downloadResume').addEventListener('click', function() {
+                    const link = document.createElement('a');
+                    link.href = pdfBase64;
+                    link.download = `${document.getElementById('name').value || 'resume'}.pdf`;
+                    link.click();
+                });
             })
             .catch(error => console.error('Error generating resume:', error));
         });
