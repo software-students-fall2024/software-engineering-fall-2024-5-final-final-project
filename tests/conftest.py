@@ -1,17 +1,22 @@
 import pytest
+import sys
+import os
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 from backend import create_app
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def app():
     """Create application for the tests."""
-    app = create_app()
-    app.config.update(
+    test_app = create_app()
+    test_app.config.update(
         {
             "TESTING": True,
         }
     )
-    return app
+    yield test_app
 
 
 @pytest.fixture
