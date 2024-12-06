@@ -1,8 +1,15 @@
 import pytest
+from unittest.mock import MagicMock
 import sys
 import os
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+# Mock mongo
+import mongomock
+import pymongo
+
+pymongo.MongoClient = mongomock.MongoClient
 
 from backend import create_app
 
