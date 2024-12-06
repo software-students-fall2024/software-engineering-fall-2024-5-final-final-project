@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import LoginManager, UserMixin, login_user
 from flask_login import login_required, logout_user, current_user
 from pymongo import MongoClient
@@ -194,6 +194,7 @@ def add_post():
             "image_id": image_id,
             "views": 0,
             "likes": 0,
+            "liked_by": [],
             "created_at": datetime.utcnow()
         }
         inserted_post = posts_collection.insert_one(post)
@@ -236,20 +237,62 @@ def get_image(image_id):
     return app.response_class(image.read(), mimetype=image.content_type)
 
 
-@app.route("/posts/<post_id>", methods=["GET", "POST"])
+@app.route("/posts/<post_id>", methods=["GET"])
 @login_required
 def display_post(post_id):
     post = posts_collection.find_one({"_id": ObjectId(post_id)})
     image = fs.get(post["image_id"])
     image_url = f"/image/{post['image_id']}"
-    if request.method == "GET":
+    
+    posts_collection.update_one(
+        {"_id": ObjectId(post_id)}, 
+        {"$inc": {"views": 1}}  # increment the views by 1
+    )
+    
+    cur_user = current_user.username
+    if cur_user in post.get('liked_by', []):
+        liked = 1
+    else:
+        liked = 0
+        
+    return render_template("post.html", post=post, image_url=image_url, liked=liked)
+
+
+@app.route('/like_post/<post_id>', methods=['POST'])
+@login_required
+def like_post(post_id):
+    cur_user = current_user.username
+
+    post = posts_collection.find_one({"_id": ObjectId(post_id)})
+
+    if not post:
+        return jsonify({'error': 'Post not found'}), 404
+
+    if cur_user in post.get('liked_by', []):
+        # User has liked the post, so remove the like
+        new_like_count = post.get('likes', 0) - 1
         posts_collection.update_one(
-            {"_id": ObjectId(post_id)}, 
-            {"$inc": {"views": 1}}  # increment the views by 1
+            {"_id": ObjectId(post_id)},
+            {
+                "$pull": {"liked_by": cur_user},  # removes the user from the liked_by list
+                "$set": {"likes": new_like_count}
+            }
         )
-        return render_template("post.html", post=post, image_url=image_url)
-    
-    
+        action = 'removed'
+    else:
+        # User has not liked the post, so add the like
+        new_like_count = post.get('likes', 0) + 1
+        posts_collection.update_one(
+            {"_id": ObjectId(post_id)},
+            {
+                "$addToSet": {"liked_by": cur_user},  # adds the user to the liked_by list
+                "$set": {"likes": new_like_count}
+            }
+        )
+        action = 'added'
+
+    return jsonify({'likes': new_like_count, 'action': action})
+
 
 
 @app.route("/register", methods=["GET", "POST"])

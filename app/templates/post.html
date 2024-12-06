@@ -11,6 +11,16 @@
             position: relative;
             left: 30%;
         }
+
+        .like-button {
+            background-color: transparent;
+            cursor: pointer;
+        }
+        
+        .like-button.liked {
+            color: #ff91af;
+            border: 2px solid #ff91af;
+        }
     </style>
 {% endblock %}
 
@@ -26,6 +36,33 @@
     </div>
     <div>
         <p>Views: {{ post.views }}</p>
-        <p>Likes: {{ post.likes }}</p>
     </div>
+    <button class="like-button {% if liked == 1 %}liked{% endif %}" data-post-id="{{ post._id }}">
+        Likes: <span class="like-count">{{ post.likes }}</span>
+    </button>
+    <script>
+        document.querySelector('.like-button').addEventListener('click', function() {
+            const postId = this.getAttribute('data-post-id');
+    
+            fetch(`/like_post/${postId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                this.querySelector('.like-count').textContent = data.likes;
+    
+                if (data.action === 'added') {
+                    this.classList.add('liked');
+                } else if (data.action === 'removed') {
+                    this.classList.remove('liked');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
 {% endblock %}
