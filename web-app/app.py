@@ -10,6 +10,7 @@ import uuid
 from datetime import datetime
 import logging
 import requests
+
 from flask import (
     Flask,
     render_template,
@@ -37,7 +38,7 @@ from bson.objectid import ObjectId
 load_dotenv()
 
 app = Flask(__name__)
-cxn = pymongo.MongoClient(os.getenv("MONGO_URI"))
+cxn = MongoClient(os.getenv("MONGO_URI"))
 db = cxn[os.getenv("MONGO_DBNAME")]
 
 # Function to get weather data

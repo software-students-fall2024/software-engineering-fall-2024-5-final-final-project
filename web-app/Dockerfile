@@ -5,13 +5,12 @@ FROM python:3.9-slim
 WORKDIR /app
 
 # Copy the application files into the container
-COPY . /app
+COPY . .
 
-# Install the required Python dependencies
-RUN pip install --no-cache-dir flask requests
+# Install Python dependencies
+RUN pip3 install --no-cache-dir -r requirements.txt
 
 # Expose the port Flask will run on
 EXPOSE 5000
 
-# Set the command to run the Flask app
-CMD ["python", "app.py"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "3", "app:app"]
