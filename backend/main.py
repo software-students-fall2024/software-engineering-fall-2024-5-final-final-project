@@ -7,7 +7,7 @@ This module initializes and runs the Flask application.
 import os
 from flask import Flask
 from flask_cors import CORS
-from routes import routes
+from routes import routes  # pylint: disable=import-error
 
 
 def create_app():

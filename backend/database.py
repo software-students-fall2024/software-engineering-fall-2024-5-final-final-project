@@ -90,6 +90,7 @@ class Database:
             "description": description,
             "date": datetime.utcnow(),
         }
+        self.db.expenses.insert_one(expense)  # Actually insert the expense
 
         # Update total expenses for the user
         self.db.users.update_one(
