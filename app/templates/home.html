@@ -2,28 +2,6 @@
 {% block head %}
     <title> Pet Circle </title>
     <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-            
-        th,td {
-            border: 1px solid #ccc;
-            padding: 8px;
-            text-align: left;
-            font-size: 14px;
-            padding: 3px;
-        }
-            
-        thead th {
-            background-color: #ffffff;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
         .circular-button {
             width: 50px;
             height: 50px;
@@ -45,55 +23,55 @@
         .circular-button:hover {
             background-color: #f8d856;
         }
+
+        .switch-buttons {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .switch-buttons a {
+            text-decoration: none;
+            color: white;
+            background-color: #5dade2;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border-radius: 5px;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+        }
+
+        .switch-buttons a.active {
+            background-color: #2e86c1;
+            font-weight: bold;
+            cursor: default;
+        }
+
+        .switch-buttons a:hover:not(.active) {
+            background-color: #3498db;
+        }
     </style>
 {% endblock %}
 
 {% block container %}
-    <!-- Song Recommendation Table -->
-    <section>
-        <h2> Recommendated for you</h2>
-        <table id="recommendations"> 
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>Artist</th>
-                    <th>Genre</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for song in recommendations %}
-                <tr>
-                    <td>{{ song["Title"] }}</td>
-                    <td>{{ song["Artist"] }}</td>
-                    <td>{{ song["Genre"] }}</td>
-                </tr> 
-                {% endfor %}
-            </tbody>
-        </table>
-    </section>
-    
-    <!-- Statistics Table -->
-    <section>
-        <h2>Statistics</h2>
-        <table id="statistics">
-            <thead>
-                <tr>
-                    <th>Genre</th>
-                    <th># of Songs</th>
-                    <th>Percentage(%)</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for genre in genres %}
-                <tr>
-                    <td>{{ genre["Name"] }}</td>
-                    <td>{{ genre["Amount"] }}</td>
-                    <td>{{ genre["Percentage"] }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </section>
+    <div class="switch-buttons">
+        <a href="/" class="active">Discovery</a>
+        <a href="/followed">Followed</a>
+    </div>
+    <div class="posts">
+        <hr>
+        {% for post in posts %}
+            <a href="/posts/{{ post.post_id }}" style="text-decoration: none; color: black;">
+                <div>
+                    <h2>{{ post.title }}</h2>
+                    <p>{{ post.content }}</p>
+                    <img src="{{ post.image_url }}" alt="Post Image" style="max-width: 100%; height: auto;">
+                    <small>Posted by: {{ post.author }}</small>
+                </div>
+            </a>
+            <hr>
+        {% endfor %}
+    </div>
 
     <button class="circular-button" onclick="window.location.href='/addpost'">+</button>
 {% endblock %}
