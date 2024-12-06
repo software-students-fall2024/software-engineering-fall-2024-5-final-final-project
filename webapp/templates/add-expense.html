@@ -6,22 +6,62 @@
 <section class="row">
     <h1>Add Expense</h1>
     <form action="/add-expense" method="post" class="form">
+        <!-- Select Group -->
+        <div class="form-group">
+            <label for="group">Select Group</label>
+            <select id="group" name="group_id" required>
+                <option value="" disabled selected>Choose a group</option>
+                {% for group in groups %}
+                    <option value="{{ group._id }}">{{ group.group_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Expense Description -->
+        <div class="form-group">
+            <label for="description">Expense Description</label>
+            <input type="text" id="description" name="description" placeholder="Enter description" required>
+        </div>
+
+        <!-- Expense Amount -->
         <div class="form-group">
             <label for="amount">Amount</label>
             <input type="number" id="amount" name="amount" placeholder="Enter amount" required>
         </div>
+
+        <!-- Paid By -->
+        <div class="form-group">
+            <label for="paid-by">Paid By</label>
+            <select id="paid-by" name="paid_by" required>
+                <option value="" disabled selected>Select who paid</option>
+                {% for group in groups %}
+                    {% for member in group.group_members %}
+                        <option value="{{ member.user_id }}">{{ member.name }}</option>
+                    {% endfor %}
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Split Among -->
         <div class="form-group">
             <label for="split-with">Split With</label>
             <select id="split-with" name="split_with[]" multiple required>
-                <option value="person1">Person 1</option>
-                <option value="person2">Person 2</option>
-                <option value="person3">Person 3</option>
+                {% for group in groups %}
+                    {% for member in group.group_members %}
+                        <option value="{{ member.user_id }}">{{ member.name }}</option>
+                    {% endfor %}
+                {% endfor %}
             </select>
+            <small class="helper-text">Hold Ctrl (Windows) or Command (Mac) to select multiple members.</small>
         </div>
+
+        <!-- Percentages -->
         <div class="form-group">
-            <label for="percentages">Percentages (comma separated)</label>
+            <label for="percentages">Split Percentages</label>
             <input type="text" id="percentages" name="percentages" placeholder="e.g. 50, 25, 25" required>
+            <small class="helper-text">Enter percentages separated by commas (total must equal 100%).</small>
         </div>
+
         <button type="submit" class="button">Add Expense</button>
     </form>
 </section>

@@ -4,13 +4,22 @@
 
 {% block content %}
 <section id="groups" class="row">
-    <h2>Groups</h2>
-    <p>Here are the groups you are part of:</p>
+    <h1>My Groups</h1>
+    <p>Below are the groups you are part of. Select a group to view details or manage expenses.</p>
     <ul class="group-list">
-        <li class="group-item">Group 1</li>
-        <li class="group-item">Group 2</li>
-        <li class="group-item">Group 3</li>
+        {% for group in groups %}
+            <li class="group-item">
+                <a href="/group/{{ group._id }}">{{ group.group_name }}</a>
+                <p>Members: {{ group.group_members | length }}</p>
+                <ul class="member-list">
+                    {% for member in group.member_names %}
+                        <li>{{ member }}</li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
     </ul>
+    <a href="/create-group" class="button">Create New Group</a>
 </section>
-<!-- Add dynamic content for groups here -->
 {% endblock %}
+

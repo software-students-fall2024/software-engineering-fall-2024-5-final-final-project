@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Create Group - SplitSmart{% endblock %}
+
+{% block content %}
+<section class="row">
+    <h1>Create New Group</h1>
+    <form action="/create-group" method="post" class="form">
+        <div class="form-group">
+            <label for="group-name">Group Name</label>
+            <input type="text" id="group-name" name="group_name" placeholder="Enter group name" required>
+        </div>
+        <div class="form-group">
+            <label for="members">Add Members</label>
+            <input type="text" id="members" name="members" placeholder="Enter usernames (comma separated)" required>
+            <small class="helper-text">Example: Alice, Bob, Charlie</small>
+        </div>
+        <button type="submit" class="button">Create Group</button>
+    </form>
+</section>
+{% endblock %}
+
