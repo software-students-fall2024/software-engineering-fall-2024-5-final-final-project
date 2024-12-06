@@ -84,14 +84,21 @@ body {
 }
 /* listed book styling */
 .book {
-    display: flex; 
-    flex-direction: column; 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     padding: 15px;
-    border: 1px solid #ddd; 
-    border-radius: 5px; 
-    background-color: #F0EBE3; 
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
     margin-bottom: 15px;
-    gap: 5px; 
+    gap: 15px;
+}
+
+.book-details {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
 .book-title {
@@ -109,10 +116,18 @@ body {
 
 .book-description {
     font-size: 12px;
-    margin: 5px 0 0; 
+    margin: 0;
     color: #444;
-    line-height: 1.4; 
+    line-height: 1.4;
 }
 
-
+.add-button {
+    padding: 10px 15px;
+    background-color: #FFEFEF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+}
 
