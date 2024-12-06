@@ -9,17 +9,22 @@
     <ul class="group-list">
         {% for group in groups %}
             <li class="group-item">
-                <a href="/group/{{ group._id }}">{{ group.group_name }}</a>
+                <!-- Link to group details page -->
+                <a href="{{ url_for('group_details', group_id=group['group_id']) }}" class="group-link">
+                    <strong>{{ group['group_name'] }}</strong>
+                </a>
                 <p>Members: {{ group.group_members | length }}</p>
                 <ul class="member-list">
-                    {% for member in group.member_names %}
+                    {% for member in group['group_members'] %}
                         <li>{{ member }}</li>
                     {% endfor %}
                 </ul>
             </li>
+        {% else %}
+            <li>You are not part of any groups yet.</li>
         {% endfor %}
     </ul>
-    <a href="/create-group" class="button">Create New Group</a>
+    <a href="{{ url_for('create_group') }}" class="button">Create New Group</a>
 </section>
 {% endblock %}
 
