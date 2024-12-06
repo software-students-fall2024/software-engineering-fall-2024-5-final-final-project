@@ -8,9 +8,9 @@ It includes methods for user authentication, budget management, and expense trac
 from typing import List, Optional
 from dataclasses import dataclass
 from datetime import datetime
+import os
 from pymongo import MongoClient
 from bson import ObjectId
-import os
 
 
 @dataclass
@@ -38,9 +38,6 @@ class Database:
     def __init__(self, uri: str = None):
         """
         Initialize the Database instance and ensure the default user exists.
-
-        Args:
-            uri (str, optional): The MongoDB connection URI. Defaults to environment variable 'MONGO_URI' or 'mongodb://mongodb:27017/'.
         """
         if uri is None:
             uri = os.environ.get("MONGO_URI", "mongodb://mongodb:27017/")
@@ -65,25 +62,12 @@ class Database:
     def get_user_data(self, username: str) -> dict:
         """
         Retrieve data for a specific user.
-
-        Args:
-            username (str): The username of the user whose data is to be retrieved.
-
-        Returns:
-            dict: A dictionary containing the user's data, including budget and total expenses.
         """
         return self.db.users.find_one({"username": username})
 
     def update_budget(self, username: str, amount: float) -> None:
         """
         Update the budget for a specific user.
-
-        Args:
-            username (str): The username of the user whose budget is to be updated.
-            amount (float): The new budget amount to be set.
-
-        Raises:
-            ValueError: If the provided amount is invalid (e.g., negative or not a number).
         """
         try:
             amount = float(amount)
@@ -99,11 +83,6 @@ class Database:
     def add_expense(self, username: str, amount: float, description: str) -> None:
         """
         Add a new expense for a specific user.
-
-        Args:
-            username (str): The username of the user adding the expense.
-            amount (float): The monetary amount of the expense.
-            description (str): A brief description of the expense.
         """
         expense = {
             "username": username,
@@ -113,7 +92,6 @@ class Database:
         }
         self.db.expenses.insert_one(expense)
 
-        # Update total expenses for the user
         self.db.users.update_one(
             {"username": username}, {"$inc": {"total_expenses": amount}}
         )
@@ -121,13 +99,6 @@ class Database:
     def remove_expense(self, username: str, expense_id: str) -> bool:
         """
         Remove an existing expense for a specific user.
-
-        Args:
-            username (str): The username of the user removing the expense.
-            expense_id (str): The unique identifier of the expense to be removed.
-
-        Returns:
-            bool: True if the expense was successfully removed; False otherwise.
         """
         expense = self.db.expenses.find_one(
             {"_id": ObjectId(expense_id), "username": username}
@@ -143,12 +114,6 @@ class Database:
     def get_expenses(self, username: str) -> List[Expense]:
         """
         Retrieve all expenses for a specific user.
-
-        Args:
-            username (str): The username of the user whose expenses are to be retrieved.
-
-        Returns:
-            List[Expense]: A list of Expense instances sorted by date in descending order.
         """
         expenses = self.db.expenses.find({"username": username}).sort("date", -1)
         return [Expense(**exp) for exp in expenses]
