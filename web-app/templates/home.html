@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rock Paper Scissors - Home</title>
+    <title>Rock Paper scissors - Home</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -11,17 +12,21 @@
             background-color: #f9f9f9;
             padding: 20px;
         }
+
         h1 {
             font-size: 3rem;
             color: #333;
         }
+
         p {
             font-size: 1.2rem;
             color: #666;
         }
+
         .button-container {
             margin-top: 50px;
         }
+
         .btn {
             display: inline-block;
             padding: 15px 30px;
@@ -36,156 +41,242 @@
             text-decoration: none;
             transition: background-color 0.3s ease;
         }
+
         .btn:hover {
             background-color: #0056b3;
         }
+
+        .btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
         .secondary-btn {
             background-color: #28a745;
         }
+
         .secondary-btn:hover {
             background-color: #1e7e34;
         }
+
         .info-btn {
             background-color: #ffc107;
             color: #333;
         }
+
         .info-btn:hover {
             background-color: #e0a800;
         }
-        #gameInfo, #loadingMessage {
-            margin-top: 30px;
-            font-size: 1.2rem;
-            color: #555;
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
         }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            width: 300px;
+        }
+
+        .modal-content p {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        .modal-content .btn {
+            margin: 10px;
+        }
+
         #loadingMessage {
             color: #007BFF;
+            font-size: 1.5rem;
+            margin-top: 30px;
+        }
+
+        #countdownMessage {
+            font-size: 1.5rem;
+            color: red;
+            margin-top: 20px;
         }
     </style>
 </head>
+
 <body>
-    <h1>Welcome to Rock Paper Scissors!</h1>
-    <p>Choose your game mode, invite a friend, match with a random player, view rankings, or save your session:</p>
+    <h1>Welcome to Rock Paper scissors!</h1>
+    <p>Choose your game mode, invite a friend, match with a random player, or view rankings:</p>
     <div class="button-container">
         <a href="/ai" class="btn">Play Against AI</a>
-        <button class="btn" onclick="inviteFriend()">Invite a Friend</button>
-        <button class="btn" onclick="matchRandom()">Match Randomly</button>
+        <a href="/ai_machine_learning" class="btn">Play AI with Camera</a>
+        <button class="btn" id="inviteFriendBtn">Invite a Friend</button>
+        <button class="btn" id="matchRandomBtn">Match Randomly</button>
         <a href="/rankings" class="secondary-btn">View Rankings</a>
-        <button class="info-btn" onclick="saveSession()">Save Session</button>
+        <button class="info-btn" id="saveSessionBtn">Save Session</button>
     </div>
 
-    <div id="loadingMessage" style="display: none;">Loading...</div>
-    <div id="sessionResult" style="margin-top: 30px; display: none;">
-        <p>Your session has been saved! Use this link to continue:</p>
-        <a id="sessionLink" href="#" style="font-size: 1.2rem; word-wrap: break-word; color: #007BFF;"></a>
+    <!-- Waiting Modal -->
+    <div class="modal" id="waitingModal">
+        <div class="modal-content">
+            <p id="waitingMessage">Waiting for an opponent...</p>
+            <button class="btn secondary-btn" id="cancelWaitingBtn">Cancel</button>
+        </div>
     </div>
-    <div id="gameInfo"></div>
 
+    <!-- Matched Modal -->
+    <div class="modal" id="matchedModal">
+        <div class="modal-content">
+            <p id="matchedMessage"></p>
+            <p id="countdownMessage"></p>
+            <button id="startGameBtn" class="btn">Start Game</button>
+            <button class="btn secondary-btn" id="cancelMatchedBtn">Cancel</button>
+        </div>
+    </div>
+
+    <div id="loadingMessage" style="display: none;"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.0/socket.io.min.js"></script>
     <script>
-        
-        function showLoading(message) {
-            const loadingDiv = document.getElementById('loadingMessage');
-            loadingDiv.textContent = message;
-            loadingDiv.style.display = 'block';
+        const waitingModal = document.getElementById("waitingModal");
+        const matchedModal = document.getElementById("matchedModal");
+        const startGameBtn = document.getElementById("startGameBtn");
+        const cancelMatchedBtn = document.getElementById("cancelMatchedBtn");
+        const cancelWaitingBtn = document.getElementById("cancelWaitingBtn");
+        const countdownMessage = document.getElementById("countdownMessage");
+        const socket = io();
+
+        const playerId = localStorage.getItem("player_id") || crypto.randomUUID();
+        localStorage.setItem("player_id", playerId);
+
+        let playerName = null;
+        let gameId = null;
+        let countdownInterval;
+
+        // Reset matchmaking state
+        function resetMatchmaking() {
+            clearInterval(countdownInterval);
+            waitingModal.style.display = "none";
+            matchedModal.style.display = "none";
+            countdownMessage.textContent = "";
+            cancelMatchedBtn.disabled = false;
+            cancelMatchedBtn.style.opacity = "1";
+            cancelMatchedBtn.style.cursor = "pointer";
+            gameId = null;
         }
 
-    
-        function hideLoading() {
-            document.getElementById('loadingMessage').style.display = 'none';
+        // Start countdown dynamically
+        function startCountdown(initialValue) {
+            let timeLeft = initialValue || 10;
+            countdownMessage.textContent = `Time left: ${timeLeft} seconds`;
+
+            clearInterval(countdownInterval);
+            countdownInterval = setInterval(() => {
+                timeLeft--;
+                countdownMessage.textContent = `Time left: ${timeLeft} seconds`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    alert("Match canceled due to timeout.");
+                    resetMatchmaking();
+                }
+            }, 1000);
         }
 
-
-        async function saveSession() {
-            const playerName = prompt("Enter your name to save your session:");
+        // Match Randomly
+        document.getElementById("matchRandomBtn").addEventListener("click", () => {
+            playerName = prompt("Enter your name:");
             if (!playerName) {
-                alert("Session save canceled.");
+                alert("Name required for matchmaking.");
                 return;
             }
+            resetMatchmaking();
+            waitingModal.style.display = "flex";
+            document.getElementById("waitingMessage").textContent = "Waiting for an opponent...";
+            socket.emit("random_match", { player_name: playerName, player_id: playerId });
 
-            const stats = {
-                player_name: playerName,
-                wins: 0,
-                losses: 0,
-                ties: 0
-            };
+            socket.off("match_found");
+            socket.off("countdown");
+            socket.off("match_cancelled");
 
-            try {
-                showLoading("Saving session...");
-                const response = await fetch('/save-session', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(stats)
-                });
+            // Match Found Listener
+            socket.on("match_found", (data) => {
+                gameId = data.game_id;
+                const opponentName = data.opponent;
 
-                const data = await response.json();
-                hideLoading();
+                waitingModal.style.display = "none";
+                matchedModal.style.display = "flex";
+                document.getElementById("matchedMessage").textContent = `Matched with ${opponentName}! Ready to start?`;
 
-                if (data.session_url) {
-                    document.getElementById('sessionResult').style.display = 'block';
-                    const sessionLink = document.getElementById('sessionLink');
-                    sessionLink.href = data.session_url;
-                    sessionLink.textContent = data.session_url;
-                } else {
-                    alert("Failed to save session.");
+                startCountdown(10);
+            });
+
+            // Countdown Listener
+            socket.on("countdown", (data) => {
+                if (data.game_id === gameId) {
+                    countdownMessage.textContent = `Time left: ${data.countdown} seconds`;
+                    if (data.countdown <= 0) resetMatchmaking();
                 }
-            } catch (error) {
-                hideLoading();
-                alert("An error occurred while saving the session. Please try again.");
-                console.error(error);
-            }
-        }
+            });
 
-        
-        async function inviteFriend() {
-            try {
-                showLoading("Creating a game...");
-                const response = await fetch('/create-game', { method: 'POST' });
-                const data = await response.json();
-                hideLoading();
+            // Match Cancelled Listener
+            socket.on("match_cancelled", (data) => {
+                alert(data.message);
+                resetMatchmaking();
+            });
+        });
 
-                document.getElementById('gameInfo').innerHTML = `
-                    Game created! Share this link with your friend: 
-                    <a href="${data.invite_link}">${data.invite_link}</a>
-                `;
-            } catch (error) {
-                hideLoading();
-                alert("An error occurred while creating the game. Please try again.");
-                console.error(error);
-            }
-        }
+        // Cancel Waiting Button
+        cancelWaitingBtn.addEventListener("click", () => {
+            socket.emit("cancel_waiting", { player_id: playerId });
+            resetMatchmaking();
+        });
 
-        
-        async function matchRandom() {
-            const playerName = prompt("Enter your name:");
-            if (!playerName) {
-                alert("Name is required for random match.");
+        // Cancel Matched Button
+        cancelMatchedBtn.addEventListener("click", () => {
+            if (!gameId) {
+                alert("No game ID found. Please retry matchmaking.");
                 return;
             }
+            socket.emit("cancel_match", { game_id: gameId, player_id: playerId });
+            resetMatchmaking();
+        });
 
-            try {
-                showLoading("Searching for an opponent...");
-                const response = await fetch('/random-match', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ player_name: playerName })
-                });
-
-                const data = await response.json();
-                hideLoading();
-
-                if (data.status === "waiting") {
-                    document.getElementById('gameInfo').textContent = "Waiting for an opponent...";
-                } else if (data.status === "matched") {
-                    document.getElementById('gameInfo').innerHTML = `
-                        Matched with ${data.opponent}! 
-                        <a href="/game.html?gameId=${data.game_id}">Start Game</a>
-                    `;
-                }
-            } catch (error) {
-                hideLoading();
-                alert("An error occurred while matching. Please try again.");
-                console.error(error);
+        // Start Game Button
+        startGameBtn.addEventListener("click", () => {
+            if (!gameId) {
+                alert("No game ID found. Please retry matchmaking.");
+                return;
             }
-        }
+            socket.emit("start_game", { game_id: gameId, player_id: playerId });
+            cancelMatchedBtn.disabled = true;
+            cancelMatchedBtn.style.opacity = "0.5";
+            cancelMatchedBtn.style.cursor = "not-allowed";
+            alert("Waiting for the other player to make a choice...");
+        });
+
+        // Proceed to Game Listener
+        socket.on("proceed_to_game", () => {
+            cancelMatchedBtn.disabled = true;
+            cancelMatchedBtn.style.opacity = "0.5";
+            cancelMatchedBtn.style.cursor = "not-allowed";
+            window.location.href = `/real_person?gameId=${gameId}&playerId=${playerId}`;
+        });
+
+        // Handle Disconnect
+        socket.on("disconnect", () => {
+            alert("Disconnected. Please refresh the page.");
+            resetMatchmaking();
+        });
     </script>
 </body>
+
 </html>

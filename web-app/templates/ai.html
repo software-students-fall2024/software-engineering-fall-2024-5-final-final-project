@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rock Paper Scissors - Play Against AI</title>
+    <title>Rock Paper scissors - Play Against AI</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -11,36 +11,80 @@
             background-color: #f9f9f9;
             padding: 20px;
         }
+
         h1 {
             font-size: 3rem;
             color: #333;
         }
+
         .choice-container {
             display: flex;
             justify-content: center;
             margin-top: 30px;
         }
+
         .choice {
             margin: 0 20px;
             cursor: pointer;
             text-align: center;
         }
+
         .choice img {
             width: 150px;
             height: 150px;
             border: 2px solid transparent;
             transition: transform 0.3s, border-color 0.3s;
         }
+
         .choice img:hover {
             transform: scale(1.1);
             border-color: #007BFF;
         }
+
+        .battle-container {
+            position: relative;
+            margin-top: 30px;
+            height: 200px;
+            display: none;
+        }
+
+        .player-move,
+        .ai-move {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            animation-duration: 2s;
+        }
+
+        .player-move {
+            left: 0;
+            animation-name: player-move;
+        }
+
+        .ai-move {
+            right: 0;
+            animation-name: ai-move;
+        }
+
+        @keyframes player-move {
+            0% { left: 0; }
+            50% { left: 50%; }
+            100% { left: 50%; }
+        }
+
+        @keyframes ai-move {
+            0% { right: 0; }
+            50% { right: 50%; }
+            100% { right: 50%; }
+        }
+
         .result-container {
             margin-top: 30px;
             font-size: 1.5rem;
             font-weight: bold;
             color: #333;
         }
+
         .home-btn {
             display: inline-block;
             margin-top: 30px;
@@ -52,13 +96,14 @@
             border-radius: 5px;
             transition: background-color 0.3s ease;
         }
+
         .home-btn:hover {
             background-color: #0056b3;
         }
     </style>
 </head>
 <body>
-    <h1>Rock Paper Scissors - Play Against AI</h1>
+    <h1>Rock Paper scissors - Play Against AI</h1>
     <p>Select your choice below to play against the AI:</p>
 
     <div class="choice-container">
@@ -71,9 +116,14 @@
             <p>Paper</p>
         </div>
         <div class="choice" onclick="playGame('scissors')">
-            <img src="{{ url_for('static', filename='images/scissor.jpg') }}" alt="Scissors">
-            <p>Scissors</p>
+            <img src="{{ url_for('static', filename='images/scissors.jpg') }}" alt="scissors">
+            <p>scissors</p>
         </div>
+    </div>
+
+    <div class="battle-container" id="battleContainer">
+        <img src="" id="playerMove" class="player-move" alt="Your Move">
+        <img src="" id="aiMove" class="ai-move" alt="AI Move">
     </div>
 
     <div class="result-container" id="result"></div>
@@ -81,30 +131,58 @@
     <a href="/" class="home-btn">Return to Home</a>
 
     <script>
-        async function playGame(choice) {
-            
+        const resultContainer = document.getElementById('result');
+        const battleContainer = document.getElementById('battleContainer');
+        const playerMoveImg = document.getElementById('playerMove');
+        const aiMoveImg = document.getElementById('aiMove');
 
-            const response = await fetch('/play/ai', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ choice })
-            });
+        async function playGame(playerChoice) {
+    try {
+        
+        resultContainer.textContent = "AI is thinking...";
+        resultContainer.style.color = "#666";
 
-            const data = await response.json();
+        const response = await fetch('/play/ai', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ choice: playerChoice })
+        });
 
-            if (data.error) {
-                document.getElementById('result').textContent = `Error: ${data.error}`;
-                return;
-            }
+        const data = await response.json();
 
-            document.getElementById('result').innerHTML = `
-                You chose <b>${data.player_choice}</b>, AI chose <b>${data.ai_choice}</b>.
-                <br>
-                <b>Result:</b> ${data.result.toUpperCase()}!
-                <br>
-                <b>Your Stats:</b> Wins: ${data.stats.wins}, Losses: ${data.stats.losses}, ties: ${data.stats.ties}.
-            `;
+        if (data.error) {
+            resultContainer.textContent = `Error: ${data.error}`;
+            resultContainer.style.color = "red";
+            return;
         }
+
+        // Set images for player and AI choices
+        playerMoveImg.src = `../static/images/${data.player_choice}.jpg`;
+        aiMoveImg.src = `../static/images/${data.ai_choice}.jpg`;
+
+        battleContainer.style.display = 'block';
+
+        setTimeout(() => {
+            showResult(data);
+        }, 2000); // Wait for the animation to complete
+    } catch (error) {
+        resultContainer.textContent = "An error occurred while playing. Please try again.";
+        resultContainer.style.color = "red";
+        console.error("Error in playGame:", error);
+    }
+}
+
+function showResult(data) {
+    battleContainer.style.display = 'none';
+    resultContainer.innerHTML = `
+        You chose <b>${data.player_choice}</b>, AI chose <b>${data.ai_choice}</b>.
+        <br>
+        <b>Result:</b> ${data.result.toUpperCase()}!
+        <br>
+        <b>Your Stats:</b> Wins: ${data.stats.wins}, Losses: ${data.stats.losses}, Ties: ${data.stats.ties}.
+    `;
+    resultContainer.style.color = "#333";
+}
     </script>
 </body>
 </html>

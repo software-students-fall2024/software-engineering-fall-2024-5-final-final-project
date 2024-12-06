@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rock Paper Scissors - Real Person</title>
+    <title>Rock Paper scissors - Play Against a Friend</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -45,105 +45,138 @@
             font-weight: bold;
             color: #333;
         }
-        .countdown {
-            font-size: 2rem;
+        .status-container {
+            font-size: 1.2rem;
             color: red;
             margin-top: 20px;
+        }
+        .home-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            color: #fff;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .home-button:hover {
+            background-color: #0056b3;
+        }
+        .disabled {
+            pointer-events: none;
+            opacity: 0.5;
         }
     </style>
 </head>
 <body>
-    <h1>Rock Paper Scissors - Play Against a Friend</h1>
-    <p>Make your choice below. The game will start in 5 seconds:</p>
+    <a href="/" class="home-button">Return Home</a>
+    <h1>Rock Paper scissors - Play Against a Friend</h1>
+    <p id="status" class="status-container">Connecting to the game...</p>
 
-    <div class="countdown" id="countdown">5</div>
-
-    <div class="choice-container">
+    <div class="choice-container disabled" id="choiceContainer">
         <div class="choice" onclick="makeChoice('rock')">
-            <img src="../static/images/rock.jpg" alt="Rock">
+            <img src="/static/images/rock.jpg" alt="Rock">
             <p>Rock</p>
         </div>
         <div class="choice" onclick="makeChoice('paper')">
-            <img src="../static/images/paper.jpg" alt="Paper">
+            <img src="/static/images/paper.jpg" alt="Paper">
             <p>Paper</p>
         </div>
         <div class="choice" onclick="makeChoice('scissors')">
-            <img src="../static/images/scissor.jpg" alt="Scissors">
-            <p>Scissors</p>
+            <img src="/static/images/scissors.jpg" alt="scissors">
+            <p>scissors</p>
         </div>
     </div>
 
     <div class="result-container" id="result"></div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.0/socket.io.min.js"></script>
     <script>
-        let playerChoice = null;
+        const socket = io();
         const urlParams = new URLSearchParams(window.location.search);
         const gameId = urlParams.get('gameId');
-        const player = prompt("Enter 'player1' or 'player2':");
+        const playerId = urlParams.get('playerId');
+        
+        let playerRole = null;
+        let playerChoice = null;
 
-        let countdownValue = 5;
-        let countdownInterval;
-
- 
-        function startCountdown() {
-            countdownInterval = setInterval(() => {
-                countdownValue -= 1;
-                document.getElementById('countdown').textContent = countdownValue;
-
-                if (countdownValue <= 0) {
-                    clearInterval(countdownInterval);
-                    submitChoice();
-                }
-            }, 1000);
+        if (gameId && playerId) {
+            socket.emit("join_game", { game_id: gameId, player_id: playerId });
+        } else {
+            updateStatus("Invalid game ID or Player ID. Unable to join the game.");
+            disableChoices();
         }
 
+        // Utility to update status message
+        function updateStatus(message) {
+            document.getElementById("status").textContent = message;
+        }
 
+        // Disable choices
+        function disableChoices() {
+            document.getElementById("choiceContainer").classList.add("disabled");
+        }
+
+        // Enable choices
+        function enableChoices() {
+            document.getElementById("choiceContainer").classList.remove("disabled");
+        }
+
+        // Handle waiting state
+        socket.on("waiting_for_opponent", () => {
+            updateStatus("Waiting for an opponent...");
+        });
+
+        // Start the game
+        socket.on("start_game", (data) => {
+            updateStatus("Game starting!");
+            playerRole = data.player_role;
+            enableChoices();
+        });
+
+        // Submit player choice
         function makeChoice(choice) {
             if (!playerChoice) {
                 playerChoice = choice;
-                document.getElementById('result').textContent = `You picked: ${choice}`;
-            }
-        }
+                updateStatus(`You chose: ${choice}`);
+                disableChoices();
 
-   
-        async function submitChoice() {
-            const response = await fetch('/submit-choice', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
+                socket.emit("submit_choice", {
                     game_id: gameId,
-                    player: player,
-                    choice: playerChoice
-                })
-            });
-
-            const data = await response.json();
-            displayResult(data);
-        }
-
-       
-        function displayResult(data) {
-            if (data.result) {
-                document.getElementById('result').innerHTML = `
-                    <b>Player 1 chose:</b> ${data.player1_choice || "Nothing"}<br>
-                    <b>Player 2 chose:</b> ${data.player2_choice || "Nothing"}<br>
-                    <b>Result:</b> ${data.result}
-                `;
-            } else {
-                document.getElementById('result').textContent = "Waiting for the other player...";
-                setTimeout(fetchResult, 2000);
+                    player_id: playerId,
+                    player: playerRole,
+                    choice: playerChoice,
+                });
             }
         }
 
+        // Listen for game result
+        socket.on("game_result", (data) => {
+            const result = `
+                <b>${data.player1_name} chose:</b> ${data.player1_choice || "Nothing"}<br>
+                <b>${data.player2_name} chose:</b> ${data.player2_choice || "Nothing"}<br>
+                <b>Result:</b> ${data.result}
+            `;
+            document.getElementById("result").innerHTML = result;
+            updateStatus("Game over!");
+        });
 
-        async function fetchResult() {
-            const response = await fetch(`/get-result/${gameId}`);
-            const data = await response.json();
-            displayResult(data);
-        }
+        // Handle error messages
+        socket.on("error", (data) => {
+            updateStatus(`Error: ${data.message}`);
+            disableChoices();
+        });
 
-    
-        startCountdown();
+        // Handle disconnection
+        socket.on("disconnect", () => {
+            updateStatus("Disconnected from the server.");
+            disableChoices();
+        });
     </script>
 </body>
 </html>
+
