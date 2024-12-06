@@ -193,12 +193,53 @@ def add_post():
             "image_id": image_id,
             "created_at": datetime.utcnow()
         }
-        cur_user_collection.insert_one(post)
+        inserted_post = posts_collection.insert_one(post)
+        
+        cur_user_collection.insert_one({"post_id": inserted_post.inserted_id})
         
         return render_template("home.html", message="Post added successfully!")
     
     return render_template("addpost.html")
 
+
+@app.route("/myInfo", methods=["GET"])
+@login_required
+def display_my_info():
+    cur_user = current_user.username
+    cur_user_collection = db[cur_user]
+    
+    post_refs = cur_user_collection.find()
+    all_posts = []
+
+    for post_ref in post_refs:
+        post = posts_collection.find_one({"_id": post_ref["post_id"]})
+        image = fs.get(post["image_id"])
+        image_url = f"/image/{post['image_id']}"
+        
+        all_posts.append({
+            "post_id": str(post["_id"]),
+            "title": post["title"],
+            "content": post["content"],
+            "image_url": image_url,
+            "created_at": post.get("created_at")
+        })
+
+    return render_template("myInfo.html", posts=all_posts)
+
+
+@app.route("/image/<image_id>")
+def get_image(image_id):
+    image = fs.get(ObjectId(image_id))
+    return app.response_class(image.read(), mimetype=image.content_type)
+
+'''
+@app.route("/posts/<post_id>", methods=["GET", "POST"])
+@login_required
+def display_post(post_id):
+    post = posts_collection.find({"_id": ObjectId(post_id)})
+
+    return render_template("myInfo.html", posts=post)
+'''
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
