@@ -14,7 +14,8 @@ def test_client():
         yield client
 
 
-def test_mock_db(monkeypatch, test_client):
+@pytest.fixture
+def mock_collections(monkeypatch):
     class MockMongoClient:
         def __init__(self, *args, **kwargs):
             pass
@@ -25,8 +26,20 @@ def test_mock_db(monkeypatch, test_client):
         def get_collection(self, *args, **kwargs):
             return self
 
+        def insert_one(self, document):
+            return True
+
     monkeypatch.setattr(pymongo, "MongoClient", MockMongoClient)
 
-    response = test_client.get("/")
 
+def test_register_user_success(test_client, mock_collections):
+    """
+    Test successful user registration.
+    """
+    response = test_client.post(
+        "/register",
+        data={"username": "testuser", "password": "password123"},
+        follow_redirects=True,
+    )
     assert response.status_code == 200
+    assert b"Registration successful" in response.data
