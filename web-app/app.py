@@ -1,7 +1,7 @@
 """
 Loads flask app for web-app
 """
-
+import os
 import logging
 import requests
 from flask import Flask, render_template, Blueprint, request, jsonify
@@ -15,6 +15,7 @@ logging.basicConfig(
     handlers=[logging.StreamHandler()],
 )
 
+ML_CLIENT_URL = os.getenv('ML_CLIENT_PORT')
 
 def create_app():
     """
@@ -44,8 +45,10 @@ def call_model():
         logging.info("Input received: %s", user_input)
 
         # Make a call to the /respond endpoint on port 5002
+        ml_endpoint = ML_CLIENT_URL + "/respond"
+        
         response = requests.post(
-            "http://127.0.0.1:5002/respond",
+            ml_endpoint,
             json={"user_input": user_input},  # Sending user input as JSON
             timeout=15,
         )
