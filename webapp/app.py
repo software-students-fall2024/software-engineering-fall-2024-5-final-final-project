@@ -247,7 +247,7 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
 
-        user = col_users.find_one({"name": username, "password": password})
+        user = col_users.find_one({"name": username})
         if user:
             
             stored_password=user['password']
