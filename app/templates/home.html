@@ -18,11 +18,32 @@
         </header>
     </div>
     <!-- search bar -->
-    <section class="search-bar-container">
-        <form action="/search" method="GET">
-            <input type="text" class="search-bar" placeholder="search for books..." name="query">
-            <button type="submit" class="search-button">.</button>
-        </form>
-    </section>
+     <div class="content-container">
+        <section class="search-bar-container">
+            <form action="/search" method="GET">
+                <input type="text" class="search-bar" placeholder="search for books..." name="query">
+                <button type="submit" class="search-button">.</button>
+            </form>
+        </section>
+    <!-- books -->
+        <section class="book-list-container">
+            <div class="book-list">
+                <div class="book">
+                    <h3 class="book-title">Book Title</h3>
+                    <p class="book-author">by Author</p>
+                    <p class="book-description">This is a short description of the book.</p>
+                </div>
+            </div>
+            <!-- <div class="book-list">
+                {% for book in books %}
+                <div class="book">
+                    <h3 class="book-title">{{ book.title }}</h3>
+                    <p class="book-author">by {{ book.author }}</p>
+                    <p class="book-description">{{ book.description }}</p>
+                </div>
+                {% endfor %}
+            </div> -->
+        </section>
+    </div>
 </body>
 </html>

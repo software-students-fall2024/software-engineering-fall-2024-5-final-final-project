@@ -44,11 +44,18 @@ body {
 }
 
 /* search bar */
+.content-container {
+    display: flex; 
+    flex-direction: column; 
+    margin: 0 50px; 
+    gap: 10px;
+}
 .search-bar-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 50px; 
+    margin-top: 50px;
+    margin-bottom: 20px; 
 }
 
 .search-bar {
@@ -75,4 +82,37 @@ body {
 .search-button:hover {
     background-color: #FFEFEF;
 }
+/* listed book styling */
+.book {
+    display: flex; 
+    flex-direction: column; 
+    padding: 15px;
+    border: 1px solid #ddd; 
+    border-radius: 5px; 
+    background-color: #F0EBE3; 
+    margin-bottom: 15px;
+    gap: 5px; 
+}
+
+.book-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
+    color: #333;
+}
+
+.book-author {
+    font-size: 14px;
+    margin: 0;
+    color: #666;
+}
+
+.book-description {
+    font-size: 12px;
+    margin: 5px 0 0; 
+    color: #444;
+    line-height: 1.4; 
+}
+
+
 
