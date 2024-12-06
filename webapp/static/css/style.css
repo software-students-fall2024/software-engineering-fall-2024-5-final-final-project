@@ -5,11 +5,17 @@
     box-sizing: border-box;
 }
 
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
 body {
     font-family: 'Quicksand', Arial, sans-serif;
     font-size: 18px;
     color: #2c2c2c;
-    background: #ffffff;
+    background-color: #f0f0f0; /* Background color for the entire page */
     line-height: 1.65;
     overflow-x: hidden;
     transition: opacity 0.25s ease-in 0.1s;
@@ -80,6 +86,38 @@ p {
     min-height: calc(100vh - 200px);
 }
 
+/* Navigation Bar */
+.nav {
+    list-style-type: none;
+    padding: 10px 0; /* Add padding for spacing */
+    margin: 0;
+    display: flex;
+    justify-content: center; /* Center the nav items */
+    background-color: #333; /* Background color for the nav bar */
+}
+
+.nav li {
+    margin: 0 15px; /* Add space between nav items */
+}
+
+.nav a {
+    text-decoration: none;
+    color: #fff; /* Text color */
+    transition: color 0.2s ease-in-out;
+}
+
+.nav a:hover {
+    color: #90D4C5; /* Hover color */
+}
+
+.navtitle {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-right: auto;
+    justify-content: left;
+    text-align: left;
+}
+
 /* Form Styling */
 form {
     width: 100%;
@@ -131,4 +169,26 @@ button:hover {
 
 .site-footer a:hover {
     color: #2c2c2c;
+}
+
+/* Wrapper to push the footer to the bottom */
+.content-wrapper {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Main content should take up the remaining space */
+main {
+    flex: 1;
+}
+
+/* Footer styling */
+footer {
+    color: #333; /* Text color for the footer */
+    text-align: right;
+    padding: 10px 0;
+    position: relative;
+    bottom: 0;
+    width: 100%;
 }
