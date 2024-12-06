@@ -66,6 +66,9 @@ class Database:
         """
         return self.db.users.find_one({"username": username})
 
+    def get_user_by_id(self, user_id: ObjectId) -> dict:
+        return self.db.users.find_one({"_id": user_id})
+
     def update_budget(self, username: str, amount: float) -> None:
         """
         Update the budget for a specific user.

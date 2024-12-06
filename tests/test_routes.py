@@ -14,3 +14,15 @@ def test_protected_route(client):
     client.post("/api/login", json={"username": "user", "password": "pw"})
     response = client.get("/api/user-data")
     assert response.status_code == 200
+
+
+def test_invalid_login(client):
+    response = client.post(
+        "/api/login", json={"username": "user", "password": "wrong_pw"}
+    )
+    assert response.status_code == 401
+
+
+def test_unauthenticated_access(client):
+    response = client.get("/api/user-data")
+    assert response.status_code == 401

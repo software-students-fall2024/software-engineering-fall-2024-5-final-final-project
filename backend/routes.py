@@ -5,7 +5,7 @@ This module defines the API routes for user authentication and financial managem
 It handles login, logout, budget updates, expense tracking, and data retrieval.
 """
 
-from flask import Blueprint, jsonify, request, session  # type: ignore
+from flask import Blueprint, jsonify, request  # type: ignore
 from flask_cors import CORS  # type: ignore
 from flask_login import login_user, logout_user, login_required, current_user
 from backend.database import Database, User  # pylint: disable=import-error
@@ -41,7 +41,7 @@ def login():
 @login_required
 def logout():
     """
-    Handle user logout by clearing the session.
+    Handle user logout.
     """
     logout_user()
     return jsonify({"success": True, "message": "Logged out successfully"})
@@ -64,14 +64,13 @@ def get_user_data():
 
 
 @routes.route("/api/update-budget", methods=["POST"])
+@login_required
 def update_budget():
     """
     Update the user's budget.
     """
-    if "username" not in session:
-        return jsonify({"error": "Not authenticated"}), 401
     data = request.json
-    db.update_budget(session["username"], float(data["budget"]))
+    db.update_budget(current_user.username, float(data["budget"]))
     return jsonify({"success": True})
 
 
@@ -87,25 +86,23 @@ def add_expense():
 
 
 @routes.route("/api/remove-expense", methods=["POST"])
+@login_required
 def remove_expense():
     """
     Remove an existing expense for the user.
     """
-    if "username" not in session:
-        return jsonify({"error": "Not authenticated"}), 401
     data = request.json
-    success = db.remove_expense(session["username"], data["expense_id"])
+    success = db.remove_expense(current_user.username, data["expense_id"])
     return jsonify({"success": success})
 
 
 @routes.route("/api/expenses")
+@login_required
 def get_expenses():
     """
     Retrieve all expenses for the authenticated user.
     """
-    if "username" not in session:
-        return jsonify({"error": "Not authenticated"}), 401
-    expenses = db.get_expenses(session["username"])
+    expenses = db.get_expenses(current_user.username)
     return jsonify(
         [
             {
