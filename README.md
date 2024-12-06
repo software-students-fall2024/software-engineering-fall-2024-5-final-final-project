@@ -4,7 +4,7 @@ An exercise to put to practice software development teamwork, subsystem communic
 
 ## Project Name
 
-y2k
+y2k 
 
 ## Table of Contents
 1. [Project Description](#project-description)
@@ -19,24 +19,28 @@ y2k
 
 ### Project Description 
 
+An Audio Recording & Transcription App
+
 Record and save your audio files, share them with friends, and get automatic transcriptions. Perfect for notes, interviews, or anything you need! 
 
 ### Features
 
-(More coming soon)
-- Productivity Report: Generates session statistic
-- User-Friendly: Intuitive application with appealing visuals
-- Modular Architechture: Organized codebase for machine learning, web app, and database
-- Environment: Runs seamlessly in containerized environments using Docker
+- **Audio Recording & Storage**: Record and save audio files directly within the app.  
+- **Speech-to-Text Transcription**: Automatically transcribe recordings into text for easy accessibility.  
+- **File Privacy Options**: Set recordings as public or private to manage visibility.  
+- **File Management**: Edit, rename, or delete audio files and transcriptions.  
+- **User Authentication**: Secure registration and login system with password hashing.  
+- **File Sharing**: Share public audio files with others seamlessly.  
+- **Metadata Tracking**: Store detailed metadata, including upload time and user information.
+- **Environment: Runs** Run Seamlessly in containerized environments using Docker
 
 ### Technologies Used
 
-(More Coming soon)
-- Languages: Python (Flask and ML models), Javascript, HTML
-- Frameworks & Libraries: 
-- Databases: MongoDB
-- Tools: Docker, pipenv
-- CI/CD: Github actions
+- **Languages**: Python (Flask for backend), JavaScript, HTML/CSS.  
+- **Frameworks & Libraries**: Flask, Flask-Login, PyMongo, GridFS, Pydub, SpeechRecognition.  
+- **Databases**: MongoDB (GridFS for audio file storage).  
+- **Tools**: Docker for containerized deployment, pipenv for dependency management.  
+- **CI/CD**: GitHub Actions for automated testing and deployment workflows.
 
 ## Setup Instructions
 
@@ -80,9 +84,9 @@ docker compose down
 ### Usage
 
 1. Build and launch app using instructions above for setup
-2. Access Trackly at (coming soon)
-3. Start session and monitor productivity through the web app
-4. View session details
+2. Access at http://localhost:8080/ 
+3. Start session and record through the web app
+4. View the public and private session details
 
 ## Project Structure
 
