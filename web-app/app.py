@@ -4,6 +4,7 @@ It uses environment variables for configuration.
 """
 
 import os  # Standard library imports
+from dotenv import load_dotenv  # For loading environment variables
 import subprocess
 import uuid
 from datetime import datetime
@@ -32,6 +33,8 @@ from pymongo import MongoClient
 from pymongo.errors import PyMongoError
 from dotenv import load_dotenv
 from bson.objectid import ObjectId
+
+load_dotenv()
 
 app = Flask(__name__)
 cxn = pymongo.MongoClient(os.getenv("MONGO_URI"))
@@ -70,3 +73,4 @@ def fetch_weather():
 if __name__ == "__main__":
     FLASK_PORT = os.getenv("FLASK_PORT", "5000")
     app.run(debug=True)
+
