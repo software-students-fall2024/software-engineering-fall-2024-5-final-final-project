@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block head %}
+    <title> Pet Circle - Create a Post </title>
+    <style>
+        
+    </style>
+{% endblock %}
+
+{% block container %}
+    <h1>New Post</h1> 
+    <form action="/addpost" method="POST" enctype="multipart/form-data">
+        <div>
+            <label for="title">Title</label>
+            <textarea name="title" placeholder="Enter Title" id="title" required></textarea>
+        </div>
+        <div>
+            <label for="content">Your Story</label>
+            <textarea name="content" placeholder="Share Your Story" id="content" required></textarea>
+        </div>
+        <div>
+            <label for="image">Share a Pic</label>
+            <input type="file" id="image" name="image" accept="image/*" required>
+        </div>
+        <div>
+            <input type="submit" value="Share" id="shareButton">
+        </div>
+    </form>
+{% endblock %}

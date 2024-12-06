@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block head %}
-    <title> Song Recommendations and Statistics </title>
+    <title> Pet Circle </title>
     <style>
         table {
             width: 100%;
@@ -22,6 +22,28 @@
             background-color: #ffffff;
             font-weight: bold;
             text-transform: uppercase;
+        }
+
+        .circular-button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #f7dc6f;
+            color: white;
+            border: black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 35px;
+            cursor: pointer;
+            position: fixed;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .circular-button:hover {
+            background-color: #f8d856;
         }
     </style>
 {% endblock %}
@@ -72,4 +94,6 @@
             </tbody>
         </table>
     </section>
+
+    <button class="circular-button" onclick="window.location.href='/addpost'">+</button>
 {% endblock %}
