@@ -3,6 +3,7 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from bson.objectid import ObjectId  # To handle MongoDB ObjectIds
 import os
+import datetime
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)  # Generates a random secret key
@@ -58,7 +59,11 @@ def groups():
 
     return render_template('groups.html', groups=group_details)
 
-
+@app.route('/check-user')
+def check_user():
+    username = request.args.get('username')
+    user = col_users.find_one({"name": username})
+    return {"exists": bool(user)}
 
 @app.route('/create-group', methods=["GET", "POST"])
 def create_group():
@@ -171,7 +176,6 @@ def login():
         user = col_users.find_one({"name": username, "password": password})
         if user:
             session['username'] = username
-            flash("Login Success!", "success")
             return redirect(url_for("home"))
         else:
             flash("Invalid credentials, please try again.", "error")
