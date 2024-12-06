@@ -1,5 +1,12 @@
-# import pytest
+import pytest
+
 # from backend import create_app
+
+""" fake test for now"""
+
+
+def test_dummy():
+    assert True
 
 
 # @pytest.mark.skip(
