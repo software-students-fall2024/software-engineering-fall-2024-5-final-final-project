@@ -1,7 +1,10 @@
-from flask import Blueprint, request, send_file
-from pylatex import Document, Section, Subsection, Command, Itemize
-from pylatex.utils import NoEscape
 import os
+import subprocess
+from flask import Blueprint, request, jsonify, render_template
+from pylatex import Document
+from pylatex.utils import NoEscape
+import tempfile
+import base64
 
 TEMP_LATEX_FILE = 'temp'
 TEMP_PDF_FILE = 'temp.pdf'
@@ -230,30 +233,27 @@ def generate_resume():
         doc.append(NoEscape(r'\begin{itemize}[leftmargin=0.15in, label={}]'))
         doc.append(NoEscape(r'\small{\item{'))
 
-        # Check if 'languages' is provided and add it
         if languages:
             doc.append(NoEscape(r'\textbf{Languages}{: %s} \\' % languages))
-        
-        # Check if 'frameworks' is provided and add it
         if frameworks:
             doc.append(NoEscape(r'\textbf{Frameworks}{: %s} \\' % frameworks))
-        
-        # Check if 'tools' is provided and add it
         if tools:
             doc.append(NoEscape(r'\textbf{Developer Tools}{: %s} \\' % tools))
-        
-        # Check if 'libraries' is provided and add it
         if libraries:
             doc.append(NoEscape(r'\textbf{Libraries}{: %s} \\' % libraries))
         
         doc.append(NoEscape(r'}}'))
         doc.append(NoEscape(r'\end{itemize}'))
 
-    # save the LaTeX file as "temp.tex"
-    doc.generate_tex(TEMP_LATEX_FILE)
+    latex_content = doc.dumps()
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".tex") as temp_tex_file:
+        temp_tex_file.write(latex_content.encode())
+        temp_tex_path = temp_tex_file.name
+    output_pdf_path = temp_tex_path.replace(".tex", ".pdf")
+    subprocess.run(["pdflatex", "-output-directory", os.path.dirname(temp_tex_path), temp_tex_path])
+    with open(output_pdf_path, "rb") as pdf_file:
+        encoded_pdf = base64.b64encode(pdf_file.read()).decode('utf-8')
+    os.remove(temp_tex_path)
+    os.remove(output_pdf_path)
 
-    # compile LaTeX to PDF (overwrite temp.pdf)
-    os.system(f"pdflatex {TEMP_LATEX_FILE}")
-
-    # provide the generated PDF to the user
-    return send_file(TEMP_PDF_FILE, as_attachment=False, mimetype='application/pdf')
+    return jsonify({'pdf': encoded_pdf})
