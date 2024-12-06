@@ -1,4 +1,5 @@
 version: "3.9"
+
 services:
   mongodb:
     image: mongo
@@ -16,7 +17,10 @@ services:
     networks:
       - app-network
     environment:
-      MONGO_URI: mongodb://mongodb:27017/theonepiece
+      - MONGO_URI=mongodb://mongodb:27017/theonepiece  # MongoDB connection URI
+    ports:
+      - "5000:5000"  # Expose the Flask app to the host
+    command: python app.py  # Command to run the Flask app
 
 networks:
   app-network:

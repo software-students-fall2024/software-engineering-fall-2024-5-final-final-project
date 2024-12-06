@@ -1,13 +1,17 @@
-FROM python:3.9-slim
+# Base Python image
+FROM python:3.10-slim
 
+# Set working directory
 WORKDIR /app
 
-COPY . /app
+# Copy project files into the container
+COPY . .
 
+# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-EXPOSE 8000
+# Expose Flask's default port
+EXPOSE 5000
 
-ENV MONGO_URI="mongodb://mongodb:27017/theonepiece"
-
+# Default command to run the Flask app
 CMD ["python", "app.py"]
