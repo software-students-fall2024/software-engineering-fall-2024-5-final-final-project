@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from bson.objectid import ObjectId  # To handle MongoDB ObjectIds
@@ -21,28 +21,30 @@ mydb = client["SplitSmart"]
 col_users = mydb["USERS"]
 col_groups = mydb["GROUPS"]
 
-logged_in = False  # Tracks the user's logged-in state
-username = None  # Tracks the logged-in user's name
+#logged_in = False  # Tracks the user's logged-in state
+#username = None  # Tracks the logged-in user's name
 
 
 @app.route('/')
 def base():
-    return redirect(url_for("login"))
+    return render_template("welcome.html")
 
 
 @app.route("/main")
 def home():
-    global username
-    if not logged_in:
+    if 'username' not in session:
+        flash("Not logged in.  Please log in first")
         return redirect(url_for("login"))
-    return render_template('home.html', username=username)
+    return render_template('home.html', username=session['username'])
 
 
 @app.route('/groups')
 def groups():
-    if not logged_in:
+    if 'username' not in session:
+        flash("Not logged in.  Please log in first")
         return redirect(url_for("login"))
-
+        
+    username = session['username']
     user = col_users.find_one({"name": username})
     user_groups = user.get("groups", [])
     
@@ -60,7 +62,8 @@ def groups():
 
 @app.route('/create-group', methods=["GET", "POST"])
 def create_group():
-    if not logged_in:
+    if 'username' not in session:
+        flash("Not logged in.  Please log in first")
         return redirect(url_for("login"))
 
     if request.method == "POST":
@@ -101,9 +104,13 @@ def create_group():
 
 @app.route('/add-expense', methods=["GET", "POST"])
 def add_expense():
-    if not logged_in:
+    if 'username' not in session:
+        flash("Not logged in.  Please log in first")
         return redirect(url_for("login"))
-
+        
+        
+    username = session['username']
+    user = col_users.find_one({"name": username})
     if request.method == "POST":
         group_id = request.form.get("group_id")
         description = request.form.get("description")
@@ -148,6 +155,7 @@ def registration():
             return redirect(url_for('registration'))
 
         col_users.insert_one({"name": username, "password": password, "groups": []})
+        flash("Registration success.  Please log in")
 
         return redirect(url_for('login'))
     return render_template('registration.html')
@@ -155,23 +163,28 @@ def registration():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    global username
-    global logged_in
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
 
         # username within database, find matching projects then redirect
-        if col_users.find_one({"name": username, "password": password}) is not None:
-            logged_in = True
-            flash("Login successful!", "success")
+        user = col_users.find_one({"name": username, "password": password})
+        if user:
+            session['username'] = username
+            flash("Login Success!", "success")
             return redirect(url_for("home"))
         else:
-            return render_template(
-                "login.html", err="Invalid credentials, please try again."
-            )
+            flash("Invalid credentials, please try again.", "error")
+            return render_template("login.html")
 
     return render_template("login.html")
+
+
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    flash("You have been logged out.", "success")
+    return render_template("welcome.html")
 
 
 if __name__ == '__main__':
