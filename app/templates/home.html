@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
-    <link rel="stylesheet" href="../statics/css/styles.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
     <!-- header -->
@@ -28,26 +28,17 @@
     <!-- books -->
         <section class="book-list-container">
             <div class="book-list">
-                <div class="book">
-                    <div class="book-details">
-                        <h3 class="book-title">Book Title</h3>
-                        <p class="book-author">by Author</p>
-                        <p class="book-description">This is a short description of the book.</p>
-                    </div>
-                    <!-- can make it add/delete -->
-                    <button class="add-button">Add</button>
-                </div>
-            </div>
-            
-            <!-- <div class="book-list">
                 {% for book in books %}
                 <div class="book">
-                    <h3 class="book-title">{{ book.title }}</h3>
-                    <p class="book-author">by {{ book.author }}</p>
-                    <p class="book-description">{{ book.description }}</p>
+                    <div class="book-details">
+                        <h3 class="book-title">{{ book.title }}</h3>
+                        <p class="book-author">by {{ book.author }}</p>
+                        <p class="book-description">{{ book.description }}</p>
+                    </div>
+                    <button class="add-button">Add</button>
                 </div>
                 {% endfor %}
-            </div> -->
+            </div>
         </section>
     </div>
 </body>
