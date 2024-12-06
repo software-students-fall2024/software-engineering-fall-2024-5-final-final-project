@@ -12,11 +12,11 @@ resume_bp = Blueprint('resume', __name__)
 @resume_bp.route('/generate_resume', methods=['POST'])
 def generate_resume():
     # get form data
-    ame = request.form['name']
+    name = request.form['name']
     phone = request.form['phone']
     email = request.form['email']
-    linkedin = request.form.get('linkedin')
-    github = request.form.get('github')
+    linkedin = request.form.get('linkedin', '')
+    github = request.form.get('github', '')
 
     # education info
     education_data = []
@@ -25,8 +25,8 @@ def generate_resume():
         education_data.append({
             'institution': request.form[f'institution{i}'],
             'degree': request.form[f'degree{i}'],
-            'location': request.form[f'location{i}'],
-            'date': request.form[f'date{i}']
+            'date': request.form[f'date{i}'],
+            'location': request.form[f'location{i}']
         })
         i += 1
 
@@ -37,8 +37,8 @@ def generate_resume():
         experience_data.append({
             'company': request.form[f'company{i}'],
             'role': request.form[f'role{i}'],
-            'location': request.form[f'location{i}'],
-            'date': request.form[f'date{i}'],
+            'location': request.form[f'expLocation{i}'],
+            'date': request.form[f'expDate{i}'],
             'responsibilities': request.form[f'responsibilities{i}']
         })
         i += 1
@@ -56,129 +56,198 @@ def generate_resume():
         i += 1
 
     # technical info
-    languages = request.form['languages']
-    frameworks = request.form['frameworks']
-    tools = request.form['tools']
-    libraries = request.form['libraries']
+    languages = request.form.get('languages')
+    frameworks = request.form.get('frameworks')
+    tools = request.form.get('tools')
+    libraries = request.form.get('libraries')
 
     # create latex doc
     doc = Document()
-    doc.preamble.append(Command('title', 'Resume'))
-    doc.preamble.append(Command('author', name))
-    doc.append(NoEscape(r'\maketitle'))
 
     # set up latex packages
     doc.preamble.append(NoEscape(r'''
-\usepackage{latexsym}
-\usepackage[empty]{fullpage}
-\usepackage{titlesec}
-\usepackage[usenames,dvipsnames]{color}
-\usepackage{verbatim}
-\usepackage{enumitem}
-\usepackage[hidelinks]{hyperref}
-\usepackage{fancyhdr}
-\usepackage[english]{babel}
-\usepackage{tabularx}
-\input{glyphtounicode}
+        \usepackage{latexsym}
+        \usepackage[empty]{fullpage}
+        \usepackage{titlesec}
+        \usepackage{marvosym}
+        \usepackage[usenames,dvipsnames]{color}
+        \usepackage{verbatim}
+        \usepackage{enumitem}
+        \usepackage[hidelinks]{hyperref}
+        \usepackage{fancyhdr}
+        \usepackage[english]{babel}
+        \usepackage{tabularx}
+        \input{glyphtounicode}
 
-% Custom fonts and page layout
-\pagestyle{fancy}
-\fancyhf{}
-\renewcommand{\headrulewidth}{0pt}
-\renewcommand{\footrulewidth}{0pt}
+        \pagestyle{fancy}
+        \fancyhf{} % clear all header and footer fields
+        \fancyfoot{}
+        \renewcommand{\headrulewidth}{0pt}
+        \renewcommand{\footrulewidth}{0pt}
 
-\addtolength{\oddsidemargin}{-0.5in}
-\addtolength{\evensidemargin}{-0.5in}
-\addtolength{\textwidth}{1in}
-\addtolength{\topmargin}{-.5in}
-\addtolength{\textheight}{1.0in}
+        % adjust margins
+        \addtolength{\oddsidemargin}{-0.5in}
+        \addtolength{\evensidemargin}{-0.5in}
+        \addtolength{\textwidth}{1in}
+        \addtolength{\topmargin}{-.5in}
+        \addtolength{\textheight}{1.0in}
 
-\urlstyle{same}
+        \urlstyle{same}
 
-\raggedbottom
-\raggedright
-\setlength{\tabcolsep}{0in}
+        \raggedbottom
+        \raggedright
+        \setlength{\tabcolsep}{0in}
 
-\titleformat{\section}{\vspace{-4pt}\scshape\raggedright\large}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+        \titleformat{\section}{
+            \vspace{-4pt}\scshape\raggedright\large
+        }{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
 
-\newcommand{\resumeItem}[1]{
-  \item\small{
-    {#1 \vspace{-2pt}}
-  }
-}
+        \pdfgentounicode=1
+                                 
+        \newcommand{\resumeItem}[1]{
+            \item\small{
+                {#1 \vspace{-2pt} }
+        }
+        }
+                                 
+        \newcommand{\resumeSubheading}[4]{
+        \vspace{-2pt}\item
+            \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+            \textbf{#1} & #2 \\ 
+            \textit{\small#3} & \textit{\small #4} \\ 
+            \end{tabular*}\vspace{-7pt}
+        }
 
-\newcommand{\resumeSubheading}[4]{
-  \vspace{-2pt}\item
-    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
-      \textbf{#1} & #2 \\
-      \textit{\small#3} & \textit{\small #4} \\
-    \end{tabular*}\vspace{-7pt}
-}
+        \newcommand{\resumeSubSubheading}[2]{
+            \item
+            \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+            \textit{\small#1} & \textit{\small #2} \\ 
+            \end{tabular*}\vspace{-7pt}
+        }
 
-\newcommand{\resumeSubSubheading}[2]{
-    \item
-    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
-      \textit{\small#1} & \textit{\small #2} \\
-    \end{tabular*}\vspace{-7pt}
-}
+        \newcommand{\resumeProjectHeading}[2]{
+            \item
+            \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+            \small#1 & #2 \\
+            \end{tabular*}\vspace{-7pt}
+        }
 
-\newcommand{\resumeProjectHeading}[2]{
-    \item
-    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
-      \small#1 & #2 \\
-    \end{tabular*}\vspace{-7pt}
-}
+        \newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
 
-\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
+        \newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.15in, label={}]}
+        \newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+        \newcommand{\resumeItemListStart}{\begin{itemize}[label=\textbullet]}
+        \newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+        '''))
 
-\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.15in, label={}]}
-\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
-\newcommand{\resumeItemListStart}{\begin{itemize}}
-\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
-'''))
+    # add header
+    doc.preamble.append(NoEscape(r'''
+        \usepackage{hyperref}
+        \usepackage{geometry}
+        \geometry{top=1in, bottom=1in, left=1in, right=1in}
+        \usepackage{enumitem}
 
-    # personal info
-    with doc.create(Section('Personal Information')):
-        doc.append(f"Phone: {phone}\n")
-        doc.append(f"Email: {email}\n")
-        if linkedin:
-            doc.append(f"LinkedIn: {linkedin}\n")
-        if github:
-            doc.append(f"GitHub: {github}\n")
+        \pagestyle{empty}
+
+        % Custom header command
+        \newcommand{\customheader}[5]{%
+            \begin{center}
+                \textbf{\Huge \scshape #1} \\ \vspace{1pt}
+                \small #2 $|$ \href{mailto:#3}{\underline{#3}} $|$
+                \href{https://linkedin.com/in/#4}{\underline{linkedin.com/in/#4}} $|$
+                \href{https://github.com/#5}{\underline{github.com/#5}}
+            \end{center}
+        }
+    '''))
+
+    doc.append(NoEscape(r'\customheader{%s}{%s}{%s}{%s}{%s}' % (
+        name, 
+        phone if phone else '', 
+        email if email else '', 
+        linkedin if linkedin else '', 
+        github if github else ''
+    )))
 
     # education section
-    with doc.create(Section('Education')):
+    if education_data:
+        doc.append(NoEscape(r'\section{Education}'))
+        doc.append(NoEscape(r'\resumeSubHeadingListStart'))  # Start the list
         for edu in education_data:
-            with doc.create(Subsection(edu['institution'])):
-                doc.append(f"Degree: {edu['degree']}\n")
-                doc.append(f"Location: {edu['location']}\n")
-                doc.append(f"Date: {edu['date']}\n")
+            doc.append(NoEscape(r'\resumeSubheading{%s}{%s}{%s}{%s}' % (
+                edu['institution'],
+                edu['date'],
+                edu['degree'],
+                edu['location']
+            )))
+        doc.append(NoEscape(r'\resumeSubHeadingListEnd'))
 
     # experience section
-    with doc.create(Section('Experience')):
+    if experience_data:
+        doc.append(NoEscape(r'\section{Experience}'))
+        
         for exp in experience_data:
-            with doc.create(Subsection(exp['company'])):
-                doc.append(f"Role: {exp['role']}\n")
-                doc.append(f"Location: {exp['location']}\n")
-                doc.append(f"Date: {exp['date']}\n")
-                doc.append("Responsibilities:\n")
-                with doc.create(Itemize()) as itemize:
-                    itemize.add_item(exp['responsibilities'])
+            doc.append(NoEscape(r'\resumeSubHeadingListStart'))  
+            
+            doc.append(NoEscape(r'\resumeSubheading{%s}{%s}{%s}{%s}' % (
+                exp['role'],
+                exp['date'],
+                exp['company'],
+                exp['location']
+            )))
+            
+            doc.append(NoEscape(r'\resumeItemListStart'))
+
+            responsibilities = exp['responsibilities'].split(';')
+            for responsibility in responsibilities:
+                if responsibility.strip():
+                    doc.append(NoEscape(r'\resumeItem{%s}' % responsibility.strip()))
+            
+            doc.append(NoEscape(r'\resumeItemListEnd'))
+            doc.append(NoEscape(r'\resumeSubHeadingListEnd'))
 
     # projects section
-    with doc.create(Section('Projects')):
-        for project in project_data:
-            with doc.create(Subsection(project['name'])):
-                doc.append(f"Technologies Used: {project['tech']}\n")
-                doc.append(f"Date: {project['date']}\n")
-                doc.append(f"Details: {project['details']}\n")
+    if project_data:
+        doc.append(NoEscape(r'\section{Projects}'))
+        doc.append(NoEscape(r'\resumeSubHeadingListStart'))
+        
+        for proj in project_data:
+            doc.append(NoEscape(r'\resumeProjectHeading{\textbf{%s} $|$ \emph{%s}}{%s}' % (
+                proj['name'],
+                proj['tech'],
+                proj['date']
+            )))
+            doc.append(NoEscape(r'\resumeItemListStart'))
+            details = proj['details'].split(';') 
+            for detail in details:
+                if detail.strip():
+                    doc.append(NoEscape(r'\resumeItem{%s}' % detail.strip()))
+            doc.append(NoEscape(r'\resumeItemListEnd'))
+        doc.append(NoEscape(r'\resumeSubHeadingListEnd'))
 
-    # technical skills section
-    with doc.create(Section('Technical Skills')):
-        doc.append(f"Languages: {languages}\n")
-        doc.append(f"Frameworks: {frameworks}\n")
-        doc.append(f"Developer Tools: {tools}\n")
-        doc.append(f"Libraries: {libraries}\n")
+    # tech skillssss
+    if languages or frameworks or tools or libraries:
+        doc.append(NoEscape(r'\section{Technical Skills}'))
+        doc.append(NoEscape(r'\begin{itemize}[leftmargin=0.15in, label={}]'))
+        doc.append(NoEscape(r'\small{\item{'))
+
+        # Check if 'languages' is provided and add it
+        if languages:
+            doc.append(NoEscape(r'\textbf{Languages}{: %s} \\' % languages))
+        
+        # Check if 'frameworks' is provided and add it
+        if frameworks:
+            doc.append(NoEscape(r'\textbf{Frameworks}{: %s} \\' % frameworks))
+        
+        # Check if 'tools' is provided and add it
+        if tools:
+            doc.append(NoEscape(r'\textbf{Developer Tools}{: %s} \\' % tools))
+        
+        # Check if 'libraries' is provided and add it
+        if libraries:
+            doc.append(NoEscape(r'\textbf{Libraries}{: %s} \\' % libraries))
+        
+        doc.append(NoEscape(r'}}'))
+        doc.append(NoEscape(r'\end{itemize}'))
 
     # save the LaTeX file as "temp.tex"
     doc.generate_tex(TEMP_LATEX_FILE)
@@ -187,4 +256,4 @@ def generate_resume():
     os.system(f"pdflatex {TEMP_LATEX_FILE}")
 
     # provide the generated PDF to the user
-    return send_file(TEMP_PDF_FILE, as_attachment=True)
+    return send_file(TEMP_PDF_FILE, as_attachment=False, mimetype='application/pdf')

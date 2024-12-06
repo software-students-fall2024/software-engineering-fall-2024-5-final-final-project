@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -8,61 +8,61 @@
 <body>
 
     <h1>Resume Information Form</h1>
-
+    
     <form id="resumeForm" method="POST" action="/generate_resume">
         <!-- PERSONAL INFO -->
         <h2>Personal Information</h2>
         <label for="name">Full Name:</label>
-        <input type="text" id="name" name="name" required><br>
+        <input type="text" id="name" name="name"><br>
 
         <label for="phone">Phone Number:</label>
-        <input type="text" id="phone" name="phone" required><br>
+        <input type="text" id="phone" name="phone"><br>
 
         <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required><br>
+        <input type="email" id="email" name="email"><br>
 
-        <label for="linkedin">LinkedIn URL:</label>
-        <input type="url" id="linkedin" name="linkedin"><br>
+        <label for="linkedin">LinkedIn User:</label>
+        <input type="text" id="linkedin" name="linkedin"><br>
 
-        <label for="github">GitHub URL:</label>
-        <input type="url" id="github" name="github"><br><br>
+        <label for="github">GitHub User:</label>
+        <input type="text" id="github" name="github"><br><br>
 
-        <!-- EDUCATION SECTION -->
+        <!-- EDUCATION -->
         <h2>Education</h2>
         <div id="educationFields">
             <h3>Education 1</h3>
             <label for="institution1">Institution:</label>
-            <input type="text" id="institution1" name="institution1" required><br>
+            <input type="text" id="institution1" name="institution1"><br>
 
             <label for="degree1">Degree:</label>
-            <input type="text" id="degree1" name="degree1" required><br>
+            <input type="text" id="degree1" name="degree1"><br>
 
             <label for="location1">Location:</label>
-            <input type="text" id="location1" name="location1" required><br>
+            <input type="text" id="location1" name="location1"><br>
 
-            <label for="date1">Date Range:</label>
-            <input type="text" id="date1" name="date1" required><br><br>
+            <label for="date1">Graduation:</label>
+            <input type="text" id="date1" name="date1"><br><br>
         </div>
         <button type="button" id="addEducation">Add Another Education</button><br><br>
 
-        <!-- EXPERIENCE SECTION -->
+        <!-- EXPERIENCE -->
         <h2>Experience</h2>
         <div id="experienceFields">
             <h3>Experience 1</h3>
             <label for="company1">Company Name:</label>
-            <input type="text" id="company1" name="company1" required><br>
+            <input type="text" id="company1" name="company1"><br>
 
             <label for="role1">Role:</label>
-            <input type="text" id="role1" name="role1" required><br>
+            <input type="text" id="role1" name="role1"><br>
 
             <label for="expLocation1">Location:</label>
-            <input type="text" id="expLocation1" name="expLocation1" required><br>
+            <input type="text" id="expLocation1" name="expLocation1"><br>
 
             <label for="expDate1">Date Range:</label>
-            <input type="text" id="expDate1" name="expDate1" required><br>
+            <input type="text" id="expDate1" name="expDate1"><br>
 
-            <label for="responsibilities1">Responsibilities:</label>
-            <textarea id="responsibilities1" name="responsibilities1" required></textarea><br><br>
+            <label for="responsibilities1">Responsibilities (SPLIT WITH COLON):</label>
+            <textarea id="responsibilities1" name="responsibilities1"></textarea><br><br>
         </div>
         <button type="button" id="addExperience">Add Another Experience</button><br><br>
 
@@ -71,32 +71,32 @@
         <div id="projectFields">
             <h3>Project 1</h3>
             <label for="projectName1">Project Name:</label>
-            <input type="text" id="projectName1" name="projectName1" required><br>
+            <input type="text" id="projectName1" name="projectName1"><br>
 
             <label for="projectTech1">Technologies Used:</label>
-            <input type="text" id="projectTech1" name="projectTech1" required><br>
+            <input type="text" id="projectTech1" name="projectTech1"><br>
 
             <label for="projectDate1">Date Range:</label>
-            <input type="text" id="projectDate1" name="projectDate1" required><br>
+            <input type="text" id="projectDate1" name="projectDate1"><br>
 
-            <label for="projectDetails1">Details:</label>
-            <textarea id="projectDetails1" name="projectDetails1" required></textarea><br><br>
+            <label for="projectDetails1">Details (SPLIT WITH COLON ;):</label>
+            <textarea id="projectDetails1" name="projectDetails1"></textarea><br><br>
         </div>
         <button type="button" id="addProject">Add Another Project</button><br><br>
 
         <!-- TECH SKILLS -->
         <h2>Technical Skills</h2>
         <label for="languages">Languages (comma-separated):</label>
-        <input type="text" id="languages" name="languages" required><br>
+        <input type="text" id="languages" name="languages"><br>
 
         <label for="frameworks">Frameworks (comma-separated):</label>
-        <input type="text" id="frameworks" name="frameworks" required><br>
+        <input type="text" id="frameworks" name="frameworks"><br>
 
         <label for="tools">Developer Tools (comma-separated):</label>
-        <input type="text" id="tools" name="tools" required><br>
+        <input type="text" id="tools" name="tools"><br>
 
         <label for="libraries">Libraries (comma-separated):</label>
-        <input type="text" id="libraries" name="libraries" required><br><br>
+        <input type="text" id="libraries" name="libraries"><br><br>
 
         <button type="submit">Generate Resume</button>
     </form>
@@ -108,16 +108,16 @@
             let newEducationField = `
                 <h3>Education ${educationCount}</h3>
                 <label for="institution${educationCount}">Institution:</label>
-                <input type="text" id="institution${educationCount}" name="institution${educationCount}" required><br>
+                <input type="text" id="institution${educationCount}" name="institution${educationCount}"><br>
 
                 <label for="degree${educationCount}">Degree:</label>
-                <input type="text" id="degree${educationCount}" name="degree${educationCount}" required><br>
+                <input type="text" id="degree${educationCount}" name="degree${educationCount}"><br>
 
                 <label for="location${educationCount}">Location:</label>
-                <input type="text" id="location${educationCount}" name="location${educationCount}" required><br>
+                <input type="text" id="location${educationCount}" name="location${educationCount}"><br>
 
                 <label for="date${educationCount}">Date Range:</label>
-                <input type="text" id="date${educationCount}" name="date${educationCount}" required><br><br>
+                <input type="text" id="date${educationCount}" name="date${educationCount}"><br><br>
             `;
             document.getElementById('educationFields').insertAdjacentHTML('beforeend', newEducationField);
         });
@@ -128,19 +128,19 @@
             let newExperienceField = `
                 <h3>Experience ${experienceCount}</h3>
                 <label for="company${experienceCount}">Company Name:</label>
-                <input type="text" id="company${experienceCount}" name="company${experienceCount}" required><br>
+                <input type="text" id="company${experienceCount}" name="company${experienceCount}"><br>
 
                 <label for="role${experienceCount}">Role:</label>
-                <input type="text" id="role${experienceCount}" name="role${experienceCount}" required><br>
+                <input type="text" id="role${experienceCount}" name="role${experienceCount}"><br>
 
                 <label for="expLocation${experienceCount}">Location:</label>
-                <input type="text" id="expLocation${experienceCount}" name="expLocation${experienceCount}" required><br>
+                <input type="text" id="expLocation${experienceCount}" name="expLocation${experienceCount}"><br>
 
                 <label for="expDate${experienceCount}">Date Range:</label>
-                <input type="text" id="expDate${experienceCount}" name="expDate${experienceCount}" required><br>
+                <input type="text" id="expDate${experienceCount}" name="expDate${experienceCount}"><br>
 
-                <label for="responsibilities${experienceCount}">Responsibilities:</label>
-                <textarea id="responsibilities${experienceCount}" name="responsibilities${experienceCount}" required></textarea><br><br>
+                <label for="responsibilities${experienceCount}">Responsibilities (SPLIT WITH COLON):</label>
+                <textarea id="responsibilities${experienceCount}" name="responsibilities${experienceCount}"></textarea><br><br>
             `;
             document.getElementById('experienceFields').insertAdjacentHTML('beforeend', newExperienceField);
         });
@@ -151,16 +151,16 @@
             let newProjectField = `
                 <h3>Project ${projectCount}</h3>
                 <label for="projectName${projectCount}">Project Name:</label>
-                <input type="text" id="projectName${projectCount}" name="projectName${projectCount}" required><br>
+                <input type="text" id="projectName${projectCount}" name="projectName${projectCount}"><br>
 
                 <label for="projectTech${projectCount}">Technologies Used:</label>
-                <input type="text" id="projectTech${projectCount}" name="projectTech${projectCount}" required><br>
+                <input type="text" id="projectTech${projectCount}" name="projectTech${projectCount}"><br>
 
                 <label for="projectDate${projectCount}">Date Range:</label>
-                <input type="text" id="projectDate${projectCount}" name="projectDate${projectCount}" required><br>
+                <input type="text" id="projectDate${projectCount}" name="projectDate${projectCount}"><br>
 
                 <label for="projectDetails${projectCount}">Details:</label>
-                <textarea id="projectDetails${projectCount}" name="projectDetails${projectCount}" required></textarea><br><br>
+                <textarea id="projectDetails${projectCount}" name="projectDetails${projectCount}"></textarea><br><br>
             `;
             document.getElementById('projectFields').insertAdjacentHTML('beforeend', newProjectField);
         });
