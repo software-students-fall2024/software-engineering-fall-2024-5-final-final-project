@@ -21,8 +21,16 @@ col_users = mydb["USERS"]
 col_groups = mydb["GROUPS"]
 
 @app.route('/')
+def base():
+    return redirect(url_for("login"))
+
+@app.route("/main")
 def home():
-    return render_template('home.html')
+    global username
+    if logged_in == False:
+        return redirect(url_for("login"))
+    else:
+        return render_template('home.html',username=username)
 
 @app.route('/groups')
 def groups():
@@ -47,9 +55,26 @@ def registration():
         return redirect(url_for('login'))
     return render_template('registration.html')
 
-@app.route('/login')
+@app.route("/login", methods=["GET", "POST"])
 def login():
-    return render_template('login.html')
+    global username
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+
+        # username within database, find matching projects then redirect
+        if col_users.find_one({"name": username, "password": password}) is not None:
+            global logged_in
+            logged_in = True
+            flash("Login successful!", "success")
+            return redirect(url_for("home", username=username))
+        else:
+            return render_template(
+                "login.html", err="Invalid credentials, please try again."
+            )
+
+    return render_template("login.html")
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001)
