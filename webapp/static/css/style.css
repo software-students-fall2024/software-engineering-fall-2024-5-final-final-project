@@ -82,7 +82,7 @@ p {
     display: flex; /* Flexbox for centering */
     justify-content: center; /* Horizontal centering */
     align-items: center; /* Vertical centering */
-    min-height: 100vh; /* Full viewport height */
+    min-height: calc(100vh - 200px); /* Full viewport height */
     padding: 20px; /* Spacing around the edges */
     flex-direction: column; /* Content stacked vertically */
     background-color: #f0f0f0; /* Background for the page */
