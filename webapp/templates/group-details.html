@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Group Details - SplitSmart{% endblock %}
+
+{% block content %}
+<section id="group-details" class="row">
+    <h1>{{ group.group_name }}</h1>
+    
+    <h2>Members</h2>
+    <ul class="member-list">
+        {% for member in group.group_members %}
+            <li>{{ member.name }}</li>
+        {% else %}
+            <li>No members found.</li>
+        {% endfor %}
+    </ul>
+    
+    <h2>Expenses</h2>
+    {% if group.expenses %}
+        <ul class="expense-list">
+            {% for expense in group.expenses %}
+                <li class="expense-item">
+                    <p><strong>{{ expense.description }}</strong>: ${{ expense.amount }}</p>
+                    <p>Paid by: {{ expense.paid_by }}</p>
+                    <p>Split among:</p>
+                    <ul>
+                        {% for user_id, share in expense.split_among.items() %}
+                            <li>{{ user_id }}: ${{ share }}</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% else %}
+                <li>No expenses found.</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No expenses added yet for this group.</p>
+    {% endif %}
+    
+    <a href="/add-expense" class="button">Add Expense</a>
+</section>
+{% endblock %}
+

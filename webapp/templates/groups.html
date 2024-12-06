@@ -9,7 +9,8 @@
     <ul class="group-list">
         {% for group in groups %}
             <li class="group-item">
-                <a href="/group/{{ group._id }}">{{ group.group_name }}</a>
+                <!-- Convert group._id to string for use in URLs -->
+                <a href="/group/{{ group['_id'] }}">{{ group['group_name'] }}</a>
                 <p>Members: {{ group.group_members | length }}</p>
                 <ul class="member-list">
                     {% for member in group.member_names %}
