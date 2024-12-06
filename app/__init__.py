@@ -8,5 +8,5 @@ app = Flask(__name__)
 # mongodb
 mongo_uri = os.getenv("MONGO_URI", "mongodb://localhost:27017")
 client = pymongo.MongoClient(mongo_uri)
-db = client["sensor_data"]
+db = client["bookswap"]
 fs = gridfs.GridFS(db)

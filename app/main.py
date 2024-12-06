@@ -1,9 +1,10 @@
-from __init__ import app
+from __init__ import app, db
 from flask import render_template
 
 @app.route('/')
 def home():
-    return render_template('home.html')
+    books = list(db.books.find({}, {"_id": 0, "title": 1, "author": 1, "description": 1}))
+    return render_template('home.html', books=books)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=3000, debug=True)
