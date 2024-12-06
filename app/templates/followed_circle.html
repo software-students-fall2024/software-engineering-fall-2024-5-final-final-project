@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block head %}
+    <title> Followed Circle </title>
+    <style>
+        .circular-button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #f7dc6f;
+            color: white;
+            border: black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 35px;
+            cursor: pointer;
+            position: fixed;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .circular-button:hover {
+            background-color: #f8d856;
+        }
+
+        .switch-buttons {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .switch-buttons a {
+            text-decoration: none;
+            color: white;
+            background-color: #5dade2;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border-radius: 5px;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+        }
+
+        .switch-buttons a.active {
+            background-color: #2e86c1;
+            font-weight: bold;
+            cursor: default;
+        }
+
+        .switch-buttons a:hover:not(.active) {
+            background-color: #3498db;
+        }
+    </style>
+{% endblock %}
+
+{% block container %}
+    <div class="switch-buttons">
+        <a href="/home">Discovery</a>
+        <a href="/" class = "active">Followed</a>
+    </div>
+    <div class="posts">
+        <hr>
+        {% for post in posts %}
+            <a href="/posts/{{ post.post_id }}" style="text-decoration: none; color: black;">
+                <div>
+                    <h2>{{ post.title }}</h2>
+                    <p>{{ post.content }}</p>
+                    <img src="{{ post.image_url }}" alt="Post Image" style="max-width: 100%; height: auto;">
+                    <small>Posted by: {{ post.author }}</small>
+                </div>
+            </a>
+            <hr>
+        {% endfor %}
+    </div>
+
+    <button class="circular-button" onclick="window.location.href='/addpost'">+</button>
+{% endblock %}
