@@ -7,7 +7,7 @@ It handles login, logout, budget updates, expense tracking, and data retrieval.
 
 from flask import Blueprint, jsonify, request, session
 from flask_cors import CORS
-from database import Database  # pylint: disable=import-error
+from backend.database import Database  # pylint: disable=import-error
 
 routes = Blueprint("routes", __name__)
 CORS(routes, supports_credentials=True)
