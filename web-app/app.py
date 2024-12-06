@@ -9,14 +9,15 @@ from pymongo.mongo_client import MongoClient
 from user.auth import auth, login_manager
 
 # MongoDB connection
-MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
-client = MongoClient(MONGO_URI)
-db = client['theonepiece']
+mongo_uri = os.getenv("MONGO_URI", "mongodb://localhost:27017/theonepiece")
+client = MongoClient(mongo_uri)
+db = client.get_default_database()
 
 # MongoDB connection
-MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
-client = MongoClient(MONGO_URI)
-db = client['theonepiece']
+mongo_uri = os.getenv("MONGO_URI", "mongodb://localhost:27017/theonepiece")
+client = MongoClient(mongo_uri)
+db = client.get_default_database()
+
 app = Flask(__name__)
 app.secret_key = "secret_key" # needed for flask login sessions
 
@@ -72,4 +73,4 @@ def logout():
 
 # write new functions here
 if __name__ == "__main__":
-    app.run(debug=True, port=8080)
+    app.run(host="0.0.0.0", port=5000, debug=True)
