@@ -13,7 +13,6 @@ from datetime import datetime
 import os
 import bcrypt
 
-# Load environment variables
 from dotenv import load_dotenv
 
 # Load the .env file to access environment variables
