@@ -2,7 +2,7 @@
 This file initializes the Flask app
 """
 
-from flask import Flask  # type: ignore
+from flask import Flask
 from flask_login import LoginManager
 from backend.routes import routes
 
