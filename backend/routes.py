@@ -5,9 +5,10 @@ This module defines the API routes for user authentication and financial managem
 It handles login, logout, budget updates, expense tracking, and data retrieval.
 """
 
-from flask import Blueprint, jsonify, request, session
-from flask_cors import CORS
-from backend.database import Database  # pylint: disable=import-error
+from flask import Blueprint, jsonify, request, session  # type: ignore
+from flask_cors import CORS  # type: ignore
+from flask_login import login_user, logout_user, login_required, current_user
+from backend.database import Database, User  # pylint: disable=import-error
 
 routes = Blueprint("routes", __name__)
 CORS(routes, supports_credentials=True)
@@ -26,29 +27,33 @@ def login():
     Handle user login by validating credentials.
     """
     data = request.json
-    if data["username"] == "user" and data["password"] == "pw":
-        session["username"] = "user"
+
+    user_data = db.get_user_data(data["username"])
+
+    if user_data and user_data["password"] == data["password"]:
+        user = User(user_data)
+        login_user(user)  # Log the user in
         return jsonify({"success": True})
     return jsonify({"success": False, "message": "Invalid credentials"}), 401
 
 
 @routes.route("/api/logout", methods=["POST"])
+@login_required
 def logout():
     """
     Handle user logout by clearing the session.
     """
-    session.pop("username", None)
-    return jsonify({"success": True})
+    logout_user()
+    return jsonify({"success": True, "message": "Logged out successfully"})
 
 
 @routes.route("/api/user-data")
+@login_required
 def get_user_data():
     """
     Retrieve user-specific financial data.
     """
-    if "username" not in session:
-        return jsonify({"error": "Not authenticated"}), 401
-    user_data = db.get_user_data(session["username"])
+    user_data = db.get_user_data(current_user.username)
     return jsonify(
         {
             "budget": user_data["budget"],
@@ -71,14 +76,13 @@ def update_budget():
 
 
 @routes.route("/api/add-expense", methods=["POST"])
+@login_required
 def add_expense():
     """
     Add a new expense for the user.
     """
-    if "username" not in session:
-        return jsonify({"error": "Not authenticated"}), 401
     data = request.json
-    db.add_expense(session["username"], float(data["amount"]), data["description"])
+    db.add_expense(current_user.get_id(), float(data["amount"]), data["description"])
     return jsonify({"success": True})
 
 

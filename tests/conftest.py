@@ -21,6 +21,7 @@ def app():
     test_app.config.update(
         {
             "TESTING": True,
+            "SECRET_KEY": "test-secret-key",
         }
     )
     yield test_app

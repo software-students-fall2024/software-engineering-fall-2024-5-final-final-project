@@ -10,3 +10,4 @@ flask-cors
 pydub
 python-dateutil
 python-dotenv
+flask-login

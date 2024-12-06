@@ -11,6 +11,7 @@ from datetime import datetime
 import os
 from pymongo import MongoClient
 from bson import ObjectId
+from flask_login import UserMixin
 
 
 @dataclass
@@ -129,3 +130,18 @@ class Database:
             expense_list.append(Expense(**expense_data))
 
         return expense_list
+
+
+class User(UserMixin):
+    """
+    Represents a user for Flask-Login
+    """
+
+    def __init__(self, user_data):
+        self.id = str(user_data["_id"])
+        self.username = user_data["username"]
+        self.password = user_data["password"]
+
+    def get_id(self):
+        """Return the ID."""
+        return self.id
