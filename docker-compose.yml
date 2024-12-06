@@ -9,7 +9,7 @@ services:
       - .env 
     environment:
       - MONGO_CXN_STRING=mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongodb:27017/
-      - ML_CLIENT_PORT=http://ml-client:5000
+      - ML_CLIENT_PORT=http://ml-client:5002
     depends_on:
       - mongodb
       - ml-client
