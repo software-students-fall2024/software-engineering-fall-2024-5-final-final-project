@@ -21,7 +21,11 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker compose build -d
+          docker compose build
+
+      - name: Start containers
+        run: |
+          docker compose up -d
 
       - name: Run Tests in Docker Container
         run: |
