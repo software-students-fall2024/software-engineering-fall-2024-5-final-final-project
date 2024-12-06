@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather & Outfits</title>
+    <title>Locations</title>
     <style>
         body {
             margin: 0;
@@ -11,8 +11,20 @@
         }
 
         .content {
-            text-align: center;
             padding: 20px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #f4f4f4;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
 
         .bottom-nav {
@@ -42,19 +54,20 @@
 </head>
 <body>
     <div class="content">
-        <h1>Today's Weather & Outfits</h1>
-        <div id="outfit-suggestions">
-            <!-- Replace this with dynamic data -->
-            <p><strong>Location:</strong> New York</p>
-            <img src="images/snow_jacket.png" alt="Snow Jacket" style="width: 200px;">
-            <p><strong>Temperature:</strong> -5°C</p>
-        </div>
+        <h1>Your Locations</h1>
+        <ul id="locations-list">
+            <!-- Example locations; replace with dynamic data -->
+            <li>New York</li>
+            <li>Los Angeles</li>
+            <li>London</li>
+        </ul>
     </div>
 
     <div class="bottom-nav">
-        <a href="locations.html">Locations</a>
-        <a href="index.html" class="active">Weather</a>
+        <a href="locations.html" class="active">Locations</a>
+        <a href="index.html">Weather</a>
         <a href="settings.html">Settings</a>
     </div>
 </body>
 </html>
+
