@@ -4,8 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
+    <link rel="stylesheet" href="../statics/css/styles.css">
 </head>
 <body>
-    <h1>Home</h1>
+    <!-- header -->
+     <div class="header-container">
+        <header class="header">
+            <h1 class="header-title">BookSwap</h1>
+            <div class="header-buttons">
+                <button class="button-primary">Find Your Match</button>
+                <button class="button-secondary">User</button>
+            </div>
+        </header>
+    </div>
+    <!-- search bar -->
+    <section class="search-bar-container">
+        <form action="/search" method="GET">
+            <input type="text" class="search-bar" placeholder="search for books..." name="query">
+            <button type="submit" class="search-button">.</button>
+        </form>
+    </section>
 </body>
 </html>
