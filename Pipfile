@@ -9,6 +9,7 @@ pytest = "*"
 [packages]
 flask = "*"
 psycopg2-binary = "*"
+pymongo = "*"
 
 [requires]
 python_version = "3.12"
