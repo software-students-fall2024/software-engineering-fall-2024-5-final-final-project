@@ -92,14 +92,39 @@ docker compose down
 
 ```text
 .
-(coming soon)
+├── __pycache__
+├── .github
+│   ├── workflows
+│   │   ├── event-logger.yml
+│   │   ├── publishing.yml
+│   │   └── testing.yml
+├── data
+├── static
+│   ├── grid.css
+│   ├── record-player.png
+│   ├── recording.js
+│   ├── styles.css
+│   └── Welcome.png
+├── templates
+│   ├── edit_transcription.html
+│   ├── index.html
+│   ├── login.html
+│   ├── public_files.html
+│   ├── record.html
+│   ├── register.html
+│   └── user_files.html
+├── test
+│   └── test_test.py
 ├── .gitignore
+├── app.py
 ├── docker-compose.yml
+├── Dockerfile
 ├── instructions.md
 ├── LICENSE
-├── README.md
-├── requirements.txt
-└── run-docker.sh
+├── pipfile.
+├── pipfile.lock
+├── pyproject.toml
+└── README.md
 ```
 
 ## Task Boards
