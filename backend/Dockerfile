@@ -5,4 +5,4 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 COPY . .
 ENV PYTHONPATH=/app
 EXPOSE 5001
-CMD ["python3", "main.py"]
+CMD ["python", "main.py"]

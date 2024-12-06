@@ -82,16 +82,17 @@ class Database:
 
     def add_expense(self, username: str, amount: float, description: str) -> None:
         """
-        Add a new expense for a specific user.
+        Add a new expense for a specific user and update total expenses.
         """
         expense = {
-            "username": username,
+            "username": username,  # Store username for filtering
             "amount": amount,
             "description": description,
             "date": datetime.utcnow(),
         }
-        self.db.expenses.insert_one(expense)
+        result = self.db.expenses.insert_one(expense)
 
+        # Update total expenses for the user
         self.db.users.update_one(
             {"username": username}, {"$inc": {"total_expenses": amount}}
         )
@@ -116,4 +117,15 @@ class Database:
         Retrieve all expenses for a specific user.
         """
         expenses = self.db.expenses.find({"username": username}).sort("date", -1)
-        return [Expense(**exp) for exp in expenses]
+        expense_list = []
+
+        for exp in expenses:
+            expense_data = {
+                "amount": exp["amount"],
+                "description": exp["description"],
+                "date": exp["date"],
+                "_id": exp["_id"],
+            }
+            expense_list.append(Expense(**expense_data))
+
+        return expense_list

@@ -20,6 +20,7 @@ services:
       - ./backend:/app
     environment:
       - FLASK_ENV=development
+      - MONGO_URI=mongodb://mongodb:27017/
     depends_on:
       - mongodb
 

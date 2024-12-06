@@ -7,12 +7,10 @@ It handles login, logout, budget updates, expense tracking, and data retrieval.
 
 from flask import Blueprint, jsonify, request, session
 from flask_cors import CORS
-from .database import Database  # Changed to relative import
+from database import Database  # Changed to absolute import
 
 routes = Blueprint("routes", __name__)
-
 CORS(routes, supports_credentials=True)
-
 db = Database()
 
 
