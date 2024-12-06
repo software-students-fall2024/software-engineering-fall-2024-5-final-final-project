@@ -12,6 +12,7 @@ import os
 from pymongo import MongoClient
 from bson import ObjectId
 from flask_login import UserMixin
+import bcrypt
 
 
 @dataclass
@@ -51,10 +52,11 @@ class Database:
         Ensure that the default user exists in the database with an initial budget.
         """
         if not self.db.users.find_one({"username": "user"}):
+            hashed_password = bcrypt.hashpw("pw".encode("utf-8"), bcrypt.gensalt())
             self.db.users.insert_one(
                 {
                     "username": "user",
-                    "password": "pw",
+                    "password": hashed_password,  # Store hashed password
                     "budget": 0.0,
                     "total_expenses": 0.0,
                 }

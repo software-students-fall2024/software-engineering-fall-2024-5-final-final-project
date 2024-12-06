@@ -9,6 +9,7 @@ from flask import Blueprint, jsonify, request
 from flask_cors import CORS
 from flask_login import login_user, logout_user, login_required, current_user
 from backend.database import Database, User  # pylint: disable=import-error
+import bcrypt
 
 routes = Blueprint("routes", __name__)
 CORS(routes, supports_credentials=True)
@@ -28,12 +29,18 @@ def login():
     """
     data = request.json
 
+    if not data or "username" not in data or "password" not in data:
+        return jsonify({"error": "Missing username or password"}), 400
+
     user_data = db.get_user_data(data["username"])
 
-    if user_data and user_data["password"] == data["password"]:
+    if user_data and bcrypt.checkpw(
+        data["password"].encode("utf-8"), user_data["password"]
+    ):
         user = User(user_data)
         login_user(user)  # Log the user in
         return jsonify({"success": True})
+
     return jsonify({"success": False, "message": "Invalid credentials"}), 401
 
 

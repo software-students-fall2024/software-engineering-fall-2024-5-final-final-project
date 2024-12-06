@@ -32,7 +32,7 @@ def create_app():
         """
         Load a user from the database by their username.
         """
-        user_data = db.get_user_by_id(ObjectId(user_id))
+        user_data = db.get_user_by_id(user_id)
         if user_data:
             return User(user_data)
         return None
