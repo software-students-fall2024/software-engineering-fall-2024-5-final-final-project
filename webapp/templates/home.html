@@ -1,13 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, intial-scale=1.0">
-    <title>Flask App</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
-    <h1> Welcome to SplitSmart!</h1>
-</body>
-</hteml>
-                
+{% extends "base.html" %}
+
+{% block title %}Home - SplitSmart{% endblock %}
+
+{% block content %}
+<h1>Welcome to SplitSmart!</h1>
+<section id="groups">
+    <h2>Groups</h2>
+    <p>Here you can see the groups you are a member of.</p>
+    <!-- Add dynamic content for groups here -->
+</section>
+<section id="create-group">
+    <h2>Add an Expense</h2>
+    <a href="{{ url_for('add_expense') }}" class="button">Add Expense</a>
+</section>
+{% endblock %}
