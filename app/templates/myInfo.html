@@ -2,14 +2,95 @@
 {% block head %}
     <title> My Info </title>
     <style>
-        
+	.user-info {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .user-info img {
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+        }
+
+        .user-info h2 {
+            font-size: 24px;
+            margin: 10px 0;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .buttons a {
+            text-decoration: none;
+            color: white;
+            background-color: #333;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .buttons a:hover {
+            background-color: #555;
+        }
+
+        .posts {
+            margin-top: 30px;
+        }
+
+        .post {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #fff;
+        }
+
+        .post img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+
+        .settings-button {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .settings-button a {
+            text-decoration: none;
+            color: white;
+            background-color: #ff4c4c;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .settings-button a:hover {
+            background-color: #e04343;
+        }        
     </style>
 {% endblock %}
 
 {% block container %}
-    <h1>My Posts</h1>
-    <hr>
-    {% for post in posts %}
+    <div class="user-info">
+        <h2>{{ username }}</h2>
+        <div class="buttons">
+            <a href="/edit-username">Edit Profile</a>
+            <a href="/chat">Chat</a>
+        </div>
+    </div>
+
+    <div class="posts">
+	<h1>My Posts</h1>
+   	<hr>
+   	{% for post in posts %}
         <a href="/posts/{{ post.post_id }}" style="text-decoration: none; color: black;">
             <div>
                 <h2>{{ post.title }}</h2>
@@ -20,4 +101,8 @@
         </a>
         <hr>
     {% endfor %}
+  </div>
+    <div class="settings-button">
+        <a href="/logout">Log Out</a>
+    </div>
 {% endblock %}
