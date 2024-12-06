@@ -129,7 +129,9 @@ class Database:
         Returns:
             bool: True if the expense was successfully removed; False otherwise.
         """
-        expense = self.db.expenses.find_one({"_id": ObjectId(expense_id), "username": username})
+        expense = self.db.expenses.find_one(
+            {"_id": ObjectId(expense_id), "username": username}
+        )
         if expense:
             self.db.expenses.delete_one({"_id": ObjectId(expense_id)})
             self.db.users.update_one(
