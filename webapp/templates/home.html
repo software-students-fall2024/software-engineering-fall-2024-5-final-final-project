@@ -3,14 +3,18 @@
 {% block title %}Home - SplitSmart{% endblock %}
 
 {% block content %}
-<h1>Welcome to SplitSmart!</h1>
-<section id="groups">
-    <h2>Groups</h2>
-    <p>Here you can see the groups you are a member of.</p>
-    <!-- Add dynamic content for groups here -->
+<section class="row hero">
+    <h1>Welcome to SplitSmart!</h1>
+    <p>Manage your expenses effortlessly with your friends and groups.</p>
+    <a href="{{ url_for('add_expense') }}" class="button">Add an Expense</a>
 </section>
-<section id="create-group">
-    <h2>Add an Expense</h2>
-    <a href="{{ url_for('add_expense') }}" class="button">Add Expense</a>
+<section id="groups" class="row">
+    <h2>Groups</h2>
+    <p>Here are the groups you are part of:</p>
+    <ul class="group-list">
+        <li class="group-item">Group 1</li>
+        <li class="group-item">Group 2</li>
+        <li class="group-item">Group 3</li>
+    </ul>
 </section>
 {% endblock %}

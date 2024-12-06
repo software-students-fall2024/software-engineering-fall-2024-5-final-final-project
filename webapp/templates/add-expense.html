@@ -3,25 +3,26 @@
 {% block title %}Add Expense - SplitSmart{% endblock %}
 
 {% block content %}
-<h1>Add Expense</h1>
-<form action="/add-expense" method="post">
-    <div class="form-group">
-        <label for="amount">Amount</label>
-        <input type="number" id="amount" name="amount" required>
-    </div>
-    <div class="form-group">
-        <label for="split-with">Split With</label>
-        <select id="split-with" name="split_with[]" multiple required>
-            <option value="person1">Person 1</option>
-            <option value="person2">Person 2</option>
-            <option value="person3">Person 3</option>
-            <!-- Add more options as needed -->
-        </select>
-    </div>
-    <div class="form-group">
-        <label for="percentages">Percentages (comma separated)</label>
-        <input type="text" id="percentages" name="percentages" placeholder="e.g. 50, 25, 25" required>
-    </div>
-    <button type="submit">Add Expense</button>
-</form>
+<section class="row">
+    <h1>Add Expense</h1>
+    <form action="/add-expense" method="post" class="form">
+        <div class="form-group">
+            <label for="amount">Amount</label>
+            <input type="number" id="amount" name="amount" placeholder="Enter amount" required>
+        </div>
+        <div class="form-group">
+            <label for="split-with">Split With</label>
+            <select id="split-with" name="split_with[]" multiple required>
+                <option value="person1">Person 1</option>
+                <option value="person2">Person 2</option>
+                <option value="person3">Person 3</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="percentages">Percentages (comma separated)</label>
+            <input type="text" id="percentages" name="percentages" placeholder="e.g. 50, 25, 25" required>
+        </div>
+        <button type="submit" class="button">Add Expense</button>
+    </form>
+</section>
 {% endblock %}
