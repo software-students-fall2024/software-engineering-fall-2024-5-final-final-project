@@ -46,9 +46,10 @@ h1 {
 button {
   margin-top: 20px;
   display: flex;
+  flex-direction: row;
   justify-content: space-evenly;
-  padding: 10px 20px;
-  font-size: 1.5rem;
+  padding: 10px;
+  font-size: 1rem;
   cursor: pointer;
   border: none;
   border-radius: 20px;
@@ -87,7 +88,6 @@ button:hover {
 }
 a {
   color: inherit;
-  text-decoration: none;
 }
 
 .textInput{
@@ -95,4 +95,36 @@ a {
   width: 300px;
   border-radius: 10px;
   margin: 20px;
+}
+
+nav{
+  position: fixed;
+  top: 0;
+  width: 95%;
+  list-style-type: none;
+}
+.navItem{
+  display: inline-block;
+  color: rgb(86, 25, 25);
+  text-align: center;
+  padding-right: 14px;
+  text-decoration: none;
+}
+.navItem a {
+  display: block;
+  text-decoration: none;
+  padding: 8px;
+}
+.navItem a:hover {
+  background-color: #f0d0d0;
+}
+.current{
+  background-color: #f0d0d0;
+  cursor: default;
+}
+
+.playback{
+  margin: 10px;
+  box-shadow:  0 12px 24px rgba(0, 0, 0, 0.2);
+  border-radius: 999px;
 }
