@@ -1,5 +1,37 @@
-from flask import Flask, request, jsonify
+"""
+This module sets up a Flask application to handle routes and connect to MongoDB.
+It uses environment variables for configuration.
+"""
+
+import os  # Standard library imports
+import subprocess
+import uuid
+from datetime import datetime
+import logging
 import requests
+from flask import (
+    Flask,
+    render_template,
+    jsonify,
+    request,
+    redirect,
+    url_for,
+    flash,
+    session,
+)
+from flask_login import (
+    LoginManager,
+    UserMixin,
+    login_user,
+    login_required,
+    logout_user,
+    current_user,
+)
+from werkzeug.security import generate_password_hash, check_password_hash
+from pymongo import MongoClient
+from pymongo.errors import PyMongoError
+from dotenv import load_dotenv
+from bson.objectid import ObjectId
 
 app = Flask(__name__)
 
@@ -34,4 +66,6 @@ def fetch_weather():
 
 # Run the app
 if __name__ == "__main__":
+    FLASK_PORT = os.getenv("FLASK_PORT", "11000")
+    app = create_app()
     app.run(debug=True)
