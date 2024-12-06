@@ -1,10 +1,11 @@
-import datetime
+from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, UserMixin, login_user
 from flask_login import login_required, logout_user, current_user
 from pymongo import MongoClient
 from werkzeug.security import generate_password_hash, check_password_hash
 from bson import ObjectId
+import gridfs
 import pymongo
 import os
 import re
@@ -18,6 +19,7 @@ print(mongo_uri)
 client = MongoClient(mongo_uri)
 
 db = client.pet_base
+fs = gridfs.GridFS(db)
 users_collection = db.users
 posts_collection = db.posts
 login_manager = LoginManager()
@@ -170,6 +172,32 @@ def get_recommendations(genres):
     ]
 
     return result
+
+
+@app.route("/addpost", methods=["GET", "POST"])
+@login_required
+def add_post():
+    if request.method == "POST":
+        title = request.form.get("title")
+        content = request.form.get("content")
+        image = request.files["image"]
+        
+        cur_user = current_user.username
+        cur_user_collection = db[cur_user]
+        
+        image_id = fs.put(image.read(), filename=image.filename, content_type=image.content_type)
+        
+        post = {
+            "title": title,
+            "content": content,
+            "image_id": image_id,
+            "created_at": datetime.utcnow()
+        }
+        cur_user_collection.insert_one(post)
+        
+        return render_template("home.html", message="Post added successfully!")
+    
+    return render_template("addpost.html")
 
 
 @app.route("/register", methods=["GET", "POST"])
