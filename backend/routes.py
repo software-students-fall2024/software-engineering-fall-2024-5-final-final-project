@@ -8,8 +8,8 @@ It handles login, logout, budget updates, expense tracking, and data retrieval.
 from flask import Blueprint, jsonify, request
 from flask_cors import CORS
 from flask_login import login_user, logout_user, login_required, current_user
-from backend.database import Database, User  # pylint: disable=import-error
 import bcrypt
+from backend.database import Database, User  # pylint: disable=import-error
 
 routes = Blueprint("routes", __name__)
 CORS(routes, supports_credentials=True)
