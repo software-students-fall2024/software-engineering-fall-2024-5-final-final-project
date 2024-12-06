@@ -82,6 +82,7 @@ def test_delete_file(test_client):
         response = test_client.post("/delete-file/1")
         assert response.status_code == 302
 
+
 def test_public_files(test_client):
     response = test_client.get("/public-files")
     assert response.status_code == 200
