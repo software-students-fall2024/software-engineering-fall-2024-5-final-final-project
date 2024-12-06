@@ -19,20 +19,21 @@
   </nav>
   <h1>Record Voice</h1>
     
-      <label for="nameInput">Enter file name:</label>
+      <label id = "label" for="nameInput">Enter file name:</label>
       <input class="textInput" type="text" id="nameInput" placeholder="File name">
     
     <!-- Private checkbox -->
-    <div>
-      <label for="private">Private:</label>
+      <label id = "checkbox" for="private">Private:</label>
       <input type="checkbox" id="private" name="private"><br><br>  
-    </div>
     <button id="recordButton">Record</button>
     <p id="status"></p>
 
     <!-- Success message and buttons (initially hidden) -->
     <div id="successContainer" style="display: none;">
       <p>Recording was successful!</p>
+      <audio class="playback" controls></audio>
+      <p>Transcription:</p>
+      <p id="transcription"></p>
       <button id="fileListButton">Go to File List</button>
       <button id="editButton">Edit Transcription</button>
     </div>

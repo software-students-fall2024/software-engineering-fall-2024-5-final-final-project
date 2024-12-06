@@ -4,6 +4,7 @@ const statusText = document.getElementById("status");
 const successContainer = document.getElementById("successContainer");
 const editButtonContainer = document.getElementById("editButtonContainer");
 const privateCheckbox = document.getElementById("private");
+const playback = document.querySelector('.playback');
 
 let mediaRecorder;
 let audioChunks = [];
@@ -24,6 +25,9 @@ recordButton.addEventListener("click", async () => {
 
     mediaRecorder.onstop = async () => {
       const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType });
+      const audioURL = window.URL.createObjectURL(audioBlob)
+      playback.src = audioURL
+
       audioChunks = [];
 
       const formData = new FormData();
@@ -63,12 +67,18 @@ recordButton.addEventListener("click", async () => {
 });
 
 function showSuccessButtons(responseData) {
+  nameInput.style.display = "none";
+  privateCheckbox.style.display = "none";
   recordButton.style.display = "none";
   statusText.style.display = "none";
+  document.getElementById("label").style.display = "none";
+  document.getElementById("checkbox").style.display = "none";
 
   successContainer.style.display = "block";
 
   const fileId = responseData.file_id;
+  const text = responseData.transcription;
+  document.getElementById("transcription").innerHTML = text
   document.getElementById("fileListButton").onclick = () => window.location.href = `/user-files`;
   document.getElementById("editButton").onclick = () => window.location.href = `/edit-transcription/${fileId}`;
 }
