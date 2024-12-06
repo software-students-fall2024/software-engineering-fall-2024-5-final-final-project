@@ -21,7 +21,8 @@ jobs:
 
     - name: Build the Docker image
       run: |
-        docker build -t ${{ secrets.DOCKER_USERNAME }}//5-final-finalfour-webapp:latest .
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/5-final-finalfour-webapp:latest ./web-app
+
 
     - name: Push the Docker image to Docker Hub
       run: |
