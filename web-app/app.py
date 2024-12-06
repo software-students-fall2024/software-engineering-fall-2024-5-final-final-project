@@ -4,6 +4,7 @@ It uses environment variables for configuration.
 """
 
 import os  # Standard library imports
+from dotenv import load_dotenv  # For loading environment variables
 import subprocess
 import uuid
 from datetime import datetime
@@ -33,6 +34,8 @@ from pymongo.errors import PyMongoError
 from dotenv import load_dotenv
 from bson.objectid import ObjectId
 
+load_dotenv()
+
 app = Flask(__name__)
 
 # Function to get weather data
@@ -48,7 +51,7 @@ def get_weather(city_name, api_key):
         return None, None
 
 # API key for OpenWeatherMap
-API_KEY = "your_openweathermap_api_key"
+API_KEY = os.getenv("OPENWEATHER_API_KEY")
 
 # Flask route to fetch weather data
 @app.route('/get_weather', methods=['GET'])
@@ -67,5 +70,4 @@ def fetch_weather():
 # Run the app
 if __name__ == "__main__":
     FLASK_PORT = os.getenv("FLASK_PORT", "11000")
-    app = create_app()
-    app.run(debug=True)
+    app.run(debug=True, port=int(FLASK_PORT))
