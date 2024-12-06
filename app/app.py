@@ -188,9 +188,12 @@ def add_post():
         image_id = fs.put(image.read(), filename=image.filename, content_type=image.content_type)
         
         post = {
+            "user": cur_user,
             "title": title,
             "content": content,
             "image_id": image_id,
+            "views": 0,
+            "likes": 0,
             "created_at": datetime.utcnow()
         }
         inserted_post = posts_collection.insert_one(post)
@@ -232,14 +235,22 @@ def get_image(image_id):
     image = fs.get(ObjectId(image_id))
     return app.response_class(image.read(), mimetype=image.content_type)
 
-'''
+
 @app.route("/posts/<post_id>", methods=["GET", "POST"])
 @login_required
 def display_post(post_id):
-    post = posts_collection.find({"_id": ObjectId(post_id)})
+    post = posts_collection.find_one({"_id": ObjectId(post_id)})
+    image = fs.get(post["image_id"])
+    image_url = f"/image/{post['image_id']}"
+    if request.method == "GET":
+        posts_collection.update_one(
+            {"_id": ObjectId(post_id)}, 
+            {"$inc": {"views": 1}}  # increment the views by 1
+        )
+        return render_template("post.html", post=post, image_url=image_url)
+    
+    
 
-    return render_template("myInfo.html", posts=post)
-'''
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
