@@ -25,7 +25,7 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m venv venv
-          venv/bin/pip install --upgrade pip
+          venv/bin/pip install --upgrade pip setuptools
           venv/bin/pip install -r requirements.txt
           venv/bin/pip install pylint black pytest pytest-cov
 
@@ -39,4 +39,4 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          venv/bin/python -m pytest tests --cov=backend
+          venv/bin/python -m pytest tests
