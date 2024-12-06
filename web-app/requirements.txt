@@ -1,0 +1,16 @@
+flask-socketio
+eventlet
+inference_sdk
+pymongo
+flask
+Flask==2.0.3
+Werkzeug==2.0.3
+requests
+tensorflow
+numpy
+pylint
+black
+pipenv
+pymongo
+pytest
+pytest-cov

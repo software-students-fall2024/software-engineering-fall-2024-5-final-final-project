@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rock Paper scissor - Play Against a Friend</title>
+    <title>Rock Paper scissors - Play Against a Friend</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -74,7 +74,7 @@
 </head>
 <body>
     <a href="/" class="home-button">Return Home</a>
-    <h1>Rock Paper scissor - Play Against a Friend</h1>
+    <h1>Rock Paper scissors - Play Against a Friend</h1>
     <p id="status" class="status-container">Connecting to the game...</p>
 
     <div class="choice-container disabled" id="choiceContainer">
@@ -86,9 +86,9 @@
             <img src="/static/images/paper.jpg" alt="Paper">
             <p>Paper</p>
         </div>
-        <div class="choice" onclick="makeChoice('scissor')">
-            <img src="/static/images/scissor.jpg" alt="scissor">
-            <p>scissor</p>
+        <div class="choice" onclick="makeChoice('scissors')">
+            <img src="/static/images/scissors.jpg" alt="scissors">
+            <p>scissors</p>
         </div>
     </div>
 
@@ -162,7 +162,7 @@
                 <b>Result:</b> ${data.result}
             `;
             document.getElementById("result").innerHTML = result;
-            updateStatus("Game over! Ready for another round?");
+            updateStatus("Game over!");
         });
 
         // Handle error messages
