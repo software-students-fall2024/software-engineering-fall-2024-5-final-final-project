@@ -29,4 +29,10 @@ jobs:
 
     - name: Deploy to DigitalOcean
       run: |
-        # Your deployment script for DigitalOcean here
+        sudo apt-get install -y sshpass
+        sshpass -p "${{ secrets.DO_PASSWORD }}" ssh -o StrictHostKeyChecking=no root@${{ secrets.DO_IP }} << 'EOF'
+          docker pull ${{ secrets.DOCKER_USERNAME }}/your-repo-name:latest
+          docker stop webapp || true
+          docker rm webapp || true
+          docker run -d --name webapp -p 5001:5001 ${{ secrets.DOCKER_USERNAME }}/your-repo-name:latest
+        EOF
