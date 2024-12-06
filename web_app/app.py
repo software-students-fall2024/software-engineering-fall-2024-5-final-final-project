@@ -12,15 +12,18 @@ def create_app():
     # database initialization
     client = MongoClient("mongodb://mongodb:27017/")
     db = client["resume_db"]
-    users_collection = db["users"]
-    resumes_collection = db["resumes"]
+    users_collection = db["users"] # STORED W/ EMAIL AND PASSWORD
+    resumes_collection = db["resumes"] # STORED W/ USER IT WAS MADE BY, NAME OF RESUME, AND THE PDF ITSELF
 
-    # home
+    # get home page
     @app.route("/")
     def home():
-        return render_template("home.html")
+        if "email" in session:
+            return redirect(url_for('dashboard'))
+        else:
+            return redirect(url_for('login'))
 
-    # login
+    # get login page
     @app.route("/login", methods=["GET", "POST"])
     def login():
         if request.method == "POST":
@@ -36,7 +39,7 @@ def create_app():
                 flash("Invalid email or password. Please try again.", "danger")
         return render_template("login.html")
 
-    # register
+    # get register page
     @app.route("/register", methods=["GET", "POST"])
     def register():
         if request.method == "POST":
@@ -59,15 +62,25 @@ def create_app():
             resumes = resumes_collection.find({"email": email})
             return render_template("dashboard.html", email=email, resumes=resumes)
         else:
-            flash("You must be logged in to access the dashboard.", "danger")
+            flash("You must be logged in to access this.", "danger")
             return redirect(url_for("login"))
-    
+
+    @app.route("/generate_resume")
+    def generate_resume():
+        if "email" in session:
+            email = session["email"]
+            resumes = resumes_collection.find({"email": email})
+            return render_template("generate_resume.html", email=email, resumes=resumes)
+        else:
+            flash("You must be logged in to access this.", "danger")
+            return redirect(url_for("login"))
+
     @app.route("/logout")
     def logout():
         session.pop("email", None)
         flash("You have been logged out.", "success")
         return redirect(url_for("login"))
-    
+
     app.register_blueprint(resume_bp)
 
     return app

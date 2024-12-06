@@ -6,17 +6,17 @@ import os
 TEMP_LATEX_FILE = 'temp'
 TEMP_PDF_FILE = 'temp.pdf'
 
-# Create a Blueprint instance
+# create blueprint instance
 resume_bp = Blueprint('resume', __name__)
 
 @resume_bp.route('/generate_resume', methods=['POST'])
 def generate_resume():
     # get form data
-    name = request.form['name']
+    ame = request.form['name']
     phone = request.form['phone']
     email = request.form['email']
-    linkedin = request.form['linkedin']
-    github = request.form['github']
+    linkedin = request.form.get('linkedin')
+    github = request.form.get('github')
 
     # education info
     education_data = []
