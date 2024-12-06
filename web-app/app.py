@@ -35,7 +35,7 @@ def index():
     """Redirect to right page if logged in or not"""
     if current_user.is_authenticated:
         return render_template("calendar.html")
-    return render_template("login.html")
+    return render_template("Login.html")
 
 @app.route("/signup")
 def signup():
@@ -69,7 +69,7 @@ def search():
 def logout():
     "Logout route"
     logout_user()
-    return redirect(url_for("index"))
+    return redirect(url_for("index.html"))
 
 # write new functions here
 if __name__ == "__main__":
