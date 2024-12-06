@@ -5,8 +5,8 @@ This module defines the API routes for user authentication and financial managem
 It handles login, logout, budget updates, expense tracking, and data retrieval.
 """
 
-from flask import Blueprint, jsonify, request  # type: ignore
-from flask_cors import CORS  # type: ignore
+from flask import Blueprint, jsonify, request
+from flask_cors import CORS
 from flask_login import login_user, logout_user, login_required, current_user
 from backend.database import Database, User  # pylint: disable=import-error
 
