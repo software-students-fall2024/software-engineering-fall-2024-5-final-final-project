@@ -1,5 +1,6 @@
 import pytest
 from app import app
+import pymongo
 
 
 def test_secret():
@@ -18,10 +19,14 @@ def test_mock_db(monkeypatch, test_client):
         def __init__(self, *args, **kwargs):
             pass
 
-        def __getattr__(self, name):
+        def get_database(self, *args, **kwargs):
             return self
 
-    monkeypatch.setattr("pymongo.MongoClient", MockMongoClient)
+        def get_collection(self, *args, **kwargs):
+            return self
+
+    monkeypatch.setattr(pymongo, "MongoClient", MockMongoClient)
 
     response = test_client.get("/")
+
     assert response.status_code == 200
