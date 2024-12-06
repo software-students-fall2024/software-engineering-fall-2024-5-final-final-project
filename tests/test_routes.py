@@ -1,6 +1,3 @@
-import pytest  # type: ignore
-
-
 def test_index(client):
     """Test the index route."""
     response = client.get("/")
