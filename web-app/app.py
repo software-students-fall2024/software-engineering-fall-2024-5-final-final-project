@@ -59,6 +59,10 @@ def get_weather(city_name, api_key):
 # API key for OpenWeatherMap
 API_KEY = os.getenv("OPENWEATHER_API_KEY")
 
+@app.route('/')
+def index():
+    return render_template('index.html')
+
 # Flask route to fetch weather data
 @app.route('/get_weather', methods=['GET'])
 def fetch_weather():
