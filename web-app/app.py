@@ -41,6 +41,9 @@ app = Flask(__name__)
 cxn = MongoClient(os.getenv("MONGO_URI"))
 db = cxn[os.getenv("MONGO_DBNAME")]
 
+@app.route('/')
+def index():
+    return render_template('index.html')
 # Function to get weather data
 def get_weather(city_name, api_key):
     url = f"http://api.openweathermap.org/data/2.5/weather?q={city_name}&appid={api_key}&units=metric"
