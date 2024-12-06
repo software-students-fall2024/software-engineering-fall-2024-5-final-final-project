@@ -5,53 +5,148 @@ Analytics
 {% block styles %}
     {{ super() }} 
     <style>
+        .calendar-container {
+            display: flex;
+            flex-direction: column;
+            min-width: 100vw;
+            min-height: 100vh;
+        }
+        .calendar-header h2{
+            margin: 0 auto;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            font-weight: normal;
+            color: white;
+        }
 
+        .search-bar{
+            width: 100%;
+            display: flex;
+            gap: 5px;
+            
+        }
+        .search-bar *{
+            box-shadow: 0 14px 14px rgba(0, 0, 0, 0.15);
+        }
+        .search-bar input{
+            padding: 0.5rem;
+            border-radius: 1rem;
+            width: 70%;
+        }
+        .search-bar button{
+            border-radius: 50%;
+            padding: 0.5rem 0.7rem;            
+        }
+        .search-bar a{
+            text-decoration: none;
+            color: white;
+            background-color:#c9404c;;
+            border-radius: 50%;
+            padding:0.5rem 0.9rem;
+            font-weight:bold;
+        }
+        .no-result{
+            display: flex;
+            flex-direction: column;
+            margin: auto;
+            gap: 1rem;
+        }
+        .no-result img{
+            height: 12vh;
+        }
+        .no-result p{
+            font-size: 1.4rem;
+            color:white;
+        }
+        .word-bank{
+            display:flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        .expense-summary {
+            border-radius: 10px;
+            display: flex;
+            width: 100%;
+            flex-direction: column;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+        .expense-summary tr{
+            padding: 0;
+        }
+        .expense-summary tr th{
+            color: #2f3e46;
+        }
+        .expense-summary tr th,td{
+            padding: 25px 3px;
+            vertical-align: middle; 
+            text-align: left;
+            min-width: 25%;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        .expense-summary h3 {
+            margin-top: 0;
+            font-size: 1.4rem;
+            font-weight: normal;
+        }
+        .expense-item {
+            display: flex;
+            border-radius: 0.4rem;
+            justify-content: space-between;
+            font-size: 0.9rem; 
+            color:white;
+            padding: 1.5rem 0.5rem;
+        }
+
+        .expense-item.odd {
+            background-color: rgba(255,255,255,0.1)
+        }
     </style>
 {% endblock %}
 {% block content %}
-    <div class="calendar-container">
-        <!-- Hamburger Menu -->
+
         <div class="calendar-header">
-            <h2>Search</h2>
+            <h2>Search Record</h2>
         </div>
 
         <div class="search-bar">
-            <input type="text" id="search-word" name="search-word" placeholder="Search for a word" {% if searchVal %} value="{{ searchVal }}"{% endif %} required>
-            <button class="search-btn" onclick="search()">Search</button>
-            <a class="x-btn" href="/search">x</a>
+            <input type="text" id="search-word" name="search-word" placeholder="category, memo..." {% if searchVal %} value="{{ searchVal }}"{% endif %} required>
+            <button class="search-btn" onclick="search()">&#128270;</button>
+            <a class="x-btn" href="/search">&#10005;</a>
         </div>
 
-        <div class="word-bank" id="word-bank">
-            {% if searchVal %}
-                {% for word in search_list %}
-                <div class="word-box">
-                    <div class="word" id="word-{{ loop.index }}">{{ word.word }}</div>
-                    <div class="definition" id="definition-{{ loop.index }}">{{ word.definition }}</div>
-                    <div class="buttons">
-                        <!--<button class="edit-button" onclick="editVocab('{{ loop.index }}', '{{ word.word }}', '{{ word.definition }}')">Edit</button>-->
-                        <button class="delete-button" onclick="deleteWord('{{ word.word }}')">x</button>
-                    </div>
-                </div>
+        {% set searchVal="dd"%}
+        {% set search_list=[{"name":"asdfsdfasdfasda", "category":"asdfasfasdfb","amount":"79","date":"2024-12-03"},{"name":"a", "category":"b","amount":"79","date":"2024-12-03"},{"name":"a", "category":"b","amount":"79","date":"2024-12-03"},]%}
+        {% if searchVal %}
+            <table class="expense-summary">
+                <tr class="expense-item">
+                    <th>Category</th>
+                    <th>Memo</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                </tr>
+                {% for expense in search_list %}
+                <tr class="expense-item {% if loop.index%2 == 1 %}odd{% endif %}">
+                    <td>{{expense.name}}</td>
+                    <td>{{expense.category}}</td>
+                    <td>-${{expense.amount}}</td>
+                    <td>{{expense.date}}</td>
+                    <!--<td class="buttons">
+
+                        <button class="delete-button" onclick="deleteWord('{{ expense.name }}')">x</button>
+                    </td>-->
+                </tr>
                 {% endfor %}
-            {% else %}
-                {% for word in vocab_list %}
-                <div class="word-box" id="word-box-{{ loop.index }}">
-                    <div class="word" id="word-{{ loop.index }}">{{ word.word }}</div>
-                    <div class="definition" id="definition-{{ loop.index }}">{{ word.definition }}</div>
-                    <div class="buttons">
-                        <button class="edit-button" onclick="editVocab({{ loop.index }}, '{{ word.word }}', '{{ word.definition }}')">Edit</button>
-                        <button class="delete-button" onclick="deleteWord('{{ word.word }}')">x</button>
-                    </div>
-                </div>
-                {% endfor %}
-            {% endif %}
-        </div>
+            </table>
+        {% else %}
+            <div class="no-result">
+                <img src="static/search-empty.svg" alt="empty" />
+                <p>There are no results yet.</p>
+            </div>
+        {% endif %}
        
-
-    </div>
-
-
-
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
