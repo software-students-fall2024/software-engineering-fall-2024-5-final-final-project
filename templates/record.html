@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"/>
+  <title>Record Voice</title>
+</head>
+
+<body>
+  <h1>Record Voice</h1>
+    
+      <label for="nameInput">Enter file name:</label>
+      <input class="textInput" type="text" id="nameInput" placeholder="File name">
+    
+    <!-- Private checkbox -->
+    <div>
+      <label for="private">Private:</label>
+      <input type="checkbox" id="private" name="private"><br><br>  
+    </div>
+    <button id="recordButton">Record</button>
+    <p id="status"></p>
+
+    <!-- Success message and buttons (initially hidden) -->
+    <div id="successContainer" style="display: none;">
+      <p>Recording was successful!</p>
+      <button id="fileListButton">Go to File List</button>
+      <button id="editButton">Edit Transcription</button>
+    </div>
+
+  <script>
+    const UPLOAD_URL = "{{ url_for('upload_audio') }}";
+  </script>
+  <script src="{{ url_for('static', filename='recording.js') }}"></script>
+</body>
+
+</html>
