@@ -19,7 +19,7 @@ y2k
 
 ### Project Description 
 
-(Coming Soon!) 
+Record and save your audio files, share them with friends, and get automatic transcriptions. Perfect for notes, interviews, or anything you need! 
 
 ### Features
 
@@ -68,7 +68,7 @@ pipenv shell
 ### 5. Build and run docker containers
 
 ```
-bash run-docker.sh
+docker compose up
 ```
 
 ### 6. Stop docker containers
