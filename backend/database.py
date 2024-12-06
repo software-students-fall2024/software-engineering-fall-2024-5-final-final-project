@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from pymongo import MongoClient
 from bson import ObjectId
+import os
 
 
 @dataclass
@@ -23,17 +24,27 @@ class Expense:
     date: datetime
     _id: Optional[ObjectId] = None
 
+    @property
+    def id(self) -> Optional[str]:
+        """Return the string representation of the expense ID."""
+        return str(self._id) if self._id else None
+
 
 class Database:
     """
     Handles all interactions with the MongoDB database for the finance application.
     """
 
-    def __init__(self, uri: str = "mongodb://mongodb:27017/"):
+    def __init__(self, uri: str = None):
         """
         Initialize the Database instance and ensure the default user exists.
+
+        Args:
+            uri (str, optional): The MongoDB connection URI. Defaults to environment variable 'MONGO_URI' or 'mongodb://mongodb:27017/'.
         """
-        self.client = MongoClient(uri)
+        if uri is None:
+            uri = os.environ.get("MONGO_URI", "mongodb://mongodb:27017/")
+        self.client = MongoClient(uri, serverSelectionTimeoutMS=5000)
         self.db = self.client.finance_db
         self._ensure_default_user()
 
@@ -54,12 +65,25 @@ class Database:
     def get_user_data(self, username: str) -> dict:
         """
         Retrieve data for a specific user.
+
+        Args:
+            username (str): The username of the user whose data is to be retrieved.
+
+        Returns:
+            dict: A dictionary containing the user's data, including budget and total expenses.
         """
         return self.db.users.find_one({"username": username})
 
     def update_budget(self, username: str, amount: float) -> None:
         """
         Update the budget for a specific user.
+
+        Args:
+            username (str): The username of the user whose budget is to be updated.
+            amount (float): The new budget amount to be set.
+
+        Raises:
+            ValueError: If the provided amount is invalid (e.g., negative or not a number).
         """
         try:
             amount = float(amount)
@@ -75,9 +99,14 @@ class Database:
     def add_expense(self, username: str, amount: float, description: str) -> None:
         """
         Add a new expense for a specific user.
+
+        Args:
+            username (str): The username of the user adding the expense.
+            amount (float): The monetary amount of the expense.
+            description (str): A brief description of the expense.
         """
         expense = {
-            "username": username,  # Added username to associate expense with user
+            "username": username,
             "amount": amount,
             "description": description,
             "date": datetime.utcnow(),
@@ -92,10 +121,15 @@ class Database:
     def remove_expense(self, username: str, expense_id: str) -> bool:
         """
         Remove an existing expense for a specific user.
+
+        Args:
+            username (str): The username of the user removing the expense.
+            expense_id (str): The unique identifier of the expense to be removed.
+
+        Returns:
+            bool: True if the expense was successfully removed; False otherwise.
         """
-        expense = self.db.expenses.find_one(
-            {"_id": ObjectId(expense_id), "username": username}
-        )
+        expense = self.db.expenses.find_one({"_id": ObjectId(expense_id), "username": username})
         if expense:
             self.db.expenses.delete_one({"_id": ObjectId(expense_id)})
             self.db.users.update_one(
@@ -107,6 +141,12 @@ class Database:
     def get_expenses(self, username: str) -> List[Expense]:
         """
         Retrieve all expenses for a specific user.
+
+        Args:
+            username (str): The username of the user whose expenses are to be retrieved.
+
+        Returns:
+            List[Expense]: A list of Expense instances sorted by date in descending order.
         """
         expenses = self.db.expenses.find({"username": username}).sort("date", -1)
         return [Expense(**exp) for exp in expenses]
