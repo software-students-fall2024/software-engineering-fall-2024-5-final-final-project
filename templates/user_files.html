@@ -23,6 +23,7 @@
       {% for file in files %}
       <li class="card">
         <p><strong>{{ file.name }}</strong></p>
+        <img src="{{ url_for('static', filename='locked.png') }}" class="locked"/>
         <p>{{ file.transcription or "Not processed yet" }}</p>
         <div class="buttons">
           <button class="small_buttons">
