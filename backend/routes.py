@@ -14,6 +14,12 @@ CORS(routes, supports_credentials=True)
 db = Database()
 
 
+@routes.route("/")
+def index():
+    """Root route."""
+    return jsonify({"status": "ok"}), 200
+
+
 @routes.route("/api/login", methods=["POST"])
 def login():
     """
