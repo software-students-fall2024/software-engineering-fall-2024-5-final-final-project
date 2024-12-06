@@ -10,9 +10,16 @@
 </head>
 
 <body>
+  <nav>
+    <ul style="padding-inline-start: 0px;">
+      <li class="navItem"><a href="{{ url_for('record') }}">Record</a></li>
+      <li class="navItem"><a href="{{ url_for('public_files') }}">Public</a></li>
+      <li class="navItem"><a class="current" href="{{ url_for('user_files') }}">Private</a></li>
+      <li class="navItem" style="float:right"><a href="{{ url_for('logout') }}">Logout</a></li>
+    </ul>
+  </nav>
   <h1>Your Files</h1>
-  <div class="grid">
-    <ul>
+    <ul class="grid">
       {% for file in files %}
       <li class="card">
         <p><strong>{{ file.name }}</strong></p>
@@ -31,9 +38,8 @@
       <p>No files found.</p>
       {% endfor %}
     </ul>
-  </div>
   
-  <button> <a href="{{ url_for('public_files') }}">Public Files</a> </button>
+  <!-- <button> <a href="{{ url_for('public_files') }}">Public Files</a> </button> -->
 </body>
 
 </html>
