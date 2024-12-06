@@ -1,7 +1,13 @@
+"""
+backend.main
+
+This module initializes and runs the Flask application.
+"""
+
+import os
 from flask import Flask
 from flask_cors import CORS
-from routes import routes
-import os
+from .routes import routes
 
 
 def create_app():
@@ -29,8 +35,6 @@ def create_app():
 
 
 if __name__ == "__main__":
-    """
-    Entry point for running the Flask application.
-    """
+    # Entry point for running the Flask application.
     app = create_app()
     app.run(host="0.0.0.0", port=5001)

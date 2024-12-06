@@ -1,3 +1,10 @@
+"""
+backend.database
+
+This module defines the Database class for interacting with the MongoDB backend.
+It includes methods for user authentication, budget management, and expense tracking.
+"""
+
 from typing import List, Optional
 from dataclasses import dataclass
 from datetime import datetime
@@ -63,13 +70,14 @@ class Database:
                 {"username": username}, {"$set": {"budget": amount}}
             )
         except (ValueError, TypeError) as e:
-            raise ValueError(f"Invalid budget value: {str(e)}")
+            raise ValueError(f"Invalid budget value: {str(e)}") from e
 
     def add_expense(self, username: str, amount: float, description: str) -> None:
         """
         Add a new expense for a specific user.
         """
         expense = {
+            "username": username,  # Added username to associate expense with user
             "amount": amount,
             "description": description,
             "date": datetime.utcnow(),
@@ -85,7 +93,9 @@ class Database:
         """
         Remove an existing expense for a specific user.
         """
-        expense = self.db.expenses.find_one({"_id": ObjectId(expense_id)})
+        expense = self.db.expenses.find_one(
+            {"_id": ObjectId(expense_id), "username": username}
+        )
         if expense:
             self.db.expenses.delete_one({"_id": ObjectId(expense_id)})
             self.db.users.update_one(
@@ -98,5 +108,5 @@ class Database:
         """
         Retrieve all expenses for a specific user.
         """
-        expenses = self.db.expenses.find().sort("date", -1)
+        expenses = self.db.expenses.find({"username": username}).sort("date", -1)
         return [Expense(**exp) for exp in expenses]

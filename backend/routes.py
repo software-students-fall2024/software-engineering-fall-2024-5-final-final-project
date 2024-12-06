@@ -1,6 +1,13 @@
+"""
+backend.routes
+
+This module defines the API routes for user authentication and financial management.
+It handles login, logout, budget updates, expense tracking, and data retrieval.
+"""
+
 from flask import Blueprint, jsonify, request, session
 from flask_cors import CORS
-from database import Database
+from .database import Database  # Changed to relative import
 
 routes = Blueprint("routes", __name__)
 
@@ -94,7 +101,7 @@ def get_expenses():
     return jsonify(
         [
             {
-                "id": str(exp._id),
+                "id": str(exp.id),  # Changed to use 'id' instead of '_id'
                 "amount": exp.amount,
                 "description": exp.description,
                 "date": exp.date.isoformat(),
