@@ -38,7 +38,7 @@ jobs:
       with:
         host: ${{ secrets.DO_IP }}
         username: root
-        password: ${{ secrets.DO_PASSWORD }}  # Store your password as a GitHub secret
+        password: ${{ secrets.DO_PASSWORD }}
         script: |
           cd /path/to/your/project
           docker pull ${{ secrets.DOCKER_USERNAME }}/5-final-finalfour-webapp:latest
