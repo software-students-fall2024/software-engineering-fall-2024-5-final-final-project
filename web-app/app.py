@@ -34,6 +34,8 @@ from dotenv import load_dotenv
 from bson.objectid import ObjectId
 
 app = Flask(__name__)
+cxn = pymongo.MongoClient(os.getenv("MONGO_URI"))
+db = cxn[os.getenv("MONGO_DBNAME")]
 
 # Function to get weather data
 def get_weather(city_name, api_key):
@@ -66,5 +68,5 @@ def fetch_weather():
 
 # Run the app
 if __name__ == "__main__":
-    FLASK_PORT = os.getenv("FLASK_PORT", "11000")
+    FLASK_PORT = os.getenv("FLASK_PORT", "5000")
     app.run(debug=True)
