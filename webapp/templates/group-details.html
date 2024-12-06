@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Group Details - SplitSmart{% endblock %}
+
+{% block content %}
+<section id="group-details" class="row">
+    <h1>{{ group_name }}</h1>
+    
+    <h2>Members</h2>
+    <ul class="member-list">
+        {% if group_members %}
+            {% for member in group_members %}
+                <li>{{ member.name }}</li>
+            {% endfor %}
+        {% else %}
+            <li>No members found.</li>
+        {% endif %}
+    </ul>
+    
+    <h2>Expenses</h2>
+    {% if expenses %}
+        <ul class="expense-list">
+            {% for expense in expenses %}
+                <li class="expense-item">
+                    <p><strong>{{ expense.description }}</strong>: ${{ expense.amount }}</p>
+                    <p>Paid by: {{ expense.paid_by }}</p>
+                    <p>Split among:</p>
+                    <ul>
+                        {% for user, share in expense.split_among.items() %}
+                            <li>{{ user }}: ${{ share }}</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No expenses added yet for this group.</p>
+    {% endif %}
+    
+    <div class="buttons">
+        <a href="{{ url_for('add_expense') }}" class="button">Add Expense</a>
+        <a href="{{ url_for('groups') }}" class="button">Back to Groups</a>
+    </div>
+</section>
+{% endblock %}

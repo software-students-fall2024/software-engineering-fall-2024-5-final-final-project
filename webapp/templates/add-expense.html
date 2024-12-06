@@ -12,7 +12,7 @@
             <select id="group" name="group_id" required>
                 <option value="" disabled selected>Choose a group</option>
                 {% for group in groups %}
-                    <option value="{{ group._id }}">{{ group.group_name }}</option>
+                <option value="{{ group['_id'] }}">{{ group['group_name'] }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -30,17 +30,17 @@
         </div>
 
         <!-- Paid By -->
-        <div class="form-group">
-            <label for="paid-by">Paid By</label>
-            <select id="paid-by" name="paid_by" required>
-                <option value="" disabled selected>Select who paid</option>
-                {% for group in groups %}
-                    {% for member in group.group_members %}
-                        <option value="{{ member.user_id }}">{{ member.name }}</option>
-                    {% endfor %}
+        <select id="paid-by" name="paid_by" required>
+            <option value="" disabled selected>Select who paid</option>
+            {% for group in groups %}
+                {% for member in group.group_members %}
+                    <option value="{{ member['user_id'] }}">{{ member['name'] }}</option>
                 {% endfor %}
-            </select>
-        </div>
+            {% else %}
+                <option value="" disabled>No members found</option>
+            {% endfor %}
+        </select>
+        
 
         <!-- Split Among -->
         <div class="form-group">
@@ -48,7 +48,7 @@
             <select id="split-with" name="split_with[]" multiple required>
                 {% for group in groups %}
                     {% for member in group.group_members %}
-                        <option value="{{ member.user_id }}">{{ member.name }}</option>
+                    <option value="{{ member['user_id'] }}">{{ member['name'] }}</option>
                     {% endfor %}
                 {% endfor %}
             </select>
@@ -58,8 +58,8 @@
         <!-- Percentages -->
         <div class="form-group">
             <label for="percentages">Split Percentages</label>
-            <input type="text" id="percentages" name="percentages" placeholder="e.g. 50, 25, 25" required>
-            <small class="helper-text">Enter percentages separated by commas (total must equal 100%).</small>
+            <input type="text" id="percentages" name="percentages" placeholder="e.g. 0.50, 0.25, 0.25" required>
+            <small class="helper-text">Enter percentages separated by commas (total must equal 1).</small>
         </div>
 
         <button type="submit" class="button">Add Expense</button>
