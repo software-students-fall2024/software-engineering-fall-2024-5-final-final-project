@@ -5,58 +5,70 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Chivo+Mono:ital,wght@0,100..900;1,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Parkinsans:wght@300..800&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
         body {
-            font-family: Arial, Helvetica, sans-serif;
-            background-color: black;
+            font-family: "Be Vietnam Pro", sans-serif;
+            background-color: #3c6e71;
+            background: linear-gradient(45deg, #3c6e71, #2a4f52, #4b8b7e);
             color: white;
-            margin: 0;
-            padding: 0;
             display: flex;
             justify-content: center;
             align-items: flex-start;
             height: 100vh;
         }
         .login-container {
-            margin: 20px;
-            background-color: #1e1e1e;
-            padding: 30px;
+            width: 100vw;
+            height: 100vh;
+            background-color: #3c6e71;
+            background: linear-gradient(45deg, #3c6e71, #2a4f52, #4b8b7e);
+            padding: 10vh 10vw;
             border-radius: 10px;
-            width: 360px; /* Matches the calendar and menu page width */
-            height: 600px; /* Same height as the menu page */
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
         .app-logo {
-            width: 100%;
-            height: 150px;
-            background-color: #d3d3d3;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             border-radius: 10px;
-            margin-bottom: 30px; /* Reduced spacing below the logo */
+            border-top: 4px solid #ffae29;
+            border-bottom: 4px solid #ffae29;
+            padding: 1rem 1rem;
+            margin: 2rem 0rem;
+            margin-bottom: 4rem;
+            color: #ffae29;
         }
         .app-logo span {
-            font-size: 1.2rem;
-            color: black;
+            font-size: 1.8rem;
+            font-weight: bold;
         }
         .login-form {
             width: 100%;
             display: flex;
             flex-direction: column;
-            align-items: center;
+
             justify-content: flex-start; /* Align buttons closer to the top */
             flex-grow: 1; /* Allow form to take available vertical space */
-            gap: 15px; /* Add spacing between inputs and button */
+            gap: 1.5rem;
         }
+
+        .login-form h3{
+            text-align: left;
+            font-size: 2rem;
+            margin: 0rem;
+            font-weight: normal;
+
+        }
+
         .form-input {
             width: 100%;
             padding: 10px;
-            border-radius: 5px;
-            border: 1px solid white;
-            background-color: #333;
+            border: 1px solid rgba(0,0,0,0);
+            border-bottom: 2px solid white;
+            background-color: rgba(0,0,0,0);
             color: white;
             font-size: 1rem;
             box-sizing: border-box;
@@ -64,16 +76,28 @@
         .form-input::placeholder {
             color: #999;
         }
+
+        button,a{
+            color:#3c6e71;
+            background-color: white;
+            border-radius: 3rem;
+            text-align: center;
+            box-shadow: 0 14px 14px rgba(0, 0, 0, 0.2);
+        }
+        button{
+            font-weight: bold;
+        }
+
+        a{
+            padding: 0.5rem 1rem;
+            color: black;
+            text-decoration: none;
+        }
+
         .login-button {
             width: 100%;
             padding: 15px;
-            background-color: black;
-            color: white;
-            border: 2px solid white;
-            border-radius: 5px;
             font-size: 1rem;
-            cursor: pointer;
-            text-align: center;
         }
         .login-button:hover {
             background-color: #6CB873;
@@ -84,24 +108,19 @@
             font-size: 0.9rem;
             text-align: center;
         }
-        .login-footer a {
-            color: #6CB873;
-            text-decoration: none;
-        }
-        .login-footer a:hover {
-            text-decoration: underline;
-        }
+
     </style>
 </head>
 <body>
     <div class="login-container">
         <!-- App Logo -->
         <div class="app-logo">
-            <span>App Logo</span>
+            <span>Fi&#36;Cal.</span>
         </div>
 
         <!-- Login Form -->
         <form class="login-form" action="/login" method="POST">
+            <h3>Welcome!</h3>
             <input
                 type="text"
                 class="form-input"
@@ -121,7 +140,7 @@
 
         <!-- Footer Links -->
         <div class="login-footer">
-            <span>Don't have an account? <a href="/signup">Sign Up</a></span>
+            <span>Don't have an account? &nbsp;&nbsp;<a href="/signup">Sign Up</a></span>
         </div>
     </div>
 </body>

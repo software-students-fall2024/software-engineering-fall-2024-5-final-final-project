@@ -6,84 +6,71 @@ Analytics
     {{ super() }} 
     <style>
         .calendar-container {
-            margin: 20px;
-            background-color: #1e1e1e;
-            padding: 20px;
+            width: 100vw;
             border-radius: 10px;
-            width: 360px; /* Adjusted width to match the wireframe */
             box-sizing: border-box;
-            position: relative;
         }
-        .hamburger-menu {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            cursor: pointer;
-            font-size: 24px;
-            color: #6CB873;
-            text-decoration: none;
-        }
+
         .calendar-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            color: #6CB873;
-            margin-bottom: 20px;
-            margin-top: 40px; /* To account for the hamburger menu */
+            text-align: center;
+            color: white;
         }
         .calendar-header h2 {
-            margin: 0;
-            font-size: 1.2rem;
+            margin: 0 auto;
+            font-size: 1.5rem;
+            font-weight: normal;
         }
         .navigation {
             cursor: pointer;
             font-size: 1.5rem;
         }
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 5px; /* Reduced gap to fit smaller width */
-        }
-        .calendar-day {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background-color: #333;
-            padding: 5px;
-            border-radius: 5px;
-            min-height: 50px;
-            font-size: 0.8rem; /* Adjust font size for smaller layout */
-        }
+
         .calendar-day.selected {
-            background-color: #6CB873;
+            background-color: #3c6e71;
             color: black;
         }
+
         .expense-summary {
             margin-top: 20px;
-            background-color: #2b2b2b;
             padding: 15px;
             border-radius: 10px;
+            display: flex;
+            flex-direction: column;
         }
         .expense-summary h3 {
             margin-top: 0;
-            font-size: 1rem;
+            font-size: 1.4rem;
+            font-weight: normal;
         }
         .expense-item {
             display: flex;
+            border-radius: 0.4rem;
             justify-content: space-between;
-            margin-bottom: 10px;
-            font-size: 0.9rem; /* Adjust font size for compact layout */
+            font-size: 0.9rem; 
+            color:white;
+            padding: 1.5rem 0.5rem;
         }
-        .expense-item:last-child {
-            margin-bottom: 0;
+
+        .expense-item.odd {
+            background-color: rgba(255,255,255,0.1)
         }
-        .total-expense {
-            border-top: 1px solid #6CB873;
-            margin-top: 10px;
-            padding-top: 10px;
-            font-weight: bold;
-            color: #6CB873;
+
+        #chart{
+            width: 100vw;
+            height: 80vh;
+            color: white;
+        }
+        .total-expense{
+            font-size: 1.2rem;
+            display: flex;
+            border-top: 3px solid #353535;
+            
+
+        }
+        .total-expense span{
+            margin-left: auto;
         }
     </style>
 {% endblock %}
@@ -93,33 +80,81 @@ Analytics
         <div class="calendar-header">
             <h2>Monthly Expenses</h2>
         </div>
-        <canvas id="chart"></canvas>
+        <div id="chart"></div>
         <div class="expense-summary">
-            <h3>December 1-31</h3>
-            <div class="expense-item">
-                <span>Transportation</span>
-                <span>-$79.50</span>
-            </div>
-            <div class="expense-item">
-                <span>Cell Phone</span>
-                <span>-$13.80</span>
-            </div>
-            <div class="expense-item">
-                <span>Food</span>
-                <span>-$79.10</span>
-            </div>
-            <div class="total-expense">
-                Total: -$172.40
+            <h3 class="expense-item">December 2024</h3>
+            {% set expenses = [{"category": 'Transportation', "expense": 79.50},{"category": 'Transportation', "expense": 79.50},{"category": 'Transportation', "expense": 79.50}] %} 
+            {% for expense in expenses %}
+                <div class="expense-item {% if loop.index%2 == 1 %}odd{% endif %}">
+                    <span>{{expense.category}}</span>
+                    <span>-${{expense.expense}}</span>
+                </div>
+            {% endfor %}
+            <div class="expense-item {% if expenses | length %2 == 0 %}odd{% endif %} total-expense">
+                <span>Total expense: -$182.89</span>
             </div>
         </div>
     </div>
 
-
-
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/core.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/charts.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
 
     <script>
+        am4core.ready(function() {
+
+            // Themes begin
+            am4core.useTheme(am4themes_animated);
+            // Themes end
+            
+            var chart = am4core.create("chart", am4charts.PieChart3D);
+            chart.hiddenState.properties.opacity = 0; // this creates initial fade-in
+            
+            chart.legend = new am4charts.Legend();
+            chart.legend.labels.template.text = "[bold {white}]{name}[/]"
+
+            chart.fill = am4core.color("white").lighten(0.5)
+
+            
+            chart.data = [
+              {
+                country: "Transportation",
+                litres: 79.50
+              },
+              {
+                country: "Cell Phone",
+                litres: 13.80
+              },
+              {
+                country: "Food",
+                litres: 79.10
+              },
+              {
+                country: "Transportation",
+                litres: 79.50
+              },
+              {
+                country: "Cell Phone",
+                litres: 13.80
+              },
+              {
+                country: "Food",
+                litres: 79.10
+              },
+            ];
+            
+            var series = chart.series.push(new am4charts.PieSeries3D());
+            series.dataFields.value = "litres";
+            series.dataFields.category = "country";
+            series.legendSettings.labelText = "[bold {color}]{name}[/]"
+            series.legendSettings.valueText = "[bold {color}]{value}[/]"
+            series.labels.template.disabled = true;
+            series.ticks.template.disabled = true;
+            
+            });
+    
+    /**
+        
     const ctx = document.getElementById('chart');
 
     new Chart(ctx, {
@@ -142,5 +177,7 @@ Analytics
           }]
         }
     });
+    **/
+    
     </script>
 {% endblock %}

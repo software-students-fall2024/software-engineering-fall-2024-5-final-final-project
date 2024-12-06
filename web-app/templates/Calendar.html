@@ -6,145 +6,347 @@ Calendar
     {{ super() }} 
     <style>
         .calendar-container {
-            margin: 20px;
-            background-color: #1e1e1e;
-            padding: 20px;
-            border-radius: 10px;
-            width: 360px; /* Adjusted width to match the wireframe */
+            background-color: #3c6e71;
             box-sizing: border-box;
-            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            padding: 100px;
+            color:white;
+
         }
-        .hamburger-menu {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            cursor: pointer;
-            font-size: 24px;
-            color: #6CB873;
-            text-decoration: none;
+
+        .calendar {
+            margin-top: 1rem;
+            background: white;
+            border-radius: 1rem;
+            color: #3c6e71;
         }
+
+        .calendar-shadow-1 {
+            background: rgba(255,255,255,0.8);
+            height: 0.3rem;
+            width: 92%;
+            margin: 0 auto;
+            border-radius: 0rem 0rem 1rem 1rem;
+        }
+        .calendar-shadow-2 {
+            background: rgba(255,255,255,0.6);
+            height: 0.3rem;
+            width: 90%;
+            margin: 0 auto;
+            border-radius: 0rem 0rem 1rem 1rem;
+        }
+
         .calendar-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            color: #6CB873;
             margin-bottom: 20px;
-            margin-top: 40px; /* To account for the hamburger menu */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
         }
         .calendar-header h2 {
             margin: 0;
+            margin-left: 10px;
+            font-size: 2.3rem;
+        }
+
+        .month-nav {
+            display: flex;
+            gap: 10px;
+        }
+        .month-nav p{
+            margin: auto;
             font-size: 1.2rem;
         }
         .navigation {
             cursor: pointer;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
+            background: none;
+            color: #3c6e71;
         }
         .calendar-grid {
+            width: 90vw;
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 5px; /* Reduced gap to fit smaller width */
+            gap: 5px;
+            padding: 1rem;
+        }
+        .calendar-grid.days{
+            padding-bottom: 0rem;
         }
         .calendar-day {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background-color: #333;
             padding: 5px;
             border-radius: 5px;
             min-height: 50px;
             font-size: 0.8rem; /* Adjust font size for smaller layout */
+            overflow:hidden;
         }
-        .calendar-day.selected {
-            background-color: #6CB873;
-            color: black;
+        .calendar-day .expense{
+            color:#c9404c;
+            font-size:0.6rem;
+        }
+        .calendar-day#selected {
+            background-color: rgba(86, 147, 150,0.7);
+            color: white;
+        }
+        .weekday {
+            text-aligh: center;
+            margin: auto;
+            color: rgb(178,178,178);
         }
         .expense-summary {
             margin-top: 20px;
-            background-color: #2b2b2b;
-            padding: 15px;
             border-radius: 10px;
+            display: flex;
+            flex-direction: column;
         }
         .expense-summary h3 {
             margin-top: 0;
-            font-size: 1rem;
+            font-size: 1.4rem;
+            font-weight: normal;
         }
         .expense-item {
             display: flex;
+            border-radius: 0.4rem;
             justify-content: space-between;
-            margin-bottom: 10px;
-            font-size: 0.9rem; /* Adjust font size for compact layout */
+            font-size: 0.9rem; 
+            color:white;
+            padding: 1.5rem 0.5rem;
         }
-        .expense-item:last-child {
-            margin-bottom: 0;
+
+        .expense-item.odd {
+            background-color: rgba(255,255,255,0.1)
         }
-        .total-expense {
-            border-top: 1px solid #6CB873;
-            margin-top: 10px;
-            padding-top: 10px;
-            font-weight: bold;
-            color: #6CB873;
+
+        #expense-form {
+            position: relative;
+            margin-top: 2rem;
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            grid-gap: 8px;
+            visibility: hidden;
+            max-height: 0rem;
+        }
+
+        #expense-form input{
+            padding: 0.7rem;
+            border-radius: 1.3rem;
+            border: 1px solid rgba(0,0,0,0);
+            grid-column: span 2;
+            grid-row: 1 / 2;
+        }
+        #expense-form select{
+            padding: 0.7rem;
+            border-radius: 1.3rem;
+            border: 1px solid rgba(0,0,0,0);
+            grid-column: span 2;
+            grid-row: 1 / 2;
+            background-color:#fca311;
+            text-align:center;
+            font-weight:bold;
+        }
+        #expense-form .buttons{
+            display: flex;
+            width: 100%;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            margin-left: auto;
+            border-radius: 1rem;
+            border: 1px solid rgba(0,0,0,0);
+            grid-column: 5 / 7;
+            grid-row: 2 / 3;
+        }
+        #expense-form .buttons button{
+            padding: 0.2rem 0.5rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(0,0,0,0);
+        }
+
+        #expense-form .buttons .submit{
+            background-color: white;
+            color: #3c6e71;
+        }
+        #expense-form .buttons .cancel{
+            background-color: #c9404c;
+            color: white;
+        }
+
+
+        #add-event {
+            background: none;
+            border: 1px solid rgba(0,0,0,0);
+            margin-right: auto;
+            font-size: 1.3rem;
+            color: white;
+        }
+
+        #add-event b{
+            font-size: 2rem;
         }
     </style>
 {% endblock %}
 {% block content %}
     <div class="calendar-container">
-        <div class="calendar-header">
-            <span class="navigation">&#9664;</span>
-            <h2>December 2024</h2>
-            <span class="navigation">&#9654;</span>
+        <div class="calendar">
+            <div class="calendar-header">
+                <h2 id="selected-date">2</h2>
+                <div class="month-nav">
+                    <button class="navigation" onclick="prevMonth()">&#9664;</button>
+                    <p id="selected-year-month"></p>
+                    <button class="navigation" onclick="nextMonth()">&#9654;</button>
+                </div>
+            </div>
+            <div class="calendar-grid days">
+                <!-- Calendar days -->
+                {% set weekdays = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] %} 
+                {% for day in weekdays %}
+                    <div class="weekday">
+                        {{ day }}
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="calendar-grid" id="calendar-grid">
+            </div>
         </div>
-        <div class="calendar-grid">
-            <!-- Calendar days -->
-            <div class="calendar-day">1</div>
-            <div class="calendar-day selected">2</div>
-            <div class="calendar-day">3</div>
-            <div class="calendar-day">4</div>
-            <div class="calendar-day">5</div>
-            <div class="calendar-day">6</div>
-            <div class="calendar-day">7</div>
-            <div class="calendar-day">8</div>
-            <div class="calendar-day">9</div>
-            <div class="calendar-day">10</div>
-            <div class="calendar-day">11</div>
-            <div class="calendar-day">12</div>
-            <div class="calendar-day">13</div>
-            <div class="calendar-day">14</div>
-            <div class="calendar-day">15</div>
-            <div class="calendar-day">16</div>
-            <div class="calendar-day">17</div>
-            <div class="calendar-day">18</div>
-            <div class="calendar-day">19</div>
-            <div class="calendar-day">20</div>
-            <div class="calendar-day">21</div>
-            <div class="calendar-day">22</div>
-            <div class="calendar-day">23</div>
-            <div class="calendar-day">24</div>
-            <div class="calendar-day">25</div>
-            <div class="calendar-day">26</div>
-            <div class="calendar-day">27</div>
-            <div class="calendar-day">28</div>
-            <div class="calendar-day">29</div>
-            <div class="calendar-day">30</div>
-            <div class="calendar-day">31</div>
-        </div>
+        <div class="calendar-shadow-1"></div>
+        <div class="calendar-shadow-2"></div>
         <div class="expense-summary">
-            <h3>Selected Day: December 2</h3>
-            <div class="expense-item">
-                <span>Transportation</span>
-                <span>-$79.50</span>
-            </div>
-            <div class="expense-item">
-                <span>Cell Phone</span>
-                <span>-$13.80</span>
-            </div>
-            <div class="expense-item">
-                <span>Food</span>
-                <span>-$79.10</span>
-            </div>
-            <div class="total-expense">
-                Total: -$172.40
-            </div>
+            <h3 class="expense-item" id="selected-month-date"></h3>
+            {% set expenses = [{"category": 'Transportation', "expense": 79.50},{"category": 'Transportation', "expense": 79.50},{"category": 'Transportation', "expense": 79.50}] %} 
+            {% for expense in expenses %}
+                <div class="expense-item {% if loop.index%2 == 1 %}odd{% endif %}">
+                    <span>{{expense.category}}</span>
+                    <span>-${{expense.expense}}</span>
+                </div>
+            {% endfor %}
+
+            <form id="expense-form" onsubmit="addExpense(event)">
+                <select name="pets" id="pet-select">
+                    <option value="food">Food</option>
+                    <option value="rent">Rent</option>
+                    <option value="phone">Phone</option>
+                    <option value="transportation">Transportation</option>
+                    <option value="education">Education</option>
+                    <option value="entertainment">Entertainment</option>
+                </select>
+                  
+                <input type="text" id="Amount" placeholder="Amount" required>
+                <input type="text" id="Memo" placeholder="Memo" >
+                <div class="buttons">
+                    <button type="submit" class="submit">Add</button>
+                    <button class="cancel" onclick="cancel()">Cancel</button>
+                </div>
+            </form>
+        
+            <button id="add-event" onClick="clickNewEvent()">
+                <b>&#8853;</b>  New Event
+            </button>
         </div>
     </div>
+    <script>
+        const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+        const months=["January","February","March","April","May","June","July","August","September","October","November","December"]
+        let currentDate = new Date();
+        let [year, month, date, day] = [currentDate.getFullYear(), currentDate.getMonth()+1,currentDate.getDate(),currentDate.getDay()]
+
+        updateElements();
+        loadCalendar();
+
+
+
+        const clickNewEvent = ()=>{
+            const addEventButton = document.getElementById("add-event");
+            addEventButton.style.visibility = "hidden";
+            const eventForm = document.getElementById("expense-form");
+            eventForm.style.visibility = "visible";
+            eventForm.style.maxHeight = "50px";
+        }
+
+        const cancel = ()=>{
+            const addEventButton = document.getElementById("add-event");
+            addEventButton.style.visibility = "visible";
+            const eventForm = document.getElementById("expense-form");
+            eventForm.style.visibility = "hidden";
+            eventForm.style.maxHeight = "0px";
+        }
+
+        function updateDate(newDate){
+            date = newDate
+            updateElements()
+        }
+
+        function prevMonth(){
+            month-=1
+            if(month===0){
+                month = 12
+                year-=1
+            }
+            if(date===31 && ![1,3,5,7,8,10,12].includes(month)) date=30;
+            day=new Date(year,month-1,date).getDay()
+            updateElements()
+            loadCalendar()
+        }
+        function nextMonth(){
+            month+=1
+            if(month===13){
+                month=1
+                year+=1
+            }
+            if(date===31 && ![1,3,5,7,8,10,12].includes(month)) date=30;
+            day=new Date(year,month-1,date).getDay()
+            updateElements()
+            loadCalendar()
+
+        }
+        function updateElements(){
+            const selectedDateElement = document.getElementById("selected-date");
+            const selectedYearMonthElement = document.getElementById("selected-year-month");
+            const selectedMonthDateElement = document.getElementById("selected-month-date");
+            selectedDateElement.textContent = date;
+            selectedYearMonthElement.textContent = `${months[month-1]} ${year}`;
+            selectedMonthDateElement.textContent = `${months[month-1]} ${date}`;
+        }
+        function loadCalendar(){
+            const calendarGrid = document.getElementById('calendar-grid');
+            calendarGrid.innerHTML="";
+            let end=30
+            if(month===2){
+                if(isLeapYear(year)) end=29
+                else end=28
+            }
+            else if([1,3,5,7,8,10,12].includes(month)) end=31
+            for(let i=0;i<(day+1)%7;i++){
+                const newDivHTML = `<div class="calendar-day">
+                </div>`;
+                calendarGrid.insertAdjacentHTML('beforeend', newDivHTML);
+            }
+            for(let i=1;i<=end;i++){
+                const newDivHTML = `<div class="calendar-day" id=${i === date ? 'selected' : ''}>
+                                        <p>${i}</p>
+                                        <p class="expense">-$120.78</p>
+                                    </div>`;
+                calendarGrid.insertAdjacentHTML('beforeend', newDivHTML);
+                const newDiv = calendarGrid.lastElementChild; // Get the last inserted element
+                newDiv.addEventListener('click', () => {
+                    const element = document.getElementById("selected");
+                    if (element) {
+                        element.removeAttribute("id");
+                    } 
+                    newDiv.setAttribute('id','selected');
+                    updateDate(i);
+                });
+            }
+
+        }
+        function isLeapYear(year) {
+            return (year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0));
+        }
+    </script>
 {% endblock %}
