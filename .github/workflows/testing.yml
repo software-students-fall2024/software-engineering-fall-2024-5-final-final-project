@@ -21,8 +21,12 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t web-app .
+          docker compose build -d
 
       - name: Run Tests in Docker Container
         run: |
-          docker run --rm --env-file .env web-app pytest
+          docker compose exec web-app pytest
+          
+      - name: Shut Down Containers
+        run: |
+          docker compose down
