@@ -13,8 +13,8 @@ def create_app():
     # database initialization
     client = MongoClient("mongodb://mongodb:27017/")
     db = client["resume_db"]
-    users_collection = db["users"] # STORED W/ EMAIL AND PASSWORD
-    resumes_collection = db["resumes"] # STORED W/ USER IT WAS MADE BY, NAME OF RESUME, AND THE PDF ITSELF
+    users_collection = db["users"] # STORES W/ EMAIL AND PASSWORD
+    resumes_collection = db["resumes"] # STORES W/ USER IT WAS MADE BY, NAME OF RESUME, AND THE PDF ITSELF
 
     # get home page
     @app.route("/")
@@ -57,6 +57,7 @@ def create_app():
         return render_template("register.html")
 
     # get user's dashboard
+    # finds resumes made under the email of current session user and returns all of them
     @app.route("/dashboard")
     def dashboard():
         if "email" in session:
@@ -91,14 +92,11 @@ def create_app():
         if "email" not in session:
             flash("You must be logged in to save a resume.", "danger")
             return redirect(url_for("login"))
-
         resume_data = request.json
         email = session["email"]
         resume_title = resume_data["name"]
         pdf_base64 = resume_data["pdf"]
-        
         pdf_data = base64.b64decode(pdf_base64.split(",")[1])
-
         resume = {
             "email": email,
             "name": resume_title,
