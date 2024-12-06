@@ -59,7 +59,7 @@ Analytics
 
         #chart{
             width: 100vw;
-            height: 60vh;
+            height: 80vh;
             color: white;
         }
         .total-expense{
@@ -93,20 +93,14 @@ Analytics
             <div class="expense-item {% if expenses | length %2 == 0 %}odd{% endif %} total-expense">
                 <span>Total expense: -$182.89</span>
             </div>
-            
-
-
-
         </div>
     </div>
 
-
-
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/core.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/charts.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
 
     <script>
-        /**
         am4core.ready(function() {
 
             // Themes begin
@@ -135,6 +129,18 @@ Analytics
                 country: "Food",
                 litres: 79.10
               },
+              {
+                country: "Transportation",
+                litres: 79.50
+              },
+              {
+                country: "Cell Phone",
+                litres: 13.80
+              },
+              {
+                country: "Food",
+                litres: 79.10
+              },
             ];
             
             var series = chart.series.push(new am4charts.PieSeries3D());
@@ -145,7 +151,9 @@ Analytics
             series.labels.template.disabled = true;
             series.ticks.template.disabled = true;
             
-            });**/
+            });
+    
+    /**
         
     const ctx = document.getElementById('chart');
 
@@ -169,6 +177,7 @@ Analytics
           }]
         }
     });
+    **/
     
     </script>
 {% endblock %}

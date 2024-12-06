@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Chivo+Mono:ital,wght@0,100..900;1,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Chivo+Mono:ital,wght@0,100..900;1,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Parkinsans:wght@300..800&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
         body {
-            font-family: "Roboto", serif;
+            font-family: "Be Vietnam Pro", sans-serif;
             background-color: black;
             background: linear-gradient(45deg, #3c6e71, #2a4f52, #4b8b7e);
             color: white;
@@ -25,23 +25,21 @@
             align-items: center;
         }
         .app-logo {
-            width: 100%;
-            height: 150px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             border-radius: 10px;
-            margin-bottom: 30px; /* Reduced spacing below the logo */
-        }
-        .app-logo img{
-            height: 5rem;
+            border-top: 4px solid #ffae29;
+            border-bottom: 4px solid #ffae29;
+            padding: 1rem 1rem;
+            margin: 2rem 0rem;
+            margin-bottom: 4rem;
+            color: #ffae29;
         }
         .app-logo span {
             font-size: 1.8rem;
             font-weight: bold;
-            color: white;
-
         }
         .signup-form {
             width: 100%;
@@ -67,11 +65,14 @@
         }
 
         button,a{
-            color: black;
+            color:#3c6e71;
             background-color: white;
             border-radius: 3rem;
             text-align: center;
             box-shadow: 0 14px 14px rgba(0, 0, 0, 0.2);
+        }
+        button{
+            font-weight: bold;
         }
 
         a{
@@ -103,8 +104,7 @@
     <div class="signup-container">
         <!-- App Logo -->
         <div class="app-logo">
-            <img src="{{ url_for('static', filename='logo.svg') }}" />
-            <span>FI&#36;CAL</span>
+            <span>FI&#36;CAL.</span>
         </div>
 
         <!-- Sign-Up Form -->
