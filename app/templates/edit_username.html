@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Edit Profile</title>
+{% endblock %}
+
+{% block container %}
+<div class="edit-profile-container">
+    <h1>Edit Your Profile</h1>
+    <form method="POST" action="{{ url_for('edit_profile') }}">
+        <div class="form-group">
+            <label for="new_username">New Username:</label>
+            <input
+                type="text"
+                id="new_username"
+                name="new_username"
+                value="{{ username }}"
+                required
+                minlength="3"
+            />
+        </div>
+        <button type="submit" class="btn">Update Username</button>
+    </form>
+    <div class="back-to-info">
+        <a href="{{ url_for('display_my_info') }}">Back to My Info</a>
+    </div>
+</div>
+
+<style>
+    .edit-profile-container {
+        max-width: 500px;
+        margin: 50px auto;
+        padding: 20px;
+        background-color: #f4f4f4;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .edit-profile-container h1 {
+        margin-bottom: 20px;
+        font-size: 24px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 16px;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 10px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        background-color: #333;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .btn:hover {
+        background-color: #555;
+    }
+
+    .back-to-info {
+        margin-top: 20px;
+    }
+
+    .back-to-info a {
+        text-decoration: none;
+        color: #007bff;
+    }
+
+    .back-to-info a:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
+
