@@ -1,5 +1,8 @@
 """
-Testing code for web app frontend
+Testing code for web app frontend. Run with 'python -m
+pytest test_app.py'
+or to see with coverage run with
+'python -m pytest --cov=app test_app.py'
 """
 
 import pytest

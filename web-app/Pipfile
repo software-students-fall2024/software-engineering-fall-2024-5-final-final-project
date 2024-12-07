@@ -6,11 +6,11 @@ name = "pypi"
 [packages]
 flask = "*"
 pytest = "*"
-pytest-cov = "*"
 pymongo = "*"
 flask-bcrypt = "*"
 flask-login = "*"
 mongomock = "*"
+pytest-cov = "*"
 
 [dev-packages]
 black = "*"
