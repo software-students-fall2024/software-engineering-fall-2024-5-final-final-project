@@ -59,7 +59,8 @@ def groups():
         if group:
             group_details.append({
                 "group_name": group["group_name"],
-                #"group_members": [[member["name"], 0] for member in group["group_members"]],  # 2D array
+                "group_members": [member[0] for member in group["group_members"]],
+                "group_balances": [member[1] for member in group["group_members"]],
                 "group_id": group["_id"]
             })
 
