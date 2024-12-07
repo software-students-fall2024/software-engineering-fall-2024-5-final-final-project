@@ -43,7 +43,26 @@ db = cxn[os.getenv("MONGO_DBNAME")]
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    city = "New York"  
+    temperature, description = get_weather(city, API_KEY)
+
+    if temperature is not None:
+        temperature = int(temperature)
+        return render_template(
+            'index.html',
+            city=city,
+            temperature=f"{temperature}°C",
+            description=description
+        )
+    else:
+        return render_template(
+            'index.html',
+            city=city,
+            temperature="N/A",
+            description="Weather data unavailable"
+        )
+
+
 # Function to get weather data
 def get_weather(city_name, api_key):
     url = f"http://api.openweathermap.org/data/2.5/weather?q={city_name}&appid={api_key}&units=metric"
