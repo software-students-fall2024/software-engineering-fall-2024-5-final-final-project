@@ -26,25 +26,42 @@ body {
     text-decoration: none;
 }
 
+.header-title:hover {
+    color: #F3D0D7;
+}
+
 .header-buttons {
     display: flex;
     gap: 10px;
 }
 
 .button-primary, .button-secondary {
-    padding: 10px 20px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
     text-decoration: none;
-    color: #ccc;
+    color: #a3a2a2bd;
     background-color: white; 
-    border: 1px solid #ccc; 
+    border: 1px solid #a3a2a2bd; 
     border-radius: 20px; 
     cursor: pointer;
     font-size: 14px;
+    font-weight: 500;
+}
+
+.button-primary {
+    width: 125px;
+}
+
+.button-secondary {
+    width: 60px;
 }
 
 .button-primary:hover, .button-secondary:hover {
-    color: #F3D0D7;
-    border: 1px solid #F3D0D7;
+    background-color: #F3D0D7;
+    color: white;
+    border: 1px solid #F3D0D7;;
+    font-weight:550;
 }
 
 /* search bar */
@@ -67,10 +84,15 @@ body {
     width: 400px;
     padding: 10px 15px;
     font-size: 16px;
+    color: #a3a2a2bd;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 20px;
     margin-right: 10px;
     outline: none;
+}
+
+.search-bar::placeholder {
+    color: #a3a2a2bd;
 }
 
 /* Style the search button */
@@ -79,7 +101,7 @@ body {
     background-color: #F3D0D7;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 20px;
     font-size: 16px;
     cursor: pointer;
 }
@@ -128,7 +150,7 @@ body {
 
 .add-button, .delete-button {
     padding: 10px 15px;
-    background-color: #FFEFEF;
+    background-color: #F3D0D7;
     color: white;
     border: none;
     border-radius: 5px;
