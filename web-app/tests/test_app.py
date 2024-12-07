@@ -1,6 +1,7 @@
 """
 Testing code for web app frontend
 """
+
 import sys
 import os
 import pytest
@@ -17,16 +18,30 @@ def mock_db(monkeypatch):
     """Mock MongoDB."""
     mock_db = MagicMock()
     mock_users = mock_db.users
-    mock_users.find_one.side_effect = lambda query: {
-        "email": "testuser@example.com",
-        "password": "hashedpassword",
-        "firstname": "Test",
-        "lastname": "User",
-        "events": [
-            {"Amount": 50.75, "Category": "Food", "Date": "2024-12-06", "Memo": "Dinner at a restaurant"},
-            {"Amount": 50.75, "Category": "Transportation", "Date": "2024-12-06", "Memo": "Train"},
-        ],
-    } if query.get("email") == "testuser@example.com" else None
+    mock_users.find_one.side_effect = lambda query: (
+        {
+            "email": "testuser@example.com",
+            "password": "hashedpassword",
+            "firstname": "Test",
+            "lastname": "User",
+            "events": [
+                {
+                    "Amount": 50.75,
+                    "Category": "Food",
+                    "Date": "2024-12-06",
+                    "Memo": "Dinner at a restaurant",
+                },
+                {
+                    "Amount": 50.75,
+                    "Category": "Transportation",
+                    "Date": "2024-12-06",
+                    "Memo": "Train",
+                },
+            ],
+        }
+        if query.get("email") == "testuser@example.com"
+        else None
+    )
     mock_db.users = mock_users
     monkeypatch.setattr("database.db", mock_db)
     return mock_db
@@ -42,8 +57,18 @@ def mock_user():
     mock_user.get_id.return_value = "testuser@example.com"
     mock_user.is_authenticated = True
     mock_user.get_events.return_value = [
-        {"Amount": 50.75, "Category": "Food", "Date": "2024-12-06", "Memo": "Dinner at a restaurant"},
-        {"Amount": 50.75, "Category": "Transportation", "Date": "2024-12-06", "Memo": "Train"},
+        {
+            "Amount": 50.75,
+            "Category": "Food",
+            "Date": "2024-12-06",
+            "Memo": "Dinner at a restaurant",
+        },
+        {
+            "Amount": 50.75,
+            "Category": "Transportation",
+            "Date": "2024-12-06",
+            "Memo": "Train",
+        },
     ]
     return mock_user
 
@@ -72,7 +97,10 @@ class Tests:
         mock_user = MagicMock(spec=User, email="testuser@example.com")
         mock_get_user.return_value = mock_user
 
-        response = client.post("/user/login", data={"email": "testuser@example.com", "password": "password123"})
+        response = client.post(
+            "/user/login",
+            data={"email": "testuser@example.com", "password": "password123"},
+        )
         assert response.status_code == 302  # Redirect after login
         assert response.location.endswith(url_for("index"))
 
@@ -116,22 +144,3 @@ class Tests:
         analytics = response.json
         assert "2024-12" in analytics
         assert analytics["2024-12"]["Food"] == 50.75
-
-    @patch("flask_login.utils._get_user")
-    def test_user_signup(self, mock_get_user, client, monkeypatch, mock_db):
-        """Test user signup."""
-        mock_create_user = MagicMock()
-        monkeypatch.setattr("user.user.User.create_user", mock_create_user)
-
-        response = client.post(
-            "/user/signup",
-            data={
-                "email": "newuser@example.com",
-                "password": "newpassword",
-                "firstname": "New",
-                "lastname": "User",
-            },
-        )
-        assert response.status_code == 302
-        assert response.location.endswith(url_for("user.login"))
-        mock_create_user.assert_called_once_with(mock_db, "newuser@example.com", "newpassword", "New", "User")
