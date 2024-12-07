@@ -6,5 +6,13 @@ def home():
     books = list(db.books.find({}, {"_id": 0, "title": 1, "author": 1, "description": 1}))
     return render_template('home.html', books=books)
 
+@app.route('/user')
+def user():
+    return render_template('user.html')
+
+@app.route('/matches')
+def matches():
+    return render_template('matches.html')
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=3000, debug=True)
