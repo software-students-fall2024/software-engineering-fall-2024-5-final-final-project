@@ -30,7 +30,7 @@ jobs:
 
       - name: Run tests in web-app Docker container
         run: |
-          docker run --rm web-app pytest /app -k "test_* or *_test" --verbose
+          docker run --rm web-app pytest --verbose
 
       - name: Cleanup Docker images
         run: |

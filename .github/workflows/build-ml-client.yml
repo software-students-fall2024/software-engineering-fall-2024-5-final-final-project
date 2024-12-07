@@ -30,7 +30,7 @@ jobs:
 
       - name: Run tests in machine learning client Docker container
         run: |
-          docker run --rm ml-client pytest /app -k "test_* or *_test" --verbose
+          docker run --rm ml-client pytest --verbose
 
       - name: Cleanup Docker images
         run: |
