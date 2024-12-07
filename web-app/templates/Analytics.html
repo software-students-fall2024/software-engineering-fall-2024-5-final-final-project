@@ -135,6 +135,13 @@ Analytics
             chart.hiddenState.properties.opacity = 0; // this creates initial fade-in
             
             chart.legend = new am4charts.Legend();
+            chart.legend.background.fill = am4core.color("#3c6e71"); 
+            chart.legend.background.fillOpacity = 0.7; 
+            chart.legend.padding(10, 10, 10, 10);
+            chart.legend.labels.template.fill = am4core.color("white"); 
+            chart.legend.valueLabels.template.fill = am4core.color("white");
+            chart.legend.labels.template.fontSize = 12; 
+            chart.legend.labels.template.fontWeight = "bold";
             chart.legend.labels.template.text = "[bold {white}]{name}[/]"
             chart.fill = am4core.color("white").lighten(0.5)
 
@@ -151,9 +158,9 @@ Analytics
             
 
             // table of summary for grouped expenses
-            const expenseSummary = document.getElementById("expense-summary");
-            expenseSummary.innerHTML = ""; // clear old content
-
+            const expenseSummary = document.querySelector(".expense-summary");
+            expenseSummary.innerHTML = ""; // Clear any existing content
+        
             const groupedByMonth = Object.keys(groupedAnalyticsData).sort();
             let totalExpenses = 0;
 
@@ -176,7 +183,7 @@ Analytics
                     const expenseItem = document.createElement("div");
                     expenseItem.classList.add("expense-item");
                     if (index % 2 === 1) expenseItem.classList.add("odd");
-
+        
                     expenseItem.innerHTML = `<span>${category}</span><span>-$${amount.toFixed(2)}</span>`;
                     expenseSummary.appendChild(expenseItem);
                 });
