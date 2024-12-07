@@ -5,6 +5,19 @@
 {% block content %}
 <section class="row">
     <h1>Create New Group</h1>
+
+    {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
     <form action="/create-group" method="post" class="form" id="create-group-form">
         <div class="form-group">
             <label for="group-name">Group Name</label>

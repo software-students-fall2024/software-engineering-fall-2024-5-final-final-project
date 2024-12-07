@@ -19,6 +19,18 @@
                 <div class="row login-container">
                     
                     <h1 class="site-tagline">Welcome</h1>
+
+                    {% with messages = get_flashed_messages(with_categories=True) %}
+                        {% if messages %}
+                            <div class="flash-messages">
+                                {% for category, message in messages %}
+                                    <div class="flash-message {{ category }}">
+                                        {{ message }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endwith %}
                     
                     <form action="/login" method="POST" class="example">
                         <input type="text" name="username" placeholder="Username" required class="large-1">

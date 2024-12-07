@@ -10,6 +10,7 @@ pytest = "*"
 flask = "*"
 psycopg2-binary = "*"
 pymongo = "*"
+bycrypt = "*"
 
 [requires]
 python_version = "3.12"
