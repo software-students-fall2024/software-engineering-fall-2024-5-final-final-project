@@ -4,6 +4,8 @@ from pymongo.server_api import ServerApi
 from bson.objectid import ObjectId  # To handle MongoDB ObjectIds
 import os
 import datetime
+import bcrypt
+
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -231,8 +233,11 @@ def registration():
         if col_users.find_one({"name": username}):
             flash("Username already in use.", "error")
             return redirect(url_for("registration"))
+            
+        salt = bcrypt.gensalt()
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
 
-        col_users.insert_one({"name": username, "password": password, "groups": []})
+        col_users.insert_one({"name": username, "password": hashed_password, "groups": []})
         flash("Registration successful. Please log in.", "success")
         return redirect(url_for("login"))
 
@@ -245,12 +250,20 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
 
-        user = col_users.find_one({"name": username, "password": password})
+        user = col_users.find_one({"name": username})
         if user:
-            session['username'] = username
-            return redirect(url_for("home"))
+            
+            stored_password=user['password']
+            if bcrypt.checkpw(password.encode('utf-8'), stored_password):
+                session["username"] = username
+                flash("Login successful!", "success")
+                return redirect(url_for("home"))
+            else:
+                flash("Invalid password. Please try again", "error")
+        else:
+            flash("Username not found. Please register account with username.", "error")
+        return render_template("login.html")
 
-        flash("Invalid username or password.", "error")
     return render_template("login.html")
 
 
