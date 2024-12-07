@@ -5,13 +5,13 @@ Web app frontend
 from flask import Flask, render_template, request, redirect, url_for
 from flask_login import current_user, login_required
 from database import db
-from user.auth import auth, login_manager
+from user.user import user, login_manager
 
 app = Flask(__name__)
 app.secret_key = "secret_key"  # needed for flask login sessions
 
 login_manager.init_app(app)
-app.register_blueprint(auth)
+app.register_blueprint(user, url_prefix="/user")
 
 
 # @app.route("/")
@@ -25,7 +25,7 @@ def index():
     """Redirect to right page if logged in or not"""
     if current_user.is_authenticated:
         return render_template("calendar.html")
-    return render_template("Login.html")
+    return redirect(url_for("user.login"))
 
 
 @app.route("/signup")
