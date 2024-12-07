@@ -29,7 +29,7 @@ def login():
             login_user(user)
             return redirect(url_for("index"))
         else:
-            flash("Invalid username or password", "danger")
+            return "Invalid username or password. Try again."
     return render_template("Login.html")
 
 
@@ -43,7 +43,7 @@ def signup():
 
         existing_user = User.find_by_username(db, username)
         if existing_user:
-            flash("Username already exists", "danger")
+            return "An account already exists with that username."
         else:
             User.create_user(db, username, password, firstname, lastname)
             return redirect(url_for("auth.login"))
