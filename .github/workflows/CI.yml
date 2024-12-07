@@ -17,9 +17,6 @@ on:
 jobs:
   test-and-build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./web-app
 
     services:
       mongodb:
@@ -45,11 +42,12 @@ jobs:
         env:
           MONGO_CXN_STRING: mongodb://localhost:27017/
         run: |
-          pipenv run coverage run -m pytest --cov=. --cov-report=xml test_app.py
-          pipenv run coverage report -m
+          # Move to the repository root
+          python -m pytest web-app/test_app.py --cov=web-app --cov-report=xml
+          python -m coverage report -m
 
       - name: Build Docker image
         run: |
           docker build -t web-app \
             --build-arg MONGO_CXN_STRING=mongodb://localhost:27017/ \
-            .
+            ./web-app
