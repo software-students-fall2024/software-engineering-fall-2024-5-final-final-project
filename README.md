@@ -46,6 +46,12 @@ Record and save your audio files, share them with friends, and get automatic tra
 - **Tools**: Docker for containerized deployment, pipenv for dependency management.
 - **CI/CD**: GitHub Actions for automated testing and deployment workflows.
 
+## Wireframes
+
+The wireframes for this project, designed in Figma, outline the structure and user interface.  
+ 
+[**Figma Wireframes**](https://www.figma.com/design/yLFRMQmg38yyakEGCcKE0K/Final-SWE-project?node-id=0-1&t=mGMPcWYwOiU1suvv-1)
+
 ## Setup Instructions
 
 ### 1. Clone the Repository
