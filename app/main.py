@@ -12,7 +12,7 @@ def user():
     # WHEN LOGIN/LOGOUT FUNCTION IS ADDED
     user_id = "user1"
 
-    user = db.users.find_one({"id": user_id}, {"_id": 0, "wishlist": 1, "inventory": 1})
+    user = db.users.find_one({"id": user_id}, {"_id": 0, "name": 1, "wishlist": 1, "inventory": 1})
     if not user:
         return "User not found", 404
 
@@ -30,7 +30,7 @@ def user():
         )
     )
 
-    return render_template('user.html', inventory=inventory, wishlist=wishlist)
+    return render_template('user.html', name=user["name"], inventory=inventory, wishlist=wishlist)
 
 @app.route('/matches')
 def matches():

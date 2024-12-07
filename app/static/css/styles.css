@@ -158,3 +158,6 @@ body {
     cursor: pointer;
 }
 
+.user-greeting {
+    font-size: 20pt;
+}

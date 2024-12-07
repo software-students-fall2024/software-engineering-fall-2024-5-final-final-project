@@ -25,6 +25,10 @@
     <!-- my collection -->
     <div class="content-container">
         <section class="book-list-container">
+            <!-- logged in user name -->
+            <div class="user-greeting">
+                <h1>Hi {{ name }}!</h1>
+            </div>
             <h2>your inventory</h2>
             <div class="book-list">
                 {% for book in inventory %}
