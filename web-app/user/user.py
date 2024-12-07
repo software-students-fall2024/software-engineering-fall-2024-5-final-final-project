@@ -81,6 +81,20 @@ class User(UserMixin):
             {"email": self.email}, {"$pull": {"events": {"_id": event_id}}}
         )
 
+    def edit_event(self, db, event_id, updated_event):
+        """user-side in database edit event by ID"""
+        db.users.update_one(
+            {"email": self.email, "events._id": event_id},
+            {
+                "$set": {
+                    "events.$.Amount": updated_event.get("Amount"),
+                    "events.$.Category": updated_event.get("Category"),
+                    "events.$.Date": updated_event.get("Date"),
+                    "events.$.Memo": updated_event.get("Memo"),
+                }
+            },
+        )
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -137,6 +151,23 @@ def delete_event(event_id):
     """DELETE request to remove an event by ID"""
     current_user.delete_event(db, event_id)
     return jsonify({"message": "Event deleted successfully"}), 200
+
+
+@user.route("/edit-event/<event_id>", methods=["PUT"])
+@login_required
+def edit_event(event_id):
+    """PUT request to edit an event by ID"""
+    data = request.json
+    updated_event = {
+        "Amount": float(data.get("Amount")),
+        "Category": data.get("Category"),
+        "Date": data.get("Date"),
+        "Memo": data.get("Memo"),
+    }
+
+    current_user.edit_event(db, event_id, updated_event)
+
+    return jsonify({"message": "Event updated successfully"}), 200
 
 
 @user.route("/get-events", methods=["GET"])
