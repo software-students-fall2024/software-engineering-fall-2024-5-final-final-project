@@ -41,6 +41,18 @@
             font-size: 1.8rem;
             font-weight: bold;
         }
+        .flash-message {
+            background-color: rgba(255, 69, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        .flash-message.success {
+            background-color: rgba(50, 205, 50, 0.8);
+        }
         .signup-form {
             width: 100%;
             display: flex;
@@ -101,6 +113,15 @@
     </style>
 </head>
 <body>
+
+    {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+    <div class="flash-message {{ messages[0][0] }}">
+        {{ messages[0][1] }}
+    </div>
+    {% endif %}
+    {% endwith %}
+
     <div class="signup-container">
         <!-- App Logo -->
         <div class="app-logo">
@@ -108,7 +129,7 @@
         </div>
 
         <!-- Sign-Up Form -->
-        <form class="signup-form" action="/signup" method="POST">
+        <form class="signup-form" action="{{url_for('user.signup') }}" method="POST">
             <input
             type="text"
             class="form-input"
@@ -128,13 +149,6 @@
                 class="form-input"
                 placeholder="Email"
                 name="email"
-                required
-            />
-            <input
-                type="text"
-                class="form-input"
-                placeholder="Username"
-                name="username"
                 required
             />
             <input

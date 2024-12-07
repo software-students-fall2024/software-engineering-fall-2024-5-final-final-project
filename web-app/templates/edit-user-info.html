@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block title %}
+Edit User Info
+{% endblock %}
+{% block styles %}
+    {{ super() }}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #3c6e71;
+            color: white;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .signup-container {
+            background-color: white;
+            color: #3c6e71;
+            max-width: 90vw;
+            width: 350px;
+            padding: 20px;
+            border-radius: 1rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        .signup-container h2 {
+            margin-bottom: 20px;
+            font-size: 2rem;
+            color: #3c6e71;
+        }
+        .signup-container input {
+            width: 90%;
+            background-color: #f0f0f0;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            color: #3c6e71;
+        }
+        .signup-container input::placeholder {
+            color: #6e6e6e;
+        }
+        .email-input {
+            cursor: not-allowed;
+        }
+        .signup-btn {
+            background-color: #3c6e71;
+            color: white;
+            font-weight: bold;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        .signup-btn:hover {
+            background-color: #2b5a5e;
+        }
+        .back-btn {
+            background-color: transparent;
+            color: #3c6e71;
+            border: 2px solid #3c6e71;
+            font-weight: bold;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover {
+            background-color: #3c6e71;
+            color: white;
+        }
+        .delete-btn {
+            background-color: #c9404c;
+            color: white;
+            font-weight: bold;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+        .delete-btn:hover {
+            background-color: #a8343e;
+        }
+        #danger-zone {
+            color: #c9404c;
+            margin-top: 100px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="signup-container">
+    <h2>Edit User Info</h2>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="flash-message">
+                {{ messages[0] }} 
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <form action="/user-info" method="POST">
+        <input type="email" class="email-input" id="email" name="Email" placeholder="Email" value={{user_info.email}} readonly>
+        <input type="text" id="firstname" name="firstname" placeholder="First Name" value={{user_info.firstname}} required>
+        <input type="text" id="lastname" name="lastname" placeholder="Last Name" value={{user_info.lastname}} required>
+        <button type="submit" class="signup-btn">Update Info</button>
+    </form>
+
+    <button onclick="goBack()" class="back-btn">Cancel</button>
+
+    <h2 id="danger-zone">Danger Zone</h2>
+    <a href="/delete-acct" class="delete-btn">Delete Account</a>
+</div>
+
+<script>
+    function goBack() {
+      window.history.back();
+    }
+</script>
+{% endblock %}
