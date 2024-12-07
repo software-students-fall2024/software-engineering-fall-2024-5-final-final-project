@@ -11,9 +11,9 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
 # MongoDB Connection
-uri = "mongodb+srv://hugobray01:AmosBloomberg@splitsmart.ursnd.mongodb.net/?retryWrites=true&w=majority&appName=SplitSmart"
+uri = os.getenv("MONGO_URI")
 client = MongoClient(uri, server_api=ServerApi('1'))
-mydb = client["SplitSmart"]
+mydb = client[os.getenv("MONGO_DBNAME")]
 col_users = mydb["USERS"]
 col_groups = mydb["GROUPS"]
 
