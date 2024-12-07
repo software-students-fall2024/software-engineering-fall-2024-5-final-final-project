@@ -2,7 +2,7 @@ from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import LoginManager, UserMixin, login_user
 from flask_login import login_required, logout_user, current_user
-from pymongo import MongoClient
+from pymongo import MongoClient, DESCENDING
 from werkzeug.security import generate_password_hash, check_password_hash
 from bson import ObjectId
 import gridfs
@@ -77,101 +77,22 @@ def home():
                 - "Artist": The artist's name.
                 - "Genre": The genre of the song.
     """
-    cur_user = current_user.username
-    cur_user_collection = db[cur_user]
-    genres = get_stats(cur_user_collection)
-    recommendations = get_recommendations(genres)
-    return render_template("home.html", genres=genres, recommendations=recommendations)
+    
+    raw_posts = posts_collection.find().sort("created_at", DESCENDING)
+    all_posts = []
+    for post in raw_posts:
+        image = fs.get(post["image_id"])
+        image_url = f"/image/{post['image_id']}"
+        
+        all_posts.append({
+            "post_id": str(post["_id"]),
+            "title": post["title"],
+            "image_url": image_url,
+            "author": post.get("user")
+        })
+    return render_template("home.html", posts = all_posts)
 
 
-def get_stats(cur_user_collection):
-    """
-    Computes the genre statistics for a user's song collection.
-
-    Args:
-        cur_user_collection: The MongoDB collection corresponding to the current user,
-        containing their song data.
-
-    Returns:
-        list: A list of dictionaries, where each dictionary represents a genre and contains:
-            - "Name" (str): The genre name.
-            - "Amount" (int): The count of songs in this genre.
-            - "Percentage" (str): The percentage of songs in this genre, formatted as a string
-              with two decimal places.
-    """
-
-    pipeline = [{"$group": {"_id": "$genre", "count": {"$sum": 1}}}]
-    genre_counts = list(cur_user_collection.aggregate(pipeline))
-    total_songs = sum(item["count"] for item in genre_counts)
-
-    result = [
-        {
-            "Name": item["_id"],
-            "Amount": item["count"],
-            "Percentage": f"{(item['count'] / total_songs) * 100:.2f}%",
-        }
-        for item in genre_counts
-    ]
-
-    return result
-
-
-def get_recommendations(genres):
-    """
-    Generates song recommendations based on the user's top genres.
-
-    Args:
-        genres (list): A list of dictionaries, where each dictionary represents
-            a genre and contains:
-            - "Name" (str): The genre name.
-            - "Amount" (int): The count of songs in this genre.
-
-    Returns:
-            - "Title" (str): The title of the song.
-            - "Artist" (str): The artist of the song.
-            - "Genre" (str): The genre of the song.
-    """
-    sorted_genres = sorted(genres, key=lambda x: x["Amount"], reverse=True)
-
-    if len(sorted_genres) == 0:
-        return []
-
-    top_genre = sorted_genres[0]
-    second_genre = sorted_genres[1] if len(sorted_genres) > 1 else None
-
-    total_amount = top_genre["Amount"] + (second_genre["Amount"] if second_genre else 0)
-    top_genre_count = round(5 * (top_genre["Amount"] / total_amount))
-    second_genre_count = 5 - top_genre_count
-
-    recommend_collection = db["recommendations"]
-
-    top_genre_songs = list(
-        recommend_collection.aggregate(
-            [
-                {"$match": {"genre": top_genre["Name"]}},
-                {"$sample": {"size": top_genre_count}},
-            ]
-        )
-    )
-    second_genre_songs = []
-    if second_genre:
-        second_genre_songs = list(
-            recommend_collection.aggregate(
-                [
-                    {"$match": {"genre": second_genre["Name"]}},
-                    {"$sample": {"size": second_genre_count}},
-                ]
-            )
-        )
-
-    combined_songs = top_genre_songs + second_genre_songs
-
-    result = [
-        {"Title": song["title"], "Artist": song["artist"], "Genre": song["genre"]}
-        for song in combined_songs
-    ]
-
-    return result
 
 
 @app.route("/addpost", methods=["GET", "POST"])
@@ -201,7 +122,7 @@ def add_post():
         
         cur_user_collection.insert_one({"post_id": inserted_post.inserted_id})
         
-        return render_template("home.html", message="Post added successfully!")
+        return home()
     
     return render_template("addpost.html")
 
@@ -223,7 +144,6 @@ def display_my_info():
         all_posts.append({
             "post_id": str(post["_id"]),
             "title": post["title"],
-            "content": post["content"],
             "image_url": image_url,
             "created_at": post.get("created_at")
         })
@@ -376,29 +296,6 @@ def ini():
     """
     return redirect(url_for("home"))
 
-
-def add_recommendations():
-    """
-    Returns:
-        None
-
-    Raises:
-        FileNotFoundError: If the 'songs.txt' file is not found.
-        ValueError: If the content of 'songs.txt' cannot be parsed as a valid Python list.
-        pymongo.errors.PyMongoError: If there are issues with MongoDB operations.
-    """
-    recommend_collection = db.recommendations
-
-    with open("songs.txt", "r", encoding="utf-8") as f:
-        file_content = f.read()
-
-    songs_dict = ast.literal_eval(file_content)
-    songs = songs_dict if isinstance(songs_dict, list) else []
-
-    if recommend_collection.count_documents({}) > 0:
-        recommend_collection.delete_many({})
-
-    recommend_collection.insert_many(songs)
 
 
 

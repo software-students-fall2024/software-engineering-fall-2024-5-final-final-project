@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% block head %}
-    <title> Pet Circle </title>
+    <title> Followed Circle </title>
     <style>
         .circular-button {
-            width: 100px;
-            height: 100px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             background-color: #f7dc6f;
             color: white;
@@ -15,8 +15,8 @@
             font-size: 35px;
             cursor: pointer;
             position: fixed;
-            bottom: 90px;
-            left: 90%;
+            bottom: 120px;
+            left: 50%;
             transform: translateX(-50%);
         }
 
@@ -50,53 +50,28 @@
         .switch-buttons a:hover:not(.active) {
             background-color: #3498db;
         }
-
-        .posts {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            margin-top: 20px;
-            align-items: flex-start;
-        }
-
-        .post {
-            flex: 0 0 calc(33.333% - 20px);
-            max-width: calc(33.333% - 20px);
-            box-sizing: border-box;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 10px;
-            background-color: #f9f9f9;
-            text-align: center;
-        }
-        
-        .post img {
-            width: 100%;
-            height: 500px;         
-            object-fit: cover;
-            display: block;
-        }
     </style>
 {% endblock %}
 
 {% block container %}
     <div class="switch-buttons">
-        <a href="/" class="active">Discovery</a>
-        <a href="/followed">Followed</a>
+        <a href="/home">Discovery</a>
+        <a href="/" class = "active">Followed</a>
     </div>
-
     <div class="posts">
+        <hr>
         {% for post in posts %}
-        <div class = "post">
             <a href="/posts/{{ post.post_id }}" style="text-decoration: none; color: black;">
+                <div>
                     <h2>{{ post.title }}</h2>
-                    <img src="{{ post.image_url }}" alt="Post Image">
-                    <small>{{ post.author }}</small>
+                    <p>{{ post.content }}</p>
+                    <img src="{{ post.image_url }}" alt="Post Image" style="max-width: 100%; height: auto;">
+                    <small>Posted by: {{ post.author }}</small>
+                </div>
             </a>
-        </div>
+            <hr>
         {% endfor %}
     </div>
 
     <button class="circular-button" onclick="window.location.href='/addpost'">+</button>
 {% endblock %}
-
