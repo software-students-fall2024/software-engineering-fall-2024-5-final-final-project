@@ -5,7 +5,9 @@ from bson.objectid import ObjectId  # To handle MongoDB ObjectIds
 import os
 import datetime
 import bcrypt
+from dotenv import load_dotenv
 
+load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
