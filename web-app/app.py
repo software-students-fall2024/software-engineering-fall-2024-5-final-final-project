@@ -3,7 +3,7 @@ Web app frontend
 """
 
 from flask import Flask, render_template, request, redirect, url_for
-from flask_login import current_user, login_required
+from flask_login import current_user, login_required, logout_user
 from database import db
 from user.user import user, login_manager
 
@@ -89,6 +89,12 @@ def user_info():
 @login_required 
 def delete_acct():
     return render_template("delete-acct.html")
+
+@app.route('/logout')
+def logout():
+    """Log out the user and redirect to the login page"""
+    logout_user()  # This function logs out the current user
+    return redirect(url_for('user.login'))  # Redirect to the login page
 
 
 
