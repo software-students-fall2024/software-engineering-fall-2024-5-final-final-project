@@ -1,0 +1,55 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'web-app/**'
+      - '.github/workflows/web-app.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'web-app/**'
+      - '.github/workflows/web-app.yml'
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./web-app
+
+    services:
+      mongodb:
+        image: mongo:6.0
+        ports:
+          - 27017:27017
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install pipenv
+          pipenv install --dev
+
+      - name: Run tests with coverage
+        env:
+          MONGO_CXN_STRING: mongodb://localhost:27017/
+        run: |
+          pipenv run coverage run -m pytest --cov=. --cov-report=xml test_app.py
+          pipenv run coverage report -m
+
+      - name: Build Docker image
+        run: |
+          docker build -t web-app \
+            --build-arg MONGO_CXN_STRING=mongodb://localhost:27017/ \
+            .
