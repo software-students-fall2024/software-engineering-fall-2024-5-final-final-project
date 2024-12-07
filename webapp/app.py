@@ -64,7 +64,7 @@ def groups():
                 "group_id": group["_id"]
             })
 
-    return render_template('groups.html', groups=group_details)
+    return render_template('groups.html', groups=group_details, zip=zip)
 
 @app.route('/check-user')
 def check_user():
