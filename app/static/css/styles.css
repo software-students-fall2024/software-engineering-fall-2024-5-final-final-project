@@ -13,9 +13,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 20px;
-    border-bottom: 1px solid #ddd;
-    
+    padding: 20px 50px;    
 }
 
 .header-title {
@@ -30,7 +28,7 @@ body {
 
 .header-buttons {
     display: flex;
-    gap: 10px; 
+    gap: 10px;
 }
 
 .button-primary, .button-secondary {
@@ -41,7 +39,7 @@ body {
     border: 1px solid #ccc; 
     border-radius: 20px; 
     cursor: pointer;
-    font-size: 12px;
+    font-size: 14px;
 }
 
 .button-primary:hover, .button-secondary:hover {
@@ -53,7 +51,8 @@ body {
 .content-container {
     display: flex; 
     flex-direction: column; 
-    margin: 0 50px; 
+    margin: auto; 
+    width: 70%;
     gap: 10px;
 }
 .search-bar-container {
