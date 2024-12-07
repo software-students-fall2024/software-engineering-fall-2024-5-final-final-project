@@ -18,4 +18,4 @@ ADD . .
 EXPOSE 5000
 
 # Run app.py when the container launches
-CMD [ "python3", "-m" , "flask", "run", "-h", "0.0.0.0" ]
+CMD [ "python3", "-m" , "flask", "-A", "app.py", "run", "-h", "0.0.0.0" ]
