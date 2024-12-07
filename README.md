@@ -1,3 +1,5 @@
+[![Run WebApp Test](https://github.com/software-students-fall2024/5-final-y2k/blob/main/.github/workflows/testing.yml/badge.svg)](https://github.com/software-students-fall2024/5-final-y2k/blob/main/.github/workflows/testing.yml)
+ [![Run MongoDB Tests](https://github.com/software-students-fall2024/5-final-y2k/blob/main/.github/workflows/publishing.yml/badge.svg)](https://github.com/software-students-fall2024/5-final-y2k/blob/main/.github/workflows/publishing.yml) 
 # Final Project
 
 An exercise to put to practice software development teamwork, subsystem communication, containers, deployment, and CI/CD pipelines. See [instructions](./instructions.md) for details.
@@ -5,6 +7,11 @@ An exercise to put to practice software development teamwork, subsystem communic
 ## Project Name
 
 y2k 
+
+This project utilizes a Docker container to streamline deployment and functionality.  
+The container image for this project is available on DockerHub:
+
+[**Container Image on DockerHub**](https://hub.docker.com/r/lucaignatescu/y2k-final-project)
 
 ## Table of Contents
 1. [Project Description](#project-description)
@@ -68,14 +75,23 @@ pipenv install
 ```
 pipenv shell
 ```
-
 ### 5. Build and run docker containers
+
+Create a .env file 
+
+```
+MONGODB_USERNAME= abc123
+MONGODB_PASSWORD= abc123
+FLASK_SECRET= abc123
+```
+
+### 6. Build and run docker containers
 
 ```
 docker compose up
 ```
 
-### 6. Stop docker containers
+### 7. Stop docker containers
 
 ```
 docker compose down

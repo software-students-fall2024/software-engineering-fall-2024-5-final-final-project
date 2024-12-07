@@ -21,7 +21,7 @@
     <ul class="grid">
       {% for file in files %}
       <li class="card">
-        
+        <img src="{{ url_for('static', filename='unlock.png') }}" class="unlocked"/>
         <p><strong>{{ file.name }}</strong></p>
         <p>{{ file.transcription or "Not processed yet" }}</p>
       </li>
