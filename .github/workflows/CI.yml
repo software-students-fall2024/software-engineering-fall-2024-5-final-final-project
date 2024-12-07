@@ -35,6 +35,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          cd web-app
           pip install pipenv
           pipenv install --dev
 
@@ -42,9 +43,10 @@ jobs:
         env:
           MONGO_CXN_STRING: mongodb://localhost:27017/
         run: |
-          # Move to the repository root
-          python -m pytest web-app/test_app.py --cov=web-app --cov-report=xml
-          python -m coverage report -m
+          # Activate pipenv shell and run tests from the root directory
+          cd web-app
+          pipenv run pytest ../web-app/test_app.py --cov=../web-app --cov-report=xml
+          pipenv run coverage report -m
 
       - name: Build Docker image
         run: |

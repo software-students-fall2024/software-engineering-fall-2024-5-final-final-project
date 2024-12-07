@@ -5,12 +5,12 @@ name = "pypi"
 
 [packages]
 flask = "*"
-pytest = "*"
 pymongo = "*"
 flask-bcrypt = "*"
 flask-login = "*"
 mongomock = "*"
 pytest-cov = "*"
+pytest = "*"
 
 [dev-packages]
 black = "*"
