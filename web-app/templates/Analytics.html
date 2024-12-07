@@ -101,56 +101,92 @@ Analytics
     <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
 
     <script>
-        am4core.ready(function() {
+        am4core.ready(async function() {
 
             // Themes begin
             am4core.useTheme(am4themes_animated);
             // Themes end
             
+            // fetch analytics data from the backend route
+            let eventsData = [];
+            let groupedAnalyticsData = {};
+            try {
+                const eventsResponse = await fetch("/user/get-events");
+                eventsData = await eventsResponse.json();
+
+                const analyticsResponse = await fetch("/user/analytics-data");
+                groupedAnalyticsData = await analyticsResponse.json();
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                return;
+            }
+            const totalChartData = eventsData.reduce((acc, event) => {
+                const category = event.Category;
+                acc[category] = (acc[category] || 0) + event.Amount;
+                return acc;
+            }, {});
+
+            const pieChartData = Object.entries(totalChartData).map(([category, amount]) => ({
+                category,
+                amount,
+            }));
+
             var chart = am4core.create("chart", am4charts.PieChart3D);
             chart.hiddenState.properties.opacity = 0; // this creates initial fade-in
             
             chart.legend = new am4charts.Legend();
             chart.legend.labels.template.text = "[bold {white}]{name}[/]"
-
             chart.fill = am4core.color("white").lighten(0.5)
 
             
-            chart.data = [
-              {
-                country: "Transportation",
-                litres: 79.50
-              },
-              {
-                country: "Cell Phone",
-                litres: 13.80
-              },
-              {
-                country: "Food",
-                litres: 79.10
-              },
-              {
-                country: "Transportation",
-                litres: 79.50
-              },
-              {
-                country: "Cell Phone",
-                litres: 13.80
-              },
-              {
-                country: "Food",
-                litres: 79.10
-              },
-            ];
+            chart.data = pieChartData;
             
             var series = chart.series.push(new am4charts.PieSeries3D());
-            series.dataFields.value = "litres";
-            series.dataFields.category = "country";
+            series.dataFields.value = "amount";
+            series.dataFields.category = "category";
             series.legendSettings.labelText = "[bold {color}]{name}[/]"
             series.legendSettings.valueText = "[bold {color}]{value}[/]"
             series.labels.template.disabled = true;
             series.ticks.template.disabled = true;
             
+
+            // table of summary for grouped expenses
+            const expenseSummary = document.getElementById("expense-summary");
+            expenseSummary.innerHTML = ""; // clear old content
+
+            const groupedByMonth = Object.keys(groupedAnalyticsData).sort();
+            let totalExpenses = 0;
+
+            groupedByMonth.forEach((monthYear) => {
+                const monthData = groupedAnalyticsData[monthYear];
+                const monthTotal = Object.values(monthData).reduce((sum, value) => sum + value, 0);
+                totalExpenses += monthTotal;
+
+                // transactions grouped by month + year title
+                const monthTitle = document.createElement("h3");
+                monthTitle.classList.add("expense-item");
+                monthTitle.textContent = new Date(`${monthYear}-01`).toLocaleString("default", {
+                    month: "long",
+                    year: "numeric",
+                });
+                expenseSummary.appendChild(monthTitle);
+
+                // expeneses for the month
+                Object.entries(monthData).forEach(([category, amount], index) => {
+                    const expenseItem = document.createElement("div");
+                    expenseItem.classList.add("expense-item");
+                    if (index % 2 === 1) expenseItem.classList.add("odd");
+
+                    expenseItem.innerHTML = `<span>${category}</span><span>-$${amount.toFixed(2)}</span>`;
+                    expenseSummary.appendChild(expenseItem);
+                });
+            });
+
+            // total Expense
+            const totalExpenseDiv = document.createElement("div");
+            totalExpenseDiv.classList.add("expense-item", "total-expense");
+            totalExpenseDiv.innerHTML = `<span>Total Expenses:</span><span>-$${totalExpenses.toFixed(2)}</span>`;
+            expenseSummary.appendChild(totalExpenseDiv);
             });
     
     /**

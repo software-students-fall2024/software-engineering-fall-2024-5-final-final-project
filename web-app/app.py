@@ -54,7 +54,6 @@ def analytics():
     """Render Analytics page"""
     return render_template("Analytics.html")
 
-
 @app.route("/search")
 @login_required
 def search():
