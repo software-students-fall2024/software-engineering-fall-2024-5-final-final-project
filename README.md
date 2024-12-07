@@ -24,3 +24,8 @@ Our Personal Finance Tracker is a web application meant to assist users in manag
     - [Flask Configuration](https://codingnomads.com/python-flask-app-configuration-project-structure)
     - [Flask Stucture and Blueprints](https://www.digitalocean.com/community/tutorials/how-to-structure-a-large-flask-application-with-flask-blueprints-and-flask-sqlalchemy)
     - [Flask with MongoDB and Docker](https://www.digitalocean.com/community/tutorials/how-to-set-up-flask-with-mongodb-and-docker)
+    - [Flask Login](https://www.digitalocean.com/community/tutorials/how-to-add-authentication-to-your-app-with-flask-login)
+    - [Bcrypt](https://pypi.org/project/bcrypt/)
+    - [More Bcrypt](https://www.geeksforgeeks.org/password-hashing-with-bcrypt-in-flask/)
+    - [Flask Pytest](https://testdriven.io/blog/flask-pytest/)
+    - [More Pytest](https://www.geeksforgeeks.org/pytest-tutorial-testing-python-application-using-pytest/)

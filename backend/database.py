@@ -11,6 +11,8 @@ from datetime import datetime
 import os
 from pymongo import MongoClient
 from bson import ObjectId
+from flask_login import UserMixin
+import bcrypt
 
 
 @dataclass
@@ -50,10 +52,11 @@ class Database:
         Ensure that the default user exists in the database with an initial budget.
         """
         if not self.db.users.find_one({"username": "user"}):
+            hashed_password = bcrypt.hashpw("pw".encode("utf-8"), bcrypt.gensalt())
             self.db.users.insert_one(
                 {
                     "username": "user",
-                    "password": "pw",
+                    "password": hashed_password,  # Store hashed password
                     "budget": 0.0,
                     "total_expenses": 0.0,
                 }
@@ -64,6 +67,12 @@ class Database:
         Retrieve data for a specific user.
         """
         return self.db.users.find_one({"username": username})
+
+    def get_user_by_id(self, user_id: ObjectId) -> dict:
+        """
+        Retrieve data with an id.
+        """
+        return self.db.users.find_one({"_id": user_id})
 
     def update_budget(self, username: str, amount: float) -> None:
         """
@@ -129,3 +138,18 @@ class Database:
             expense_list.append(Expense(**expense_data))
 
         return expense_list
+
+
+class User(UserMixin):
+    """
+    Represents a user for Flask-Login
+    """
+
+    def __init__(self, user_data):
+        self.id = str(user_data["_id"])
+        self.username = user_data["username"]
+        self.password = user_data["password"]
+
+    def get_id(self):
+        """Return the ID."""
+        return self.id
