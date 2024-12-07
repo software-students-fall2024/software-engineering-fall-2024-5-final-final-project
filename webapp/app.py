@@ -61,8 +61,7 @@ def groups():
         if group:
             group_details.append({
                 "group_name": group["group_name"],
-                "group_members": [member[0] for member in group["group_members"]],
-                "group_balances": [member[1] for member in group["group_members"]],
+                "group_members": [{"name": member[0], "balance": member[1]} for member in group["group_members"]],
                 "group_id": group["_id"]
             })
 
@@ -135,22 +134,20 @@ def group_details(group_id):
             flash("Group not found.", "error")
             return redirect(url_for("groups"))
 
+        # Format group members (name and balance)
         group_name = group.get("group_name", "Unnamed Group")
-        group_members = group.get("group_members", [])
-        expenses = group.get("expenses", [])
+        group_members = [{"name": member[0], "balance": member[1]} for member in group.get("group_members", [])]
 
+        # Format expenses (paid_by and split_among)
         detailed_expenses = []
-        for expense in expenses:
-            # Fetch payer's name
-            paid_by_user = col_users.find_one({"_id": ObjectId(expense["paid_by"])})
-            paid_by_name = paid_by_user["name"] if paid_by_user else "Unknown"
+        for expense in group.get("expenses", []):
+            paid_by_name = expense.get("paid_by", "Unknown")  # Paid_by is stored as name directly
+            split_among = expense.get("split_among", {})
 
-            # Handle missing 'split_among' gracefully
-            split_among = expense.get("split_among", {})  # Default to an empty dictionary if key is missing
-            split_among_detailed = {
-                col_users.find_one({"_id": ObjectId(user_id)})["name"] if col_users.find_one({"_id": ObjectId(user_id)}) else "Unknown": share
-                for user_id, share in split_among.items()
-            }
+            split_among_detailed = [
+                {"name": name, "amount": share}
+                for name, share in split_among.items()
+            ]
 
             detailed_expenses.append({
                 "expense_id": expense.get("expense_id"),
@@ -172,6 +169,7 @@ def group_details(group_id):
         return redirect(url_for("groups"))
 
 
+
 @app.route('/add-expense', methods=["GET", "POST"])
 def add_expense():
     if 'username' not in session:
@@ -189,32 +187,35 @@ def add_expense():
             group_id = request.form.get("group_id")
             description = request.form.get("description")
             amount = float(request.form.get("amount"))
-            paid_by = ObjectId(request.form.get("paid_by"))
+            paid_by = request.form.get("paid_by")
             split_with = request.form.getlist("split_with[]")
             percentages = [float(p) for p in request.form.get("percentages").split(",")]
 
             # Validate percentages
-            if len(percentages) != len(split_with) or sum(percentages) != 1.0:
-                flash("Split percentages must match members and total 1.0.", "error")
+            if len(percentages) != len(split_with):
+                flash("The number of split members and percentages do not match.", "error")
                 return redirect(url_for("add_expense"))
 
-            # Prepare split_among with string keys
+            if sum(percentages) != 1.0:
+                flash("Split percentages must sum to 1.0.", "error")
+                return redirect(url_for("add_expense"))
+
+            # Prepare split_among
             split_among = {
-                str(ObjectId(split_with[i])): round(percentages[i] * amount, 2)
-                for i in range(len(split_with))
+                member: round(percentages[i] * amount, 2) for i, member in enumerate(split_with)
             }
 
-            # Create the expense document
+            # Create expense document
             expense_id = str(ObjectId())
             expense = {
                 "expense_id": expense_id,
                 "description": description,
                 "amount": amount,
-                "paid_by": str(paid_by),
-                "split_among": split_among  # Ensure this field is always present
+                "paid_by": paid_by,
+                "split_among": split_among
             }
 
-            # Add the expense to the group
+            # Add expense to the group
             col_groups.update_one({"_id": group_id}, {"$push": {"expenses": expense}})
             flash("Expense added successfully!", "success")
             return redirect(url_for("group_details", group_id=group_id))
@@ -223,8 +224,18 @@ def add_expense():
             flash(f"Error adding expense: {str(e)}", "error")
             return redirect(url_for("add_expense"))
 
+    # Fetch groups for the user
     user_groups = user.get("groups", [])
-    group_details = [col_groups.find_one({"_id": group_id}) for group_id in user_groups]
+    group_details = [
+        {
+            "_id": group["_id"],
+            "group_name": group["group_name"],
+            "group_members": [{"name": member[0], "user_id": member[1]} for member in group["group_members"]]
+        }
+        for group_id in user_groups
+        if (group := col_groups.find_one({"_id": group_id}))
+    ]
+
     return render_template('add-expense.html', groups=group_details)
 
 @app.route("/registration", methods=["GET", "POST"])
