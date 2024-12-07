@@ -2,7 +2,7 @@
 Web app frontend
 """
 
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, request
 from flask_login import current_user, login_required, logout_user
 import os
 from pymongo.mongo_client import MongoClient
@@ -70,6 +70,49 @@ def logout():
     "Logout route"
     logout_user()
     return redirect(url_for("index.html"))
+
+@app.route("/user-info")
+@login_required 
+def getUserInfo():
+    #retrieve user info and return with template
+    user_info = {
+        "username": current_user.username,
+        "password": current_user.password,
+        "firstname": current_user.firstname,
+        "lastname": current_user.lastname
+    }
+    
+    return render_template("edit-user-info.html", user_info=user_info)
+
+@app.route("/update-info")
+@login_required
+def getUpdatePage():
+    user_info = {
+        "username": current_user.username,
+        "firstname": current_user.firstname,
+        "lastname": current_user.lastname
+    }
+    
+    return render_template("edit-user-info.html", user_info=user_info)
+
+@app.route("/user-info",methods=["POST"])
+@login_required
+def updateUserInfo():
+    # getting firstname and last name from the HTML form
+    firstname = request.form["firstname"]
+    lastname = request.form["lastname"]
+    
+    # update the user's first name and last name in the mongodb
+    db.users.update_one(
+        {"username": current_user.username},
+        {"$set": {"firstname": firstname, "lastname": lastname}}
+    )
+    
+    # update the current_user object on flask app
+    current_user.firstname = firstname
+    current_user.lastname = lastname
+    
+    return redirect(url_for("getUserInfo"))
 
 # write new functions here
 if __name__ == "__main__":

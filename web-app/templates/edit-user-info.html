@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% block title %}
+Edit User Info
+{% endblock %}
+{% block styles %}
+    {{ super() }} 
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: black;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .signup-container {
+            display: flex;
+            max-width: 90vw;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: auto;
+            color: #6CB873;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+            gap: 1rem;
+        }
+        .signup-container form{
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .signup-container h1 {
+            margin-bottom: 20px;
+            padding: 0.8rem 1.5rem;
+            border: 6px solid #6CB873;
+            border-radius: 1.6rem;
+            flex-grow: 0;
+            
+        }
+        .signup-container input {
+            width: 90%;
+            background-color: #858585;
+            padding: 5%;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+        .email-input {
+            color: #C0C0C0;
+            font-style: italic;
+            cursor: not-allowed;
+        }
+        .signup-container input::placeholder {
+            color: #C0C0C0;
+        }
+        .signup-btn {
+            background-color: #6CB873;
+            font-weight: bold;
+            color: black;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            margin-top: 10vh;
+            padding: 1rem 0rem;
+        }
+        .sign-up:hover {
+            background-color: #45a049;
+        }
+        .delete-btn {
+            background-color: #ff4a4a;
+            font-weight: bold;
+            color: black;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            padding: 1rem 0rem;
+            text-decoration: none;
+        }
+        .delete-btn:hover {
+            background-color: #d73e3e;
+        }
+        .back-btn {
+            background-color: transparent;
+            color: #6CB873;
+            border: 2px solid #6CB873;
+            font-weight: bold;
+            padding: 10px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        .back-btn:hover {
+            background-color: #6CB873;
+            color: black;
+        }
+        .flash-message {
+            color: red;
+            background-color: #f8d7da;
+            padding: 10px;
+            border-radius: 5px;
+            width: 90%;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        #danger-zone{
+            color:  #d73e3e;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+<div class="signup-container">
+    <h2>Edit User Info</h2>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="flash-message">
+                {{ messages[0] }} 
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <form action="/user-info" method="POST">
+        <input type="email" class="email-input" id="username" name="username" placeholder="Email" value={{user_info.username}} readonly>
+        <input type="text" id="firstname" name="firstname" placeholder="First Name" value={{user_info.firstname}} required>
+        <input type="text" id="lastname" name="lastname" placeholder="Last Name" value={{user_info.lastname}} required>
+        <button type="submit" class="signup-btn">Update Info</button>
+    </form>
+
+    <button onclick="goBack()" class="back-btn">Cancel</button>
+
+    <h2 id="danger-zone">Danger Zone</h2>
+    <a href="/delete-acct" class="delete-btn">Delete Account</a>
+</div>
+
+<script>
+    function goBack() {
+      window.history.back();
+    }
+</script>
+{% endblock %}
