@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post Detail</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .post-detail-container {
+            background: white;
+            padding: 30px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .post-title {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .post-meta {
+            margin: 15px 0;
+            padding: 10px 0;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+        }
+
+        .post-content {
+            line-height: 1.8;
+            margin-top: 20px;
+        }
+
+        .back-button {
+            display: inline-block;
+            background: #007bff;
+            color: white;
+            padding: 8px 16px;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+
+        .back-button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1>Blog Post</h1>
+            <div>
+                <a href="../index.html">Back to Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div id="error-message" class="error-message"></div>
+        <div id="post-detail" class="post-detail-container">
+            <!-- Post content will be loaded here -->
+        </div>
+    </div>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/posts.js"></script>
+    <script>
+        checkAuth();
+        loadPostDetail();
+    </script>
+</body>
+</html>
