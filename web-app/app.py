@@ -45,7 +45,7 @@ def menu():
 @app.route("/calendar")
 def calendar():
     """Render calendar page"""
-    return render_template("Calendar.html")
+    return render_template("calendar.html")
 
 
 @app.route("/analytics")
