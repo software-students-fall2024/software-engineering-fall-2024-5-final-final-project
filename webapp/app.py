@@ -3,7 +3,9 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from bson.objectid import ObjectId  # To handle MongoDB ObjectIds
 import os
+import datetime
 import bcrypt
+
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -57,12 +59,17 @@ def groups():
         if group:
             group_details.append({
                 "group_name": group["group_name"],
-                "group_members": [member["name"] for member in group["group_members"]],
+                "group_members": [[member["name"], 0] for member in group["group_members"] if isinstance(member, dict)],  # 2D array
                 "group_id": group["_id"]
             })
 
     return render_template('groups.html', groups=group_details)
 
+@app.route('/check-user')
+def check_user():
+    username = request.args.get('username')
+    user = col_users.find_one({"name": username})
+    return {"exists": bool(user)}
 
 @app.route('/create-group', methods=["GET", "POST"])
 def create_group():
@@ -72,11 +79,7 @@ def create_group():
 
     if request.method == "POST":
         group_name = request.form.get("group_name")
-        members = request.form.get("members").split(",")
-
-        if not group_name or not members:
-            flash("Group name and at least one member are required.", "error")
-            return redirect(url_for("create_group"))
+        members = request.form.get("members").split(",")  # Split usernames by commas
 
         # Fetch user IDs for members
         member_objects = []
@@ -88,26 +91,26 @@ def create_group():
                 flash(f"User '{member_name.strip()}' does not exist.", "error")
                 return redirect(url_for("create_group"))
 
+        # Ensure the current user is also added to the group
         current_user = col_users.find_one({"name": session['username']})
         if current_user and current_user["_id"] not in [m["user_id"] for m in member_objects]:
             member_objects.append({"user_id": current_user["_id"], "name": current_user["name"]})
 
-        # Generate unique group ID
-        new_group_id = str(ObjectId())
+        # Create the group with a 2D array for group members
         new_group = {
-            "_id": new_group_id,
+            "_id": str(ObjectId()),  # Generate a unique ID for the group
             "group_name": group_name,
-            "group_members": member_objects,
+            "group_members": [[member["name"], 0] for member in member_objects],  # 2D array
             "expenses": []
         }
 
         col_groups.insert_one(new_group)
 
-        # Add group to users' group lists
+        # Add the group ID to each member's group list
         for member in member_objects:
             col_users.update_one(
                 {"_id": member["user_id"]},
-                {"$addToSet": {"groups": new_group_id}}
+                {"$push": {"groups": new_group["_id"]}}
             )
 
         flash(f"Group '{group_name}' created successfully!", "success")
