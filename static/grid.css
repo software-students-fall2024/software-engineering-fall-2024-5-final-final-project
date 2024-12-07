@@ -43,14 +43,8 @@
   text-decoration: none;
 }
 
-.locked{
-  width: 30px;
-  position: absolute; 
-  top: 10px; 
-  right: 10px; 
-}
-.unlocked{
-  width: 30px;
+.lock{
+  width: 20px;
   position: absolute; 
   top: 10px; 
   right: 10px; 
