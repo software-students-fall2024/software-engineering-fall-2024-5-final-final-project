@@ -8,7 +8,29 @@ def home():
 
 @app.route('/user')
 def user():
-    return render_template('user.html')
+    # HARDCODED! CHANGE LATER
+    # WHEN LOGIN/LOGOUT FUNCTION IS ADDED
+    user_id = "user1"
+
+    user = db.users.find_one({"id": user_id}, {"_id": 0, "wishlist": 1, "inventory": 1})
+    if not user:
+        return "User not found", 404
+
+    inventory = list(
+        db.books.find(
+            {"id": {"$in": user["inventory"]}},
+            {"_id": 0, "title": 1, "author": 1, "description": 1}
+        )
+    )
+
+    wishlist = list(
+        db.books.find(
+            {"id": {"$in": user["wishlist"]}},
+            {"_id": 0, "title": 1, "author": 1, "description": 1}
+        )
+    )
+
+    return render_template('user.html', inventory=inventory, wishlist=wishlist)
 
 @app.route('/matches')
 def matches():

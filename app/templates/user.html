@@ -20,6 +20,42 @@
             </div>
         </header>
     </div>
-    
+    <!-- remember to add delete functionality! -->
+     <!-- also add logout -->
+    <!-- my collection -->
+    <div class="content-container">
+        <section class="book-list-container">
+            <h2>your inventory</h2>
+            <div class="book-list">
+                {% for book in inventory %}
+                <div class="book">
+                    <div class="book-details">
+                        <h3 class="book-title">{{ book.title }}</h3>
+                        <p class="book-author">by {{ book.author }}</p>
+                        <p class="book-description">{{ book.description }}</p>
+                    </div>
+                    <button class="add-button">Add</button>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- wishlist -->
+        <section class="book-list-container">
+            <h2>your wishlist</h2>
+            <div class="book-list">
+                {% for book in wishlist %}
+                <div class="book">
+                    <div class="book-details">
+                        <h3 class="book-title">{{ book.title }}</h3>
+                        <p class="book-author">by {{ book.author }}</p>
+                        <p class="book-description">{{ book.description }}</p>
+                    </div>
+                    <button class="add-button">Add</button>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </div> 
 </body>
 </html>
