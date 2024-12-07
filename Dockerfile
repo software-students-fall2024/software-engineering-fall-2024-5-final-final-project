@@ -6,7 +6,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 # Set working directory
-WORKDIR /app
+WORKDIR /webapp
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -19,11 +19,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Install pipenv
 RUN pip install --no-cache-dir pipenv
 
-# Ensure pipenv is in PATH
-ENV PATH="/root/.local/bin:$PATH"
-
 # Copy Pipfile to the container
-COPY Pipfile /app/
+COPY Pipfile /webapp/
 
 # Run pipenv lock to generate a new Pipfile.lock
 RUN pipenv lock
@@ -32,10 +29,10 @@ RUN pipenv lock
 RUN pipenv install --system --deploy
 
 # Copy the rest of the application code
-COPY . /app/
+COPY webapp/ /webapp
 
 # Expose port
-EXPOSE 5000
+EXPOSE 5001
 
 # Command to run the application
 CMD ["python", "app.py"]
