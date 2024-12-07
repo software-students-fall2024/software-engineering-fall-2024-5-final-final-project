@@ -20,8 +20,7 @@
             </div>
         </header>
     </div>
-    <!-- remember to add delete functionality! -->
-     <!-- also add logout -->
+     <!-- add  generic user info / logout functionality -->
     <!-- my collection -->
     <div class="content-container">
         <section class="book-list-container">
@@ -34,7 +33,7 @@
                         <p class="book-author">by {{ book.author }}</p>
                         <p class="book-description">{{ book.description }}</p>
                     </div>
-                    <button class="add-button">Add</button>
+                    <button class="delete-button">Delete</button>
                 </div>
                 {% endfor %}
             </div>
@@ -51,7 +50,7 @@
                         <p class="book-author">by {{ book.author }}</p>
                         <p class="book-description">{{ book.description }}</p>
                     </div>
-                    <button class="add-button">Add</button>
+                    <button class="delete-button">Delete</button>
                 </div>
                 {% endfor %}
             </div>
