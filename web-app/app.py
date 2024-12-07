@@ -108,7 +108,7 @@ def updateUserInfo():
     lastname = request.form["lastname"]
 
     # update the user's first name and last name in the mongodb
-    db.users.update_one(
+    auth.db.users.update_one(
         {"username": current_user.username},
         {"$set": {"firstname": firstname, "lastname": lastname}},
     )
