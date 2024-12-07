@@ -19,10 +19,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Install pipenv
 RUN pip install --no-cache-dir pipenv
 
-# Copy Pipfile and Pipfile.lock
-COPY Pipfile Pipfile.lock /app/
+# Ensure pipenv is in PATH
+ENV PATH="/root/.local/bin:$PATH"
 
-# Install dependencies
+# Copy Pipfile to the container
+COPY Pipfile /app/
+
+# Run pipenv lock to generate a new Pipfile.lock
+RUN pipenv lock
+
+# Install dependencies using the new Pipfile.lock
 RUN pipenv install --system --deploy
 
 # Copy the rest of the application code
@@ -32,4 +38,4 @@ COPY . /app/
 EXPOSE 5000
 
 # Command to run the application
-CMD ["pipenv", "run", "python", "app.py"]
+CMD ["python", "app.py"]
