@@ -1,0 +1,32 @@
+version: "3.8"
+services:
+  mongodb:
+    build:
+      context: ./web_app/mongodb
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - app-network
+
+  flask-app:
+    build:
+      context: ./web_app
+    container_name: flask-app
+    ports:
+      - "5002:5002"
+    environment:
+      - SECRET_KEY=your_secret_key
+      - MONGO_URI=mongodb://mongodb:27017/resume_db
+    depends_on:
+      - mongodb
+    networks:
+      - app-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  app-network:
