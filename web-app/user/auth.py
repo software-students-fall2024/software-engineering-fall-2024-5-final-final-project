@@ -1,4 +1,4 @@
-from flask import Blueprint, request, redirect, url_for, flash, render_template
+from flask import Blueprint, request, redirect, url_for, flash, render_template, session
 from flask_login import LoginManager, login_user, logout_user, login_required
 from user.models import User
 from pymongo import MongoClient
@@ -56,5 +56,6 @@ def signup():
 @login_required
 def logout():
     logout_user()
+    session.clear()
     flash("Logged out successfully!", "success")
     return redirect(url_for("auth.login"))
