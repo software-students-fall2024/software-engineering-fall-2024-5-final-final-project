@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='grid.css') }}">
+  <title>Public Files</title>
+</head>
+<body>
+  <nav>
+    <ul style="padding-inline-start: 0px;">
+      <li class="navItem"><a href="{{ url_for('record') }}">Record</a></li>
+      <li class="navItem"><a class="current" href="{{ url_for('public_files') }}">Public</a></li>
+      <li class="navItem"><a href="{{ url_for('user_files') }}">Private</a></li>
+      <li class="navItem" style="float:right"><a href="{{ url_for('logout') }}">Logout</a></li>
+    </ul>
+  </nav>
+  <h1>Public Files</h1>
+    <ul class="grid">
+      {% for file in files %}
+      <li class="card">
+        <img src="{{ url_for('static', filename='unlock.png') }}" class="lock"/>
+        <p><strong>{{ file.name }}</strong></p>
+        <p>{{ file.transcription or "Not processed yet" }}</p>
+      </li>
+      {% else %}
+      <p>No public files available.</p>
+      {% endfor %}
+    </ul>
+  <!-- <button><a href="{{ url_for('user_files') }}">User Files</a></button> -->
+</body>
+
+</html>

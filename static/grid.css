@@ -1,0 +1,51 @@
+.grid{
+  display: flex;
+  justify-content: space-evenly;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: stretch;
+  width: 95%;
+}
+
+.card{
+  background: linear-gradient(90deg, rgb(171, 240, 251) 0%, rgb(209, 225, 167) 68%);
+  border-radius: 20px;
+  padding: 20px;
+  margin: 10px;
+  width: 300px;
+  height: 150px;
+  display: flex;
+  justify-content: center;
+  text-align: left;
+  align-items: center;
+  flex-direction: column;
+  position: relative;
+  /* margin: 10px; */
+}
+.buttons{
+  width: 300px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.small_buttons{
+  font-size: .7rem;
+  cursor: pointer;
+  border: none;
+  /* border-radius: 20px; */
+  /* background: linear-gradient(to bottom, #f7fdd6, #8fda8c); */
+  padding: 5px;
+  width: 50px;
+  color: rgb(0, 0, 0);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.small_buttons a{
+  text-decoration: none;
+}
+
+.lock{
+  width: 20px;
+  position: absolute; 
+  top: 10px; 
+  right: 10px; 
+}
