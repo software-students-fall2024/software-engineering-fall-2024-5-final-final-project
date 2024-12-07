@@ -1,4 +1,4 @@
-from flask import Blueprint, request, redirect, url_for, flash, render_template, session
+from flask import Blueprint, request, redirect, url_for, render_template, session
 from flask_login import LoginManager, login_user, logout_user, login_required
 from user.models import User
 from pymongo import MongoClient
@@ -27,7 +27,6 @@ def login():
         user = User.validate_login(db, username, password)
         if user:
             login_user(user)
-            flash("Logged in successfully!", "success")
             return redirect(url_for("index"))
         else:
             flash("Invalid username or password", "danger")
@@ -47,7 +46,6 @@ def signup():
             flash("Username already exists", "danger")
         else:
             User.create_user(db, username, password, firstname, lastname)
-            flash("Account created successfully! Please log in.", "success")
             return redirect(url_for("auth.login"))
     return render_template("Signup.html")
 
@@ -57,5 +55,4 @@ def signup():
 def logout():
     logout_user()
     session.clear()
-    flash("Logged out successfully!", "success")
     return redirect(url_for("auth.login"))
