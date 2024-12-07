@@ -1,8 +1,7 @@
 """
-Testing code for web app frontend. Run with 'python -m
-pytest test_app.py'
-or to see with coverage run with
-'python -m pytest --cov=app test_app.py'
+Testing code for web app frontend. Run with 'python -m pytest test_app.py'
+or to see with coverage run from root directory with
+'python -m pytest web-app/test_app.py --cov=web-app'
 """
 
 import pytest
@@ -48,7 +47,7 @@ def mock_db(monkeypatch):
 
 
 @pytest.fixture
-def mock_user():
+def mock_user(monkeypatch):
     """Mock a logged-in user."""
     mock_user = MagicMock(spec=User)
     mock_user.email = "testuser@example.com"
@@ -70,6 +69,7 @@ def mock_user():
             "Memo": "Train",
         },
     ]
+    monkeypatch.setattr("flask_login.utils._get_user", lambda: mock_user)
     return mock_user
 
 
@@ -92,23 +92,41 @@ class Tests:
         assert actual == expected, "Expected True to be equal to True!"
 
     @patch("flask_login.utils._get_user")
-    def test_user_login(self, mock_get_user, client, mock_db):
+    @patch("user.user.db")
+    @patch("user.user.bcrypt.check_password_hash")
+    def test_user_login(
+        self, mock_check_password, mock_db, mock_get_user, client, mock_user
+    ):
         """Test user login."""
-        mock_user = MagicMock(spec=User, email="testuser@example.com")
         mock_get_user.return_value = mock_user
+        mock_check_password.return_value = (
+            True  # Make the password check always return True
+        )
+
+        mock_db.users.find_one.return_value = {
+            "email": "testuser@example.com",
+            "password": "doesn't_matter",
+            "firstname": "Test",
+            "lastname": "User",
+        }
 
         response = client.post(
             "/user/login",
             data={"email": "testuser@example.com", "password": "password123"},
         )
-        assert response.status_code == 302  # Redirect after login
+
+        assert response.status_code == 302
         assert response.location.endswith(url_for("index"))
 
-    @patch("flask_login.utils._get_user")
-    def test_user_add_event(self, mock_get_user, client, mock_user):
-        """Test adding an event for a logged-in user."""
-        mock_get_user.return_value = mock_user
+        response = client.post(
+            "/user/login",
+            data={"email": "testuser@example.com", "password": "password123"},
+        )
+        assert response.status_code == 302
+        assert response.location.endswith(url_for("index"))
 
+    def test_user_add_event(self, client, mock_user):
+        """Test adding an event for a logged-in user."""
         response = client.post(
             "/user/add-event",
             json={
@@ -122,11 +140,8 @@ class Tests:
         assert response.json == {"message": "Event added successfully"}
         mock_user.add_event.assert_called_once()
 
-    @patch("flask_login.utils._get_user")
-    def test_get_events(self, mock_get_user, client, mock_user):
+    def test_get_events(self, client, mock_user):
         """Test retrieving user events."""
-        mock_get_user.return_value = mock_user
-
         response = client.get("/user/get-events")
         assert response.status_code == 200
         events = response.json
@@ -134,11 +149,8 @@ class Tests:
         assert events[0]["Category"] == "Food"
         assert events[1]["Category"] == "Transportation"
 
-    @patch("flask_login.utils._get_user")
-    def test_analytics_data(self, mock_get_user, client, mock_user):
+    def test_analytics_data(self, client, mock_user):
         """Test analytics data."""
-        mock_get_user.return_value = mock_user
-
         response = client.get("/user/analytics-data")
         assert response.status_code == 200
         analytics = response.json
