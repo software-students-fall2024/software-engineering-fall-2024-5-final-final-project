@@ -144,11 +144,11 @@ def display_my_info():
         all_posts.append({
             "post_id": str(post["_id"]),
             "title": post["title"],
-            "image_url": image_url,
+	    "image_url": image_url,
             "created_at": post.get("created_at")
         })
 
-    return render_template("myInfo.html", posts=all_posts)
+    return render_template("myInfo.html", posts=all_posts, username=cur_user)
 
 
 @app.route("/image/<image_id>")
@@ -296,7 +296,35 @@ def ini():
     """
     return redirect(url_for("home"))
 
+@app.route("/edit-username", methods=["GET", "POST"])
+@login_required
+def edit_profile():
+    if request.method == "POST":
+        new_username = request.form.get("new_username")
 
+        if not new_username or len(new_username.strip()) < 3:
+            flash("Username must be at least 3 characters long.")
+            return redirect(url_for("edit_profile"))
+
+        existing_user = users_collection.find_one({"username": new_username})
+        if existing_user:
+            flash("Username already taken. Please choose a different one.")
+            return redirect(url_for("edit_profile"))
+
+        # Update username in the database
+        old_username = current_user.username
+        users_collection.update_one(
+            {"_id": ObjectId(current_user.id)}, {"$set": {"username": new_username}}
+        )
+
+        # Rename the user's collection in MongoDB
+        db[old_username].rename(new_username)
+
+        current_user.username = new_username
+        flash("Your username has been updated successfully!")
+        return redirect(url_for("display_my_info"))
+
+    return render_template("edit_username.html", username=current_user.username)
 
 
 if __name__ == "__main__":
