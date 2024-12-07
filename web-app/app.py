@@ -86,6 +86,13 @@ def user_info():
 
     return render_template("edit-user-info.html", user_info=user_info)
 
+@app.route("/delete-acct")
+@login_required 
+def delete_acct():
+    return render_template("delete-acct.html")
+
+
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
