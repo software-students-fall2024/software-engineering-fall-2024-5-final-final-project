@@ -92,6 +92,7 @@ def load_user(user_id):
             user_id=str(user_data["_id"]),
             username=user_data["username"],
             password=user_data["password"],
+            gender=user_data["gender"]
         )
     return None
 
