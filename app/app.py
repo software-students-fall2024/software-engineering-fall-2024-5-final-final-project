@@ -77,8 +77,6 @@ def home():
                 - "Artist": The artist's name.
                 - "Genre": The genre of the song.
     """
-    cur_user = current_user.username
-    cur_user_collection = db[cur_user]
     
     raw_posts = posts_collection.find().sort("created_at", DESCENDING)
     all_posts = []
@@ -89,11 +87,11 @@ def home():
         all_posts.append({
             "post_id": str(post["_id"]),
             "title": post["title"],
-            "content": post["content"],
             "image_url": image_url,
             "author": post.get("user")
         })
     return render_template("home.html", posts = all_posts)
+
 
 
 
@@ -124,7 +122,7 @@ def add_post():
         
         cur_user_collection.insert_one({"post_id": inserted_post.inserted_id})
         
-        return render_template("home.html", message="Post added successfully!")
+        return home()
     
     return render_template("addpost.html")
 
@@ -146,7 +144,6 @@ def display_my_info():
         all_posts.append({
             "post_id": str(post["_id"]),
             "title": post["title"],
-            "content": post["content"],
             "image_url": image_url,
             "created_at": post.get("created_at")
         })
@@ -299,29 +296,6 @@ def ini():
     """
     return redirect(url_for("home"))
 
-
-def add_recommendations():
-    """
-    Returns:
-        None
-
-    Raises:
-        FileNotFoundError: If the 'songs.txt' file is not found.
-        ValueError: If the content of 'songs.txt' cannot be parsed as a valid Python list.
-        pymongo.errors.PyMongoError: If there are issues with MongoDB operations.
-    """
-    recommend_collection = db.recommendations
-
-    with open("songs.txt", "r", encoding="utf-8") as f:
-        file_content = f.read()
-
-    songs_dict = ast.literal_eval(file_content)
-    songs = songs_dict if isinstance(songs_dict, list) else []
-
-    if recommend_collection.count_documents({}) > 0:
-        recommend_collection.delete_many({})
-
-    recommend_collection.insert_many(songs)
 
 
 
