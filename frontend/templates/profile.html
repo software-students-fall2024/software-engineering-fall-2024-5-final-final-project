@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Welcome, {{ user.username }}</h1>
+<h2>Your Study Sessions</h2>
+<ul>
+    {% for session in user.sessions %}
+    <li>{{ session.course }}: {{ session.date }} at {{ session.time }} {{ session.timezone }}</li>
+    {% endfor %}
+</ul>
+<a href="{{ url_for('logout') }}">Logout</a>
+{% endblock %}

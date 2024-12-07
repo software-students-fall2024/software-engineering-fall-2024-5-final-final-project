@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Your Calendar</h1>
+<p>Here is where your scheduled study sessions will appear.</p>
+<ul>
+    {% for session in sessions %}
+    <li>{{ session.course }}: {{ session.date }} at {{ session.time }} {{ session.timezone }}</li>
+    {% endfor %}
+</ul>
+<a href="{{ url_for('create_session') }}">Create a new session</a>
+{% endblock %}
