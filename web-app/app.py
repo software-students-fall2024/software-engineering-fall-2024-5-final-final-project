@@ -50,9 +50,10 @@ class User(UserMixin):
         id (str): The user's unique ID.
         username (str): The user's username.
         password (str): The user's hashed password.
+        gender(str): The user's gender
     """
 
-    def __init__(self, user_id, username, password):
+    def __init__(self, user_id, username, password, gender):
         """
         Initialize the User object.
 
@@ -60,10 +61,12 @@ class User(UserMixin):
             user_id (str): The user's unique ID.
             username (str): The user's username.
             password (str): The user's hashed password.
+            gender(str): The user's gender
         """
         self.id = user_id
         self.username = username
         self.password = password
+        self.gender  = gender
 
 ##########################################
 # LOGIN MANAGER
@@ -110,6 +113,8 @@ def register():
         username = request.form["username"]
         password = request.form["password"]
         repassword = request.form["repassword"]
+        gender = request.form["gender"]
+        
         if password != repassword:
             flash("Passwords do not match.")
             return redirect(url_for("register"))
@@ -119,7 +124,13 @@ def register():
             flash("Username already exists.")
             return redirect(url_for("register"))
 
-        db.users.insert_one({"username": username, "password": hashed_password})
+        # Insert new user into the database with gender
+        db.users.insert_one({
+            "username": username,
+            "password": hashed_password,
+            "gender": gender  # Save the gender
+        })
+
         flash("Registration successful. Please log in.")
         return redirect(url_for("login"))
 
