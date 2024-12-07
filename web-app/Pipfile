@@ -10,6 +10,7 @@ pytest-cov = "*"
 pymongo = "*"
 flask-bcrypt = "*"
 flask-login = "*"
+mongomock = "*"
 
 [dev-packages]
 black = "*"
