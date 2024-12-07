@@ -11,7 +11,7 @@ async function loadPosts() {
                     <span class="tags">${post.tags.join(', ')}</span>
                     <span class="date">${new Date(post.created_at).toLocaleDateString()}</span>
                 </div>
-                <a href="/pages/post-detail.html?id=${post._id}" class="read-more">Read More</a>
+                <a href="./pages/post-detail.html?id=${post._id}" class="read-more">Read More</a>
             </div>
         `).join('');
     } catch (error) {
@@ -24,17 +24,25 @@ async function loadPostDetail() {
     const urlParams = new URLSearchParams(window.location.search);
     const postId = urlParams.get('id');
 
+    if (!postId) {
+        showError('Post ID not found');
+        return;
+    }
+
     try {
         const response = await api.posts.getOne(postId);
         const post = response.data;
         document.getElementById('post-detail').innerHTML = `
-            <h1>${post.title}</h1>
+            <h1 class="post-title">${post.title}</h1>
             <div class="post-meta">
-                <span class="tags">${post.tags.join(', ')}</span>
-                <span class="date">${new Date(post.created_at).toLocaleDateString()}</span>
+                <span class="tags">Tags: ${post.tags.join(', ')}</span>
+                <span class="date">Published: ${new Date(post.created_at).toLocaleDateString()}</span>
             </div>
             <div class="post-content">${post.content}</div>
+            <a href="../index.html" class="back-button">Back to Posts</a>
         `;
+        // 更新页面标题
+        document.title = `${post.title} - Blog Post`;
     } catch (error) {
         showError(error.message);
     }

@@ -22,9 +22,12 @@ async function handleRegister(event) {
     const password = document.getElementById('password').value;
 
     try {
-        await api.auth.register(username, email, password);
+        console.log('Attempting to register with:', { username, email });
+        const response = await api.auth.register(username, email, password);
+        console.log('Registration successful:', response);
         window.location.href = '/pages/login.html';
     } catch (error) {
+        console.error('Registration failed:', error);
         showError(error.message);
     }
 }

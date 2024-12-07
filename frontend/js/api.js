@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://192.168.80.134:5000/api';
+const API_BASE_URL = 'http://localhost:5000/api';
 
 // 统一处理API请求的函数
 async function fetchAPI(endpoint, options = {}) {
@@ -9,20 +9,28 @@ async function fetchAPI(endpoint, options = {}) {
         ...(token ? { 'Authorization': `Bearer ${token}` } : {})
     };
 
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-        ...options,
-        headers: {
-            ...defaultHeaders,
-            ...options.headers
+    try{
+        console.log('Sending request to:', `${API_BASE_URL}${endpoint}`);
+        console.log('Request options:', options);
+
+        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+            ...options,
+            headers: {
+                ...defaultHeaders,
+                ...options.headers
+            }
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Something went wrong');
         }
-    });
 
-    if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Something went wrong');
+        return response.json();
+    } catch (error) {
+        console.error('API Error:', error);
+        throw error;
     }
-
-    return response.json();
 }
 
 // API函数
