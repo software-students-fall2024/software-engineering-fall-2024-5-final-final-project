@@ -17,5 +17,5 @@ ADD . .
 # expose the port that the Flask app is running on... by default 5000
 EXPOSE 5000
 
-# Run app.py when the container launches
-CMD [ "python3", "-m" , "flask", "-A", "web-app/app.py", "run", "-h", "0.0.0.0" ]
+# # Run app.py when the container launches
+# CMD [ "python3", "-m" , "flask", "-A", "web-app/app.py", "run", "-h", "0.0.0.0" ]
