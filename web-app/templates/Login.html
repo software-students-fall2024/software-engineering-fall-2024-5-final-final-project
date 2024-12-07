@@ -45,6 +45,18 @@
             font-size: 1.8rem;
             font-weight: bold;
         }
+        .flash-message {
+            background-color: rgba(255, 69, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        .flash-message.success {
+            background-color: rgba(50, 205, 50, 0.8);
+        }
         .login-form {
             width: 100%;
             display: flex;
@@ -118,14 +130,23 @@
             <span>Fi&#36;Cal.</span>
         </div>
 
+        {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+        <div class="flash-message {{ messages[0][0] }}">
+            {{ messages[0][1] }}
+        </div>
+        {% endif %}
+        {% endwith %}
+        
+
         <!-- Login Form -->
         <form class="login-form" action="/login" method="POST">
             <h3>Welcome!</h3>
             <input
                 type="text"
                 class="form-input"
-                placeholder="Username"
-                name="username"
+                placeholder="Email Address"
+                name="email"
                 required
             />
             <input

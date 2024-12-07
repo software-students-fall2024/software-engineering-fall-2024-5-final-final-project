@@ -114,7 +114,7 @@ Edit User Info
     {% endwith %}
 
     <form action="/user-info" method="POST">
-        <input type="email" class="email-input" id="username" name="username" placeholder="Email" value={{user_info.username}} readonly>
+        <input type="email" class="email-input" id="email" name="Email" placeholder="Email" value={{user_info.email}} readonly>
         <input type="text" id="firstname" name="firstname" placeholder="First Name" value={{user_info.firstname}} required>
         <input type="text" id="lastname" name="lastname" placeholder="Last Name" value={{user_info.lastname}} required>
         <button type="submit" class="signup-btn">Update Info</button>
