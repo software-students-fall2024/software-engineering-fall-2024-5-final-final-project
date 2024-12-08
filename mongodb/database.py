@@ -26,13 +26,13 @@ def add_user(user):
 def get_books():
     return list(db.books.find())
 
-#add a book to the database
+# add a book to the database
 def add_book(book):
     db.books.insert_one(book)
 
 def get_matches():
     return list(db.matches.find())
 
-#add a match to the database
+# add a match to the database
 def add_match(match):
     db.matches.insert_one(match)
