@@ -165,6 +165,8 @@ describe('Posts Module', () => {
         });
     });
 
+    
+
     describe('deletePost', () => {
         it('should delete post and redirect', async () => {
             mockApi.posts.delete.mockResolvedValue({});
