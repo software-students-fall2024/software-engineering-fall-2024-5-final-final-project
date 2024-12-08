@@ -248,6 +248,44 @@ def fetch_weather():
         return jsonify({"error": "Could not fetch weather data"}), 400
 
 def seed_database():
+    """
+    Populate the database with outfits based on temperature range, gender, and weather condition.
+    """
+    categories = {
+        "cold": {"min": -10, "max": 0},
+        "cool": {"min": 1, "max": 15},
+        "warm": {"min": 16, "max": 25},
+        "hot": {"min": 26, "max": 40}
+    }
+    images_folder = "./static/images"
+    genders = ["male", "female"]  # Include genders here
+    outfit_data = []
+
+    for category, temp_range in categories.items():
+        for gender in genders:
+            gender_folder = os.path.join(images_folder, category, gender)
+            if os.path.exists(gender_folder):
+                images = [
+                    img for img in os.listdir(gender_folder)
+                    if img.lower().endswith((".jpg", ".jpeg", ".png"))
+                ]
+                for image in images:
+                    outfit_data.append({
+                        "temperature_range_min": temp_range["min"],
+                        "temperature_range_max": temp_range["max"],
+                        "weather_condition": category,
+                        "gender": gender,  # Store gender information
+                        "image_url": f"/static/images/{category}/{gender}/{image}"  # Construct gender-specific URL
+                    })
+            else:
+                print(f"Folder for category '{category}' and gender '{gender}' does not exist. Skipping...")
+
+    if outfit_data:
+        db.outfits.insert_many(outfit_data)
+        print(f"Inserted {len(outfit_data)} entries into the database!")
+    else:
+        print("No outfit data was inserted. Check your folder structure.")
+
     categories = {
         "cold": {"min": -10, "max": 0},
         "cool": {"min": 1, "max": 15},
