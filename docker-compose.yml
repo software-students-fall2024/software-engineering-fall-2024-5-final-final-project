@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  flask-api:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/wishlist_db
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  db-seeder:
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+    depends_on:
+      - mongodb
+    environment:
+      - MONGO_URI=mongodb:27017
+    command: ["python3", "/seed.py"]
+
+volumes:
+  mongo_data:

@@ -52,7 +52,8 @@ The Wish List Tracker App is a web-based platform designed to help users organiz
 ## Getting Started
 
 ### Prerequisites
-- Python 3.9+
+- Python 3.9+ for local dev 
+- Docker and Docker Compose installed on your system.
 - MongoDB (running locally or in Docker)
 
 ### Setup Instructions
@@ -64,52 +65,101 @@ The Wish List Tracker App is a web-based platform designed to help users organiz
     ```bash
     cd 5-final-fantastic-five
     ```
-
-3. Create and activate a virtual environment:
+3. Set up environment variables:
+    create a .env file in the root of the project with following values:
     ```bash
-    python -m venv venv
-    source venv/bin/activate
+    MONGO_URI=mongodb://mongodb:27017/wishlist_db
+    SECRET_KEY=your_secret_key
     ```
 
-4. Install Dependencies:
+4. Build and run containers: 
+Use Docker Compose to set up the application:
     ```bash
-    pip install -r requirements.txt
+    docker-compose up --build
     ```
 
-4. Install Dependencies:
-    ```bash
-    pip install -r requirements.txt
-    ```
+5. Verify services:
+    Flask API: open http://localhost:3000 in browser
+    MongoDB: Connect using a MongoDB client (like compass) or the Mongo shell.
 
+Here’s how you can add a **"Local Development Setup"** section to your `README`:
 
-1000. Follow the setup instructions for each subsystem:
-    - **Flask API:**
-        ```bash
-        cd api
-        docker build -t flask-api . <!-- temp, not actual name -->
-        docker run -d -p 5000:5000 flask-api <!-- temp, not actual port -->
-        ```
-    - **MongoDB:**
-        ```bash
-        docker pull mongo
-        docker run -d -p 27017:27017 --name mongodb mongo <!-- temp, not actual port -->
-        ```
+---
+
+### Local Development Setup (Optional)
+
+If you'd like to work on the Flask API outside the containerized environment, follow these steps to set up the project locally:
+
+--- 
+
+#### Prerequisites
+- Python 3.9+
+- MongoDB installed locally or running in a Docker container.
+
+---
+#### Steps to Set Up
+
+1. **Clone the Repository:**
+   ```bash
+   git clone https://github.com/software-students-fall2024/5-final-fantastic-five.git
+   cd 5-final-fantastic-five
+   ```
+
+2. **Set Up a Virtual Environment:**
+   Create and activate a Python virtual environment to manage dependencies:
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+
+3. **Install Dependencies:**
+   Install the required Python libraries listed in `requirements.txt`:
+   ```bash
+   pip install -r app/requirements.txt
+   ```
+
+4. **Set Up Environment Variables:**
+   Create a `.env` file in the root of the project with the following content:
+   ```bash
+   MONGO_URI=mongodb://localhost:27017/wishlist_db
+   SECRET_KEY=your_secret_key
+   ```
+
+5. **Run MongoDB Locally (Optional):**
+   If MongoDB is not already running locally, start it using Docker:
+   ```bash
+   docker run -d -p 27017:27017 --name mongodb mongo
+   ```
+
+6. **Start the Flask API Locally:**
+   Navigate to the Flask application directory and start the server:
+   ```bash
+   cd app
+   flask run --host=0.0.0.0 --port=3000
+   ```
+
+   The API will be accessible at `http://localhost:3000`.
+
+---
+
+#### Notes:
+- When working locally, ensure the `MONGO_URI` in your `.env` file points to the correct MongoDB instance (local or Dockerized).
+- Always activate the virtual environment (`source venv/bin/activate`) before running the application locally.
+- To deactivate the virtual environment, run `deactivate`.
+
 ---
 
 ## Usage
 Once the application is set up, update the following steps:
-1. Access the Flask API endpoints for managing wishlists and items (e.g., `http://localhost:5000/wishlists`). <!-- temp, not actual name -->
-2. Create wishlists by sending POST requests to the `/wishlists` endpoint. <!-- temp, not actual name -->
+1. Access the Flask API endpoints for managing wishlists and items (e.g., `http://localhost:3000/wishlists`). 
+2. Use the /wishlists endpoint to create and retrieve wishlists via POST requests
 3. Share wishlists by using the generated unique links.
 
 ---
 
 ## Environment Variables
-<!-- temp, not actual name -->
 The application requires the following environment variables:
-- `DB_HOST`: Host for the MongoDB database (e.g., `localhost` or the container name in Docker).
-- `DB_PORT`: Port for the MongoDB database (default: `27017`).
-- `DB_NAME`: Name of the database (e.g., `wishlist_db`).
+- `MONGO_URI`: Connection string for MongoDB (e.g., mongodb://mongodb:27017/wishlist_db for local Dockerized MongoDB, or an Atlas URI for production).
 - `SECRET_KEY`: Secret key for Flask sessions.
 
 ---
@@ -119,16 +169,15 @@ Each subsystem includes unit tests to ensure functionality.
 
 <!-- temp, not actual commands, just for example -->
 ### Running Tests
-1. **Subsystem 1:**
+1. **Flask API**
     ```bash
-    cd api
+    cd app
     pytest --cov=.
     ```
-2. **Subsystem 2:**
-    ```bash
-    cd subsystem2
-    pytest --cov=.
-    ```
+2. **Database**
+    Run ```bash
+    docker exec -it mongodb mongo
+    ``` and verify the seeded collections.
 
 ---
 
@@ -140,8 +189,9 @@ Each subsystem includes unit tests to ensure functionality.
 
 ## Links
 - [Container Images](#)
-  - [Subsystem 1 Image](https://hub.docker.com/r/yourusername/subsystem1)
-  - [Subsystem 2 Image](https://hub.docker.com/r/yourusername/subsystem2)
+    - [Flask API Image](https://hub.docker.com/r/arm9129/flask-api)
+  - [MongoDB Image](https://hub.docker.com/r/arm9129/db)
+  - [Database Seeder Image](https://hub.docker.com/r/arm9129/db-seeder)
 - [Digital Ocean Deployment](#)
   - [Subsystem 1 Deployment](#)
   - [Subsystem 2 Deployment](#)
@@ -152,34 +202,3 @@ Each subsystem includes unit tests to ensure functionality.
 - **Item Recommendations:** Suggest items based on wishlist content.
 - **Collaborative Wishlists:** Allow multiple users to contribute to a single wishlist.
 - **Price Tracking:** Notify users of price changes for wishlist items.
-
-
-## Directory Schema (Will remove eventually)
-
-5-final-fantastic-five/
-├── app/                        # Flask app (Backend + Frontend)
-│   ├── __init__.py             # App initialization
-│   ├── routes/                 # Routes (API + Web)
-│   ├── models/                 # Database schemas and logic
-│   ├── services/               # Business logic/services layer
-│   ├── templates/              # Jinja2 templates for HTML
-│   ├── static/                 # Static assets (CSS, JS)
-│   └── config.py               # Flask app configuration
-├── db/                         # MongoDB setup
-│   ├── seed.py                 # Script to seed the database
-│   ├── Dockerfile              # Dockerfile for MongoDB
-├── tests/                      # Unit and integration tests
-│   ├── test_api.py             # API route tests
-│   ├── test_web.py             # Web route tests
-│   ├── test_models.py          # Model logic tests
-├── .github/                    # GitHub Actions for CI/CD
-│   ├── workflows/
-│       ├── flask-api.yml       # CI/CD for Flask API
-│       ├── mongo.yml           # CI/CD for MongoDB
-├── docker-compose.yml          # Orchestrates Flask + MongoDB containers
-├── Dockerfile                  # Dockerfile for Flask API
-├── requirements.txt            # Python dependencies
-├── venv/                       # Python virtual environment
-├── .env                        # Environment variables
-├── .gitignore                  # Git ignore file
-└── README.md                   # Project documentation
