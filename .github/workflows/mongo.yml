@@ -35,18 +35,19 @@ jobs:
           -t ${{ secrets.DOCKER_USERNAME }}/mongo:latest \
           ./mongo --push || echo "Using default MongoDB image from Docker Hub"
 
-    # Deploy MongoDB container to DigitalOcean
-    - name: Deploy MongoDB to DigitalOcean
+    - name: Deploy to DigitalOcean
       uses: appleboy/ssh-action@v0.1.6
       with:
         host: ${{ secrets.DO_IP }}
         username: root
         key: ${{ secrets.DO_SSH_KEY }}
         script: |
-          docker pull ${{ secrets.DOCKER_USERNAME }}/mongo:latest || docker pull mongo:latest
+          cd /root/project
+          docker pull ${{ secrets.DOCKER_USERNAME }}/mongo:latest
           docker stop mongodb || true
           docker rm mongodb || true
           docker run -d --name mongodb -p 27017:27017 \
             -e MONGO_INITDB_ROOT_USERNAME=${{ secrets.MONGO_USER }} \
             -e MONGO_INITDB_ROOT_PASSWORD=${{ secrets.MONGO_PASSWORD }} \
             ${{ secrets.DOCKER_USERNAME }}/mongo:latest
+
