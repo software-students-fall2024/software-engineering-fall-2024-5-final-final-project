@@ -266,8 +266,7 @@ def seed_database():
             ]
             for image in images:
                 outfit_data.append({
-                    "temperature_range_min": temp_range["min"],
-                    "temperature_range_max": temp_range["max"],
+                    "temperature_range": temp_range,
                     "weather_condition": category,
                     "image_url": f"/static/images/{category}/{image}" 
                 })
