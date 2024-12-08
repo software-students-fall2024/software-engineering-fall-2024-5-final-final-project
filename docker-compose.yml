@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  mongodb:
+    build:
+      context: ./mongodb
+    container_name: mongodb-container
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      DB_NAME: ${DB_NAME}
+      MONGO_URI: ${MONGO_URI}
+volumes:
+  mongodb_data:
