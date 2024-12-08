@@ -35,7 +35,7 @@ jobs:
           -t ${{ secrets.DOCKER_USERNAME }}/mongo:latest \
           ./mongo --push || echo "Using default MongoDB image from Docker Hub"
 
-  #edited
+  #edited again
     - name: Deploy to DigitalOcean
       uses: appleboy/ssh-action@v0.1.6
       with:
