@@ -198,7 +198,7 @@ def index():
 
     if temperature is not None:
         temperature = int(temperature)
-        outfit = get_outfit_from_db(temperature)
+        outfit = get_outfit_from_db(temperature, current_user.gender)
         
         return render_template(
             'index.html',
@@ -247,6 +247,7 @@ def fetch_weather():
     else:
         return jsonify({"error": "Could not fetch weather data"}), 400
 
+
 def seed_database():
     categories = {
         "cold": {"min": -10, "max": 0},
@@ -254,24 +255,29 @@ def seed_database():
         "warm": {"min": 16, "max": 25},
         "hot": {"min": 26, "max": 40}
     }
+
+    genders = ["male", "female"]
     images_folder = "./static/images"
     outfit_data = []
 
-    for category, temp_range in categories.items():
-        category_folder = os.path.join(images_folder, category)
-        if os.path.exists(category_folder):
-            images = [
-                img for img in os.listdir(category_folder) 
-                if img.lower().endswith((".jpg", ".jpeg", ".png"))
-            ]
-            for image in images:
-                outfit_data.append({
-                    "temperature_range": temp_range,
-                    "weather_condition": category,
-                    "image_url": f"/static/images/{category}/{image}" 
-                })
-        else:
-            print(f"Folder for category '{category}' does not exist. Skipping...")
+    for gender in genders:
+        for category, temp_range in categories.items():
+            category_folder = os.path.join(images_folder, category, gender)
+            if os.path.exists(category_folder):
+                images = [
+                    img for img in os.listdir(category_folder) 
+                    if img.lower().endswith((".jpg", ".jpeg", ".png"))
+                ]
+                for image in images:
+                    outfit_data.append({
+                        "temperature_range_min": temp_range["min"],
+                        "temperature_range_max": temp_range["max"],
+                        "weather_condition": category,
+                        "gender": gender,  # Store gender information
+                        "image_url": f"/static/images/{category}/{gender}/{image}"
+                    })
+            else:
+                print(f"Folder for category '{category}' does not exist. Skipping...")
 
     if outfit_data:
         db.outfits.insert_many(outfit_data)
@@ -279,11 +285,12 @@ def seed_database():
     else:
         print("Failed to put pics in database")
 
-def get_outfit_from_db(temp):
+def get_outfit_from_db(temp, gender):
     # Query for matching temperature range and gender
     outfit = db.outfits.find_one({
         "temperature_range_min": {"$lte": int(temp)},
-        "temperature_range_max": {"$gte": int(temp)}
+        "temperature_range_max": {"$gte": int(temp)},
+        "gender": gender
     })
     if outfit:
         return {
@@ -295,11 +302,8 @@ def get_outfit_from_db(temp):
             "image": "/images/default.png",
             "description": "Default Outfit"
         }
-
-
 # Run the app
 if __name__ == "__main__":
     seed_database()
     FLASK_PORT = os.getenv("FLASK_PORT", "5000")
     app.run(debug=True)
-
