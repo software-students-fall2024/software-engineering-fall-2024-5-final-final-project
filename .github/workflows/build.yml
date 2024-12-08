@@ -3,9 +3,11 @@ name: CI / CD
 on:
   pull_request:
     branches: [main]
+  push:
+    branches: [main]
 
 jobs:
-  build:
+  build_and_deliver:
     runs-on: ubuntu-latest
 
     strategy:
@@ -29,3 +31,15 @@ jobs:
     #   - name: Run tests with coverage
     #     run: |
     #       venv/bin/python -m pytest tests
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Build Docker image
+        run: docker build -t popilopi/webapp .
+
+      - name: Tag image
+        run: docker tag popilopi/webapp:latest popilopi/webapp:latest
+
+      - name: Push image
+        run: docker push popilopi/webapp:latest
