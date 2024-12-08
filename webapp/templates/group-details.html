@@ -11,13 +11,9 @@
     <div class="group-section">
         <h2>Members</h2>
         <ul class="member-list">
-            {% if group_members %}
-                {% for member in group_members %}
-                    <li>{{ member.name }}</li>
-                {% endfor %}
-            {% else %}
-                <li>No members found.</li>
-            {% endif %}
+            {% for member in group_members %}
+                <li>{{ member.name }}: ${{ member.balance }}</li>
+            {% endfor %}
         </ul>
     </div>
     
@@ -31,8 +27,8 @@
                         <p>Paid by: <span class="small">{{ expense.paid_by }}</span></p>
                         <p>Split among:</p>
                         <ul class="member-list">
-                            {% for user, share in expense.split_among.items() %}
-                                <li>{{ user }}: ${{ share }}</li>
+                            {% for member in expense.split_among %}
+                                <li>{{ member.name }}: ${{ member.amount }}</li>
                             {% endfor %}
                         </ul>
                     </li>
@@ -41,7 +37,8 @@
         {% else %}
             <p>No expenses added yet for this group.</p>
         {% endif %}
-    </div>
+    </div>    
+    
     
     <div class="action-buttons">
         <a href="{{ url_for('add_expense') }}" class="button">Add Expense</a>
@@ -49,3 +46,4 @@
     </div>
 </section>
 {% endblock %}
+

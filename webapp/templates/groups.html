@@ -15,15 +15,15 @@
                 </a>
                 <p>Members: {{ group.group_members | length }}</p>
                 <ul class="member-list">
-                    {% for member, balance in zip(group['group_members'], group['group_balances']) %}
-                        <li>{{ member }}: {{ balance }}</li>
+                    {% for member in group.group_members %}
+                        <li>{{ member.name }}: {{ member.balance }}</li>
                     {% endfor %}
                 </ul>
             </li>
         {% else %}
             <li>You are not part of any groups yet.</li>
         {% endfor %}
-    </ul>
+    </ul>    
     <a href="{{ url_for('create_group') }}" class="button">Create New Group</a>
 </section>
 {% endblock %}
