@@ -39,9 +39,15 @@ def call_model():
     """
     Post request saves user input and posts it to ml-client to await response
     """
+
     try:
         # Extract user input
         user_input = request.form["user_input"]
+
+        if not user_input:  # Check if user_input is None or empty
+            logging.error("No user input received.")
+            return jsonify({"response": "User input is required"}), 400
+
         logging.info("Input received: %s", user_input)
 
         # Make a call to the /respond endpoint on port 5002
@@ -64,7 +70,7 @@ def call_model():
     # NewConnectionError
     except requests.exceptions.ConnectionError as e:
         logging.error("error in /call_model: %s", e)
-        return jsonify({"response": "Error connecting to ml-client"})
+        return jsonify({"response": "Error connecting to ml-client"}), 500
     except Exception as e:  # pylint: disable=broad-exception-caught
         # logging.error("Error in /call_model: %s", e)
         return jsonify({"response": str(e)}), 500
