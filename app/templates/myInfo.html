@@ -99,7 +99,21 @@
 
         .settings-button a:hover {
             background-color: #e04343;
-        }        
+        }       
+        
+        @media (max-width: 900px) {
+            .post {
+                flex: 0 0 calc(50% - 20px);
+                max-width: calc(50% - 20px);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .post {
+                flex: 0 0 calc(100% - 20px);
+                max-width: calc(100% - 20px);
+            }
+        }
     </style>
 {% endblock %}
 
