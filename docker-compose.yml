@@ -1,8 +1,6 @@
 services:
   web-app:
-    build: 
-      context: ./web-app
-      dockerfile: Dockerfile
+    image: ${DOCKERHUB_USERNAME}/web-app:latest
     ports:
       - "5001:5001"
     env_file:
@@ -13,15 +11,13 @@ services:
     depends_on:
       - mongodb
       - ml-client
-    volumes:
-      - ./web-app:/app
+    restart: unless-stopped
 
   ml-client:
-    build:
-      context: ./ml_client
-      dockerfile: Dockerfile
+    image: ${DOCKERHUB_USERNAME}/ml-client:latest
     ports:
       - "5002:5002"
+    restart: unless-stopped
 
   mongodb:
     image: mongo:6.0
@@ -33,10 +29,7 @@ services:
     command: mongod --quiet --logpath /dev/null
     volumes:
       - mongodb_data:/data/db
+    restart: unless-stopped
 
 volumes:
   mongodb_data:
-
-networks:
-  default:
-    driver: bridge
