@@ -1,9 +1,29 @@
-from flask import Flask, render_template, g;
+from flask import Flask, render_template, g, request
 import csv;
 import os;
 import random;
+import os
+from dotenv import load_dotenv
+from flask_pymongo import PyMongo
+
+
+load_dotenv()
+
+MONGO_URI = os.getenv('MONGO_URI')
 
 app = Flask(__name__)
+
+app.config["MONGO_URI"] = MONGO_URI
+
+mongo = PyMongo(app)
+
+def create_user(username, password):
+    user = {
+        "username": username,
+        "password": password,  # Maybe hash this?
+    }
+    return user
+
 
 # Runs before requests - reads csv file and puts each row into all_movies variable
 @app.before_request
@@ -16,6 +36,8 @@ def read_movies():
 
 @app.route('/')
 def index():
+    # user = create_user('test','unhashedpass')
+    # mongo.db.users.insert_one(user)
     movie_picked = False
     if not movie_picked:
         selected_movie = g.all_movies[random.randint(1,1000)]
@@ -24,4 +46,4 @@ def index():
     return render_template("index.html", selectedMovie=selected_movie)
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=3000)
