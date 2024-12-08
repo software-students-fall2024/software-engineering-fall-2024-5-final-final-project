@@ -192,6 +192,7 @@ def logout():
 @app.route('/')
 @login_required
 def index():
+    seed_database()
     city = "New York"  
     temperature, description = get_weather(city, API_KEY)
 
