@@ -13,7 +13,7 @@ app.secret_key = 'secret'
 
 #mongodb connect
 cxn = pymongo.MongoClient(os.getenv("MONGO_URI"))
-db = cxn[os.getenv("MONGO_DBNAME")]
+db = cxn[os.getenv("MONGO_DBNAME", "database")]
 users = db['users']
 events = db['events']
 
