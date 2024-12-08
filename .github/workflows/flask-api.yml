@@ -34,8 +34,8 @@ jobs:
       run: pipenv run black .
 
     - name: Run tests
-      working-directory: ./app
-      run: pipenv run pytest
+      working-directory: .
+      run: pipenv run pytest tests
 
     - name: Build Docker image
       working-directory: ./app
