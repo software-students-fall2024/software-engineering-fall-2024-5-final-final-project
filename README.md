@@ -65,12 +65,25 @@ To initialize the database with starter data:
    ```bash
    docker exec -it backend-container-name bash
    ```
-2. Execute the following script:
+   Where backend-container-name is the name of the backend container. 
+   You can see all docker container names with the docker command:
+   ```
+   docker ps
+   ```
+
+2. Execute the following script (also saved in backend folder as script.sh):
    ```python
    from backend.database import Database
    db = Database()
    db._ensure_default_user()
    ```
+## Using App
+
+1. The default username and password is 'user' and 'pw' respectively.
+
+2. You can add expenses and update budgets with the add expense button and update budget button in the app.
+
+3. You can see a list of previous expenses in the previous expense button.
 
 ## Team members
 
