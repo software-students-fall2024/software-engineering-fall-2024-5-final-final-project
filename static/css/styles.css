@@ -162,12 +162,7 @@ body {
     border-radius: 5px;
     margin-bottom: 20px; 
   }
-  
-  
-  input[type="submit"] {
-    font-size: 1.3em;
-    width: 20%
-  }
+
   
   .datepicker {
     width: 300px; 
@@ -218,11 +213,6 @@ body {
     input[type="text"], input[type="password"] {
       font-size: 1.3em;
       width: 90%;
-    }
-  
-    input[type="submit"] {
-      font-size: 1.3em;
-      width: 20%
     }
   
     .post {
