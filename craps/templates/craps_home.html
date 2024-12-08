@@ -21,6 +21,7 @@
 <body>
     <h1 style="align-content: center;">Let's Play Craps!</h1>
     <h2 style="align-content: center;">Please Select a Bet Type and Amount:</h2>
+    
     <form method="POST" action="{{url_for('playline', username=username)}}" style = "text-align: center;">
         <div style="float: left;">
             <input type="radio" id="pass" name="bettype" value="p" required/>
@@ -43,6 +44,9 @@
         <input type="submit" value = "Place Bet"/>
 
     </form>
+
+
+
     <form method="POST" action="{{url_for('playbuy', username=username)}}" style = "text-align: center;">
         <div style="float: left;">
             <input type="radio" id="buy" name="bettype" value="b" required/>
