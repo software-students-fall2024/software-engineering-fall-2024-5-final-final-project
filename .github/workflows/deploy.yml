@@ -6,6 +6,11 @@ on:
     types:
       - completed
     branches: [main, master]
+  push:
+    branches: [main, master]
+    paths:
+      - 'docker-compose.yml'
+      - '.github/workflows/deploy.yml'
 
 jobs:
   deploy:
@@ -31,7 +36,6 @@ jobs:
           script: |
             mkdir -p ~/app
             cd ~/app
-            # Create .env file from GitHub secrets
             echo "DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" > .env
             echo "MONGO_USERNAME=${{ secrets.MONGO_USERNAME }}" >> .env
             echo "MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}" >> .env
