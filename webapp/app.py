@@ -247,7 +247,7 @@ def add_expense():
             for member, share in split_among.items():
                 if member != paid_by:
                     group["balances"][member] -= share
-                group["balances"][paid_by] += amount
+                    group["balances"][paid_by] += share
 
             # Add expense to the group
             col_groups.update_one({"_id": group_id}, {
