@@ -161,6 +161,7 @@ def login():
                 user_id=str(user_data["_id"]),
                 username=user_data["username"],
                 password=user_data["password"],
+                gender=user_data["gender"]
             )
             login_user(user)
             flash("Login successful!")
