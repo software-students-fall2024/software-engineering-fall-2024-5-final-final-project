@@ -8,6 +8,7 @@ transformers = "*"
 tensorflow = "*"
 tf-keras = "*"
 flask = "*"
+pytest = "*"
 
 [dev-packages]
 

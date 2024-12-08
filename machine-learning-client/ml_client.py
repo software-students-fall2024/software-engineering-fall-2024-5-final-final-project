@@ -46,7 +46,7 @@ def analyze():
             },
             "all_emotions": emotions
         }
-        return jsonify(response), 200
+        return jsonify(response)
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
