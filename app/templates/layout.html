@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}PlantifyAI{% endblock %}</title>
+        
+        <!-- Font Awesome for icons -->
+        <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+            rel="stylesheet"
+            crossorigin="anonymous"
+        >
+
+        <!-- main stylesheet -->
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    </head>
+    
+    <body>
+        <div class="nav">
+            <a href="{{ url_for('home') }}" >
+                <h1>Wishlist</h1>
+            </a>
+        </div>
+        <main>   
+            {% block content %}
+
+            {% endblock %}
+        </main>
+        <footer>
+            <p>&copy; 2024 Wishlist. All rights reserved.</p>
+        </footer>
+        {% block scripts %}{% endblock %}
+    </body>
+</html>

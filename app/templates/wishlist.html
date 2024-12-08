@@ -1,12 +1,20 @@
-<h3>Wishlist</h3>
-<p> {{ wishlist['name'] }}</p>
-{% for item in wishlist['items'] %}
-    <p>
-        <a href="{{ item['link'] }}">{{ item['name'] }}</a>
-        ${{ item['price'] }}
-    </p>
-    
-{% endfor %}
-<a href="{{ url_for('add_item', id=wishlist['_id']) }}">Add Item</button>
-<button type="button">Browse recommended items</button>
-<button type="button">Export wish list</button>
+{% extends "layout.html" %}
+
+{% block title %}{{ wishlist['name'] }}{% endblock %}
+
+{% block content %}
+<section>
+    <h3>Wishlist</h3>
+    <p> {{ wishlist['name'] }}</p>
+    {% for item in wishlist['items'] %}
+        <p>
+            <a href="{{ item['link'] }}">{{ item['name'] }}</a>
+            ${{ item['price'] }}
+        </p>
+        
+    {% endfor %}
+    <a href="{{ url_for('add_item', id=wishlist['_id']) }}">Add Item</button>
+    <button type="button">Browse recommended items</button>
+    <button type="button">Export wish list</button>
+</section>
+{% endblock %}
