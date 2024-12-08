@@ -10,7 +10,7 @@ def index():
 
 
 @app.route("/<username>/craps", methods = ["POST", "GET"])
-def home(username):
+def craps_home(username):
     return render_template("craps_home.html", username=username, balance="10000")
 
 
