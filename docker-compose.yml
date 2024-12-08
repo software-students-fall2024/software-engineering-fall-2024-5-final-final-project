@@ -4,7 +4,7 @@ services:
   webapp:
     build:
       context: ./web-app
-      dockerfile: Dockerfile  # Ensure you are using the right Dockerfile
+      dockerfile: Dockerfile
     ports:
       - "5001:5001"
     environment:
@@ -12,7 +12,7 @@ services:
       - MONGO_DBNAME=finalfour
     depends_on:
       - mongo
-    command: ["python", "app.py"]  # Change this if needed for the specific app entry point
+    command: ["python", "app.py"]
 
   # bar_recs:
   #   build:

@@ -7,3 +7,6 @@ numpy
 scipy
 Cython
 scikit-surprise
+pandas
+scikit-learn
+json
