@@ -22,25 +22,21 @@ jobs:
       run: pip install pipenv
 
     - name: Install dependencies
-      working-directory: ./app
       run: pipenv install --dev
 
     - name: Run linting
-      working-directory: ./app
-      run: pipenv run pylint app.py
+      run: pipenv run pylint app/app.py
 
     - name: Format code with Black
-      working-directory: ./app
-      run: pipenv run black .
+      run: pipenv run black app/
 
     - name: Run tests
-      working-directory: .
       run: pipenv run pytest tests
 
     - name: Build Docker image
       working-directory: ./app
       run: |
-        docker build -t flask-api
+        docker build -t yourusername/flask-api ./app
 
     - name: Push Docker image to Docker Hub
       env:
@@ -48,4 +44,4 @@ jobs:
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       run: |
         echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-        docker push flask-api
+        docker push yourusername/flask-api
