@@ -41,7 +41,153 @@ app = Flask(__name__)
 cxn = MongoClient(os.getenv("MONGO_URI"))
 db = cxn[os.getenv("MONGO_DBNAME")]
 
+# User Class
+class User(UserMixin):
+    """
+    User class that extends UserMixin for Flask-Login.
+
+    Attributes:
+        id (str): The user's unique ID.
+        username (str): The user's username.
+        password (str): The user's hashed password.
+        gender(str): The user's gender
+    """
+
+    def __init__(self, user_id, username, password, gender):
+        """
+        Initialize the User object.
+
+        Args:
+            user_id (str): The user's unique ID.
+            username (str): The user's username.
+            password (str): The user's hashed password.
+            gender(str): The user's gender
+        """
+        self.id = user_id
+        self.username = username
+        self.password = password
+        self.gender  = gender
+
+##########################################
+# LOGIN MANAGER
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = "login"
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    """
+    User loader callback for Flask-Login.
+
+    Args:
+        user_id (str): The user's unique ID.
+
+    Returns:
+        User: The User object if found, else None.
+    """
+    user_data = db.users.find_one({"_id": ObjectId(user_id)})
+    if user_data:
+        return User(
+            user_id=str(user_data["_id"]),
+            username=user_data["username"],
+            password=user_data["password"],
+            gender=user_data["gender"]
+        )
+    return None
+
+
+# REGISTER
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    """
+    Handle user registration.
+
+    On GET request, renders the registration page.
+    On POST request, processes the registration form and creates a new user.
+
+    Returns:
+        Response: Redirects to login page upon successful registration,
+                  or renders registration page with error messages.
+    """
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+        repassword = request.form["repassword"]
+        gender = request.form["gender"]
+        
+        if password != repassword:
+            flash("Passwords do not match.")
+            return redirect(url_for("register"))
+
+        hashed_password = generate_password_hash(password)
+        if db.users.find_one({"username": username}):
+            flash("Username already exists.")
+            return redirect(url_for("register"))
+
+        # Insert new user into the database with gender
+        db.users.insert_one({
+            "username": username,
+            "password": hashed_password,
+            "gender": gender  # Save the gender
+        })
+
+        flash("Registration successful. Please log in.")
+        return redirect(url_for("login"))
+
+    return render_template("register.html")
+
+
+# LOGIN
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    """
+    Handle user login.
+
+    On GET request, renders the login page.
+    On POST request, processes the login form and logs in the user.
+
+    Returns:
+        Response: Redirects to index page upon successful login,
+                  or renders login page with error messages.
+    """
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+        user_data = db.users.find_one({"username": username})
+
+        if user_data and check_password_hash(user_data["password"], password):
+            user = User(
+                user_id=str(user_data["_id"]),
+                username=user_data["username"],
+                password=user_data["password"],
+            )
+            login_user(user)
+            flash("Login successful!")
+            return redirect(url_for("index"))
+        flash("Invalid username or password.")
+        return redirect(url_for("login"))
+    # Explicitly return a rendered template for GET requests
+    return render_template("login.html")
+
+
+# LOGOUT
+@app.route("/logout")
+@login_required
+def logout():
+    """
+    Log out the current user and redirect to the login page.
+
+    Returns:
+        Response: Redirects to the login page with a logout message.
+    """
+    logout_user()
+    session.pop("_flashes", None)
+    flash("You have been logged out.")
+    return redirect(url_for("login"))
+
 @app.route('/')
+@login_required
 def index():
     city = "New York"  
     temperature, description = get_weather(city, API_KEY)
@@ -61,8 +207,7 @@ def index():
             temperature="N/A",
             description="Weather data unavailable"
         )
-
-
+      
 # Function to get weather data
 def get_weather(city_name, api_key):
     url = f"http://api.openweathermap.org/data/2.5/weather?q={city_name}&appid={api_key}&units=metric"
