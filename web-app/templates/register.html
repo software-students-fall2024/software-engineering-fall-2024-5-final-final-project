@@ -82,6 +82,42 @@
             font-size: 0.9rem;
             margin-bottom: 10px;
         }
+        /* Add styles for the select dropdown */
+        select {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.6);
+            font-size: 1rem;
+            color: #696969;
+            box-shadow: inset 0px 4px 6px rgba(0, 0, 0, 0.1);
+            appearance: none; /* Hide the default dropdown arrow */
+        }
+    
+        select:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.8);
+            color: #696969; 
+        }
+    
+        /* Add custom styling for the dropdown arrow */
+        select::-ms-expand {
+            display: none; /* Hide the dropdown arrow in IE */
+        }
+    
+        /* Add a custom dropdown arrow using a pseudo-element */
+        select {
+            position: relative;
+            background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px 16px; 
+        }
+        select option {
+            color: #696969; /* Use a lighter color for the placeholder text */
+        }
     </style>
 </head>
 <body>
