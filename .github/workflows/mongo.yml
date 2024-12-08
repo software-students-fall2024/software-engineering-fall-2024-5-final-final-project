@@ -1,0 +1,52 @@
+name: CI/CD Pipeline for MongoDB
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout code
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    # Set up Docker Buildx
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    # Log in to Docker Hub
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    # Build and push custom MongoDB image (if customizations are needed)
+    - name: Build and push MongoDB Docker image
+      run: |
+        docker buildx build --platform linux/amd64 \
+          -t ${{ secrets.DOCKER_USERNAME }}/mongo:latest \
+          ./mongo --push || echo "Using default MongoDB image from Docker Hub"
+
+    # Deploy MongoDB container to DigitalOcean
+    - name: Deploy MongoDB to DigitalOcean
+      uses: appleboy/ssh-action@v0.1.6
+      with:
+        host: ${{ secrets.DO_IP }}
+        username: root
+        key: ${{ secrets.DO_SSH_KEY }}
+        script: |
+          docker pull ${{ secrets.DOCKER_USERNAME }}/mongo:latest || docker pull mongo:latest
+          docker stop mongodb || true
+          docker rm mongodb || true
+          docker run -d --name mongodb -p 27017:27017 \
+            -e MONGO_INITDB_ROOT_USERNAME=${{ secrets.MONGO_USER }} \
+            -e MONGO_INITDB_ROOT_PASSWORD=${{ secrets.MONGO_PASSWORD }} \
+            ${{ secrets.DOCKER_USERNAME }}/mongo:latest
