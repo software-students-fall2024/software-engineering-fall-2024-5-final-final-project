@@ -139,3 +139,14 @@ async function addComment(postId) {
         showError(error.message);
     }
 }
+if (typeof jest !== 'undefined') {
+    module.exports = {
+        loadPosts,
+        createPost,
+        loadPostDetail,
+        editPost,
+        deletePost,
+        addComment,
+        renderComments
+    };
+}

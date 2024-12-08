@@ -1,0 +1,17 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# 复制 package.json 和配置文件
+COPY package*.json ./
+COPY jest.config.js ./
+COPY test ./test
+
+# 复制源代码
+COPY js ./js
+COPY css ./css
+COPY *.html ./
+
+# 安装依赖并运行测试
+RUN npm install
+CMD ["npm", "test"] 
