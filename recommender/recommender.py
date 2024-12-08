@@ -28,7 +28,9 @@ def combine_features(row):
 
 # Preprocess data
 def preprocess_bars(bars_df):
-    bars_df["Combined"] = bars_df.apply(combine_features, axis=1)
+    print("Columns in DataFrame:", bars_df.columns)
+
+    bars_df['Combined'] = bars_df['Type'] + " " + bars_df['Occasion'] + " " + bars_df['Area']
     return bars_df
 
 # Compute cosine similarity matrix
@@ -39,20 +41,24 @@ def compute_sim_matrix(bars_df):
 
 # Recommend bars based on user preference
 def recommend_bars(user_bars, bars_df, cosine_sim):
-    user_bar_indices = [bars_df.index[bars_df['Name'] == bar].tolist()[0] for bar in user_bars]
+    user_bar_indices = [bars_df.index[bars_df['Name'] == bar].tolist()[0] for bar in user_bars if bar in bars_df['Name'].values]
+    if not user_bar_indices:
+        return []  # Return empty list if user has no bars or none match
     sim_scores = cosine_sim[user_bar_indices].mean(axis=0)
     ranked_indices = sim_scores.argsort()[::-1]
 
-    # get recommendations
-    recommendations = [
-        {
-            "name": bars_df.iloc[i]["Name"],
-            "type": bars_df.iloc[i]["Type"],
-            "occasion": bars_df.iloc[i]["Occasion"],
-            "area": bars_df.iloc[i]["Area"],
-            "reservation": bars_df.iloc[i]["Reservation"],
-            "cost": bars_df.iloc[i]["Cost"]
-        }
-        for i in ranked_indices if i not in user_bar_indices
-    ]
-    return recommendations[:5] # list top 5
+    recommendations = []
+    for i in ranked_indices:
+        if bars_df.iloc[i]["Name"] not in user_bars:
+            recommendations.append({
+                "name": bars_df.iloc[i]["Name"],
+                "type": bars_df.iloc[i]["Type"],
+                "occasion": bars_df.iloc[i]["Occasion"],
+                "area": bars_df.iloc[i]["Area"],
+                "reservation": bars_df.iloc[i]["Reservation"],
+                "cost": bars_df.iloc[i]["Cost"]
+            })
+        if len(recommendations) == 5:
+            break
+
+    return recommendations

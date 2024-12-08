@@ -1,0 +1,318 @@
+[
+    {
+        "Name": "Little Branch",
+        "Type": "Speakeasy",
+        "Occasion": "Jazz",
+        "Area": "West Village",
+        "Reservation": "No",
+        "Cost": "$",
+        "Rating": "0/10"
+    },
+    {
+        "Name": "Employees Only",
+        "Type": "Speakeasy",
+        "Occasion": "Date",
+        "Area": "West Village",
+        "Reservation": "Yes",
+        "Cost": "$$$",
+        "Rating": "0/10"
+    },
+    {
+        "Name": "Bathtub Gin",
+        "Type": "Speakeasy",
+        "Occasion": "Date",
+        "Area": "Chelsea",
+        "Reservation": "No",
+        "Cost": "$$$",
+        "Rating": "0/10"
+    },
+    {
+        "Name": "Attaboy",
+        "Type": "Speakeasy",
+        "Occasion": "Fancy",
+        "Area": "Lower East Side",
+        "Reservation": "Yes",
+        "Cost": "$$$",
+        "Rating": "0/10"
+    },
+    {
+        "Name": "Please Don't Tell",
+        "Type": "Speakeasy",
+        "Occasion": "Date",
+        "Area": "East Village",
+        "Reservation": "Yes",
+        "Cost": "$$",
+        "Rating": "0/10"
+    },
+    {
+        "Name": "Sincerely, Ophelia",
+        "Type": "Speakeasy",
+        "Occasion": "Groups",
+        "Area": "East Village",
+        "Reservation": "No",
+        "Cost": "$$",
+        "Rating": "0/10"
+    },
+    {
+        "Name": "La Noxe",
+        "Type": "Speakeasy",
+        "Occasion": "Retro",
+        "Area": "Chelsea",
+        "Reservation": "No",
+        "Cost": "$$$",
+        "Rating": "0/10"
+    },
+    {
+        "Name": "Nothing Really Matters",
+        "Type": "Speakeasy",
+        "Occasion": "Happy Hour",
+        "Area": "Midtown",
+        "Reservation": "Yes",
+        "Cost": "$$$",
+        "Rating": "0/10"
+    },
+    {
+        "Name": "The Garret",
+        "Type": "Speakeasy",
+        "Occasion": "Casual",
+        "Area": "West Village",
+        "Reservation": "No",
+        "Cost": "$$",
+        "Rating": "5/10"
+    },
+    {
+        "Name": "Apotheke Nomad",
+        "Type": "Speakeasy",
+        "Occasion": "Date",
+        "Area": "Nomad",
+        "Reservation": "Yes",
+        "Cost": "$$$",
+        "Rating": "0/10"
+    },
+    {
+            "Name": "George Bang Bang",
+            "Type": "Speakeasy",
+            "Occasion": "Jazz",
+            "Area": "Koreatown",
+            "Reservation": "Yes",
+            "Cost": "$$",
+            "Rating": "0/10"
+    },
+        {
+            "Name": "The Back Room",
+            "Type": "Speakeasy",
+            "Occasion": "Casual",
+            "Area": "Lower East Side",
+            "Reservation": "No",
+            "Cost": "$$",
+            "Rating": "0/10"
+        },
+        {
+            "Name": "Titsou Bar",
+            "Type": "Hotel",
+            "Occasion": "Date",
+            "Area": "Tribeca",
+            "Reservation": "No",
+            "Cost": "$$$",
+            "Rating": "0/10"
+        },
+        {
+            "Name": "Up & Up",
+            "Type": "Speakeasy",
+            "Occasion": "Date",
+            "Area": "Greenwich Village",
+            "Reservation": "Yes",
+            "Cost": "$$",
+            "Rating": "8/10"
+        },
+        {
+            "Name": "Elvis",
+            "Type": "Wine Bar",
+            "Occasion": "Date",
+            "Area": "Noho",
+            "Reservation": "No",
+            "Cost": "$$",
+            "Rating": "7/10"
+        },
+        {
+            "Name": "Nubeluz",
+            "Type": "Hotel",
+            "Occasion": "Fancy",
+            "Area": "Nomad",
+            "Reservation": "Yes",
+            "Cost": "$$$",
+            "Rating": "0/10"
+        },
+        {
+            "Name": "Double Chicken Please",
+            "Type": "Cocktail Bar",
+            "Occasion": "Casual",
+            "Area": "Lower East Side",
+            "Reservation": "Yes",
+            "Cost": "$$",
+            "Rating": "0/10"
+        },
+        {
+            "Name": "Dante",
+            "Type": "Cocktail Bar",
+            "Occasion": "Casual",
+            "Area": "Greenwich Village",
+            "Reservation": "Yes",
+            "Cost": "$$",
+            "Rating": "0/10"
+        },
+        {
+            "Name": "The Dead Rabbit",
+            "Type": "Irish Pub",
+            "Occasion": "Social",
+            "Area": "Financial District",
+            "Reservation": "Yes",
+            "Cost": "$$",
+            "Rating": "0/10"
+        },
+        {
+            "Name": "Maison Premiere",
+            "Type": "Oyster Bar",
+            "Occasion": "Romantic",
+            "Area": "Williamsburg",
+            "Reservation": "Yes",
+            "Cost": "$$$",
+            "Rating": "0/10"
+        },
+        {
+            "Name": "Katana Kitten",
+            "Type": "Cocktail Bar",
+            "Occasion": "Casual",
+            "Area": "West Village",
+            "Reservation": "Yes",
+            "Cost": "$$",
+            "Rating": "0/10"
+        },
+        {
+            "Name": "The Long Island Bar",
+            "Type": "Cocktail Bar",
+            "Occasion": "Casual",
+            "Area": "Cobble Hill",
+            "Reservation": "No",
+            "Cost": "$$",
+            "Rating": "0/10"
+        },
+        {
+            "Name": "Bemelmans Bar",
+            "Type": "Hotel Bar",
+            "Occasion": "Upscale",
+            "Area": "Upper East Side",
+            "Reservation": "Yes",
+            "Cost": "$$$$",
+            "Rating": "0/10"
+        },
+        {
+            "Name": "Angel's Share",
+            "Type": "Speakeasy",
+            "Occasion": "Romantic",
+            "Area": "West Village",
+            "Reservation": "Yes",
+            "Cost": "$$$",
+            "Rating": "0/10"
+        },
+        {
+            "Name": "Bar Goto",
+            "Type": "Cocktail Bar",
+            "Occasion": "Casual",
+            "Area": "Lower East Side",
+            "Reservation": "No",
+            "Cost": "$$",
+            "Rating": "0/10"
+        },
+        {
+            "Name": "Amor y Amargo",
+            "Type": "Cocktail Bar",
+            "Occasion": "Intimate",
+            "Area": "East Village",
+            "Reservation": "No",
+            "Cost": "$$",
+            "Rating": "0/10"
+        },
+        {
+            "Name": "The Campbell",
+            "Type": "Hotel Bar",
+            "Occasion": "Social",
+            "Area": "Midtown",
+            "Reservation": "Yes",
+            "Cost": "$$$",
+            "Rating": "0/10"
+        },
+        {
+            "Name": "Happy Be",
+            "Type": "Cocktail Bar",
+            "Occasion": "Trendy",
+            "Area": "Chinatown",
+            "Reservation": "No",
+            "Cost": "$$",
+            "Rating": "0/10"
+        },
+        {
+            "Name": "Mother’s Ruin",
+            "Type": "Cocktail Bar",
+            "Occasion": "Casual",
+            "Area": "Nolita",
+            "Reservation": "No",
+            "Cost": "$$",
+            "Rating": "0/10"
+        },
+        {
+            "Name": "Milk & Honey",
+            "Type": "Speakeasy",
+            "Occasion": "Romantic",
+            "Area": "Lower East Side",
+            "Reservation": "Yes",
+            "Cost": "$$$",
+            "Rating": "0/10"
+        },
+        {
+            "Name": "Taverna Kyclades",
+            "Type": "Greek",
+            "Occasion": "Dining",
+            "Area": "Astoria",
+            "Reservation": "Yes",
+            "Cost": "$$",
+            "Rating": "0/10"
+        },
+        {
+            "Name": "Sugar Monk",
+            "Type": "Cocktail Bar",
+            "Occasion": "Chic",
+            "Area": "Harlem",
+            "Reservation": "Yes",
+            "Cost": "$$$",
+            "Rating": "0/10"
+        },
+        {
+            "Name": "The Gin Mill",
+            "Type": "Pub",
+            "Occasion": "Casual",
+            "Area": "Upper West Side",
+            "Reservation": "No",
+            "Cost": "$",
+            "Rating": "0/10"
+        },
+        {
+            "Name": "Death & Company",
+            "Type": "Speakeasy",
+            "Occasion": "Sophisticated",
+            "Area": "East Village",
+            "Reservation": "Yes",
+            "Cost": "$$$",
+            "Rating": "0/10"
+        },
+        {
+            "Name": "Lullaby",
+            "Type": "Speakeasy",
+            "Occasion": "Relaxed",
+            "Area": "Lower East Side",
+            "Reservation": "No",
+            "Cost": "$$",
+            "Rating": "0/10"
+        }    
+
+]
