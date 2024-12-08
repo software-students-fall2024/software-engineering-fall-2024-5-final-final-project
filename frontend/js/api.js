@@ -73,6 +73,12 @@ const api = {
             fetchAPI(`/posts/${id}`, {
                 method: 'PUT',
                 body: JSON.stringify({ title, content, tags })
+            }),
+        
+        comment: (id, content) =>
+            fetchAPI(`/posts/${id}`, {
+                method: 'POST',
+                body: JSON.stringify({ content })
             })
     }
 }; 
