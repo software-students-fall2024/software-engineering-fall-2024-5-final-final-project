@@ -87,11 +87,8 @@ To set up this project locally, follow these steps:
     docker run -p 5001:5000 webapp
     ```
     
-- This will start the Flask app inside the container and map it to port 5001 on your host machine. You can access the application at http://127.0.0.1:5001/. 
+- This will start the Flask app inside the container and map it to port 8080 on your host machine. You can access the application at http://127.0.0.1:8080/. 
 
-<<<<<<< HEAD
-    - This will start the Flask app inside the container and map it to port 5001 on your host machine. You can access the application at http://127.0.0.1:8080. 
-=======
 4b. **Run Locally**:
     ```bash
     python app.py
@@ -163,4 +160,3 @@ You are free to use, modify, and distribute this software under the terms of the
 - MongoDB Documentation: [MongoDB](https://www.mongodb.com/)
 - Docker Documentation: [Docker](https://www.docker.com/)
 - GitHub Actions for CI/CD
->>>>>>> 44c4962925c80a42523b349607d6c84e1c08abd9
