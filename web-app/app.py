@@ -262,23 +262,20 @@ def seed_database():
     outfit_data = []
 
     for category, temp_range in categories.items():
-        for gender in genders:
-            gender_folder = os.path.join(images_folder, category, gender)
-            if os.path.exists(gender_folder):
-                images = [
-                    img for img in os.listdir(gender_folder)
-                    if img.lower().endswith((".jpg", ".jpeg", ".png"))
-                ]
-                for image in images:
-                    outfit_data.append({
-                        "temperature_range_min": temp_range["min"],
-                        "temperature_range_max": temp_range["max"],
-                        "weather_condition": category,
-                        "gender": gender,  # Store gender information
-                        "image_url": f"/static/images/{category}/{gender}/{image}"  # Construct gender-specific URL
-                    })
-            else:
-                print(f"Folder for category '{category}'  does not exist. Skipping...")
+        category_folder = os.path.join(images_folder, category)
+        if os.path.exists(category_folder):
+            images = [
+                img for img in os.listdir(category_folder) 
+                if img.lower().endswith((".jpg", ".jpeg", ".png"))
+            ]
+            for image in images:
+                outfit_data.append({
+                    "temperature_range": temp_range,
+                    "weather_condition": category,
+                    "image_url": f"/static/images/{category}/{image}" 
+                })
+        else:
+            print(f"Folder for category '{category}' does not exist. Skipping...")
 
     if outfit_data:
         db.outfits.insert_many(outfit_data)
