@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 load_dotenv()
 
-mongo_uri = os.getenv("MONGO_URI", "mongodb://localhost:27017/wishlist_db") 
+mongo_uri = os.getenv("MONGO_URI") 
 client = pymongo.MongoClient(mongo_uri)
 db = client["wishlist"]
 
