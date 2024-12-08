@@ -34,7 +34,6 @@ jobs:
       run: pipenv run pytest tests
 
     - name: Build Docker image
-      working-directory: ./app
       run: |
         docker build -t yourusername/flask-api ./app
 
