@@ -1,0 +1,51 @@
+name: Flask API CI
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+
+    - name: Install pipenv
+      run: pip install pipenv
+
+    - name: Install dependencies
+      working-directory: ./flask-api
+      run: pipenv install --dev
+
+    - name: Run linting
+      working-directory: ./flask-api
+      run: pipenv run pylint app.py
+
+    - name: Format code with Black
+      working-directory: ./flask-api
+      run: pipenv run black .
+
+    - name: Run tests
+      working-directory: ./flask-api
+      run: pipenv run pytest
+
+    - name: Build Docker image
+      working-directory: ./flask-api
+      run: |
+        docker build -t wishlist-flask-api .
+
+    - name: Push Docker image to Docker Hub
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      run: |
+        echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        docker push wishlist-flask-api

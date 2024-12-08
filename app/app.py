@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 load_dotenv()
 
-mongo_uri = os.getenv("MONGO_URI") 
+mongo_uri = os.getenv("MONGO_URI", "mongodb://localhost:27017/wishlist_db") 
 client = pymongo.MongoClient(mongo_uri)
 db = client["wishlist"]
 
@@ -71,5 +71,5 @@ def signup():
     return render_template('signup.html')
 
 if __name__ == "__main__":
-    app.run(debug=True, port=3000)
+    app.run(debug=True, host="0.0.0.0", port=3000)
     # app.run(debug=True, port=3000)

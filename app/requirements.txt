@@ -1,0 +1,8 @@
+Flask
+pymongo
+python-dotenv
+pytest
+pylint
+black
+numpy
+dnspython
