@@ -24,6 +24,7 @@ pylint = "*"
 pytest = "*"
 tomli = "*"
 typing_extensions = "*"
+exceptiongroup = "*"
 
 [dev-packages]
 pytest = "*"
