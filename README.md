@@ -33,7 +33,7 @@ This project consists of two main subsystems:
 1. **Backend**:
    - A Flask-based RESTful API for user authentication, financial data management, and machine learning predictions
    - Interacts with a MongoDB database to store user and transaction data
-   - Fully containerized with its own `Dockerfile` and integrated CI/CD pipeline
+   - Fully containerized with its own `Dockerfile` and an integrated CI/CD pipeline
 
 2. **Frontend**:
    - A lightweight Flask app serving a user-friendly interface
