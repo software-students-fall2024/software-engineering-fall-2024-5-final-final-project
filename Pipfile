@@ -23,6 +23,7 @@ black = "*"
 pylint = "*"
 pytest = "*"
 tomli = "*"
+typing_extensions = "*"
 
 [dev-packages]
 pytest = "*"
