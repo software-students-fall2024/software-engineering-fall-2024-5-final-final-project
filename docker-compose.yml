@@ -51,6 +51,24 @@ services:
     networks:
       - blog-network
 
+  frontend-test:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.test
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm test
+
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    networks:
+      - blog-network
+
 networks:
   blog-network:
     driver: bridge
