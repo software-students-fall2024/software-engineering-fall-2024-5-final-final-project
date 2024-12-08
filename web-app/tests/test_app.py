@@ -1,6 +1,7 @@
 import pytest
 from flask import session
 from bson.objectid import ObjectId
+from werkzeug.security import generate_password_hash
 from app import app,users_collection, journal_collection
 
 @pytest.fixture
@@ -41,16 +42,20 @@ def test_register_existing_user(client):
     """
     users_collection.insert_one({"username": "testuser", "password": "hashedpass"})
     response = client.post("/register", data={"username": "testuser", "password": "testpass"}, follow_redirects=True)
-    assert b"Username already exists" in response.data
+    assert "Username already exists. Please choose another." in response.data.decode("utf-8")
 
 def test_login_user(client):
     """
     Test user login.
     """
-    users_collection.insert_one({"username": "testuser", "password": "hashedpass"})
-    response = client.post("/login", data={"username": "testuser", "password": "hashedpass"})
+    users_collection.insert_one({
+        "username": "testuser",
+        "password": generate_password_hash("testpass", method="pbkdf2:sha256")
+    })
+    response = client.post("/login", data={"username": "testuser", "password": "testpass"})
     assert response.status_code == 302
-    assert "user_id" in session
+    with client.session_transaction() as sess:
+        assert "user_id" in sess
 
 def test_login_invalid_user(client):
     """
