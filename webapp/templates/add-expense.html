@@ -12,10 +12,10 @@
             <select id="group" name="group_id" required>
                 <option value="" disabled selected>Choose a group</option>
                 {% for group in groups %}
-                <option value="{{ group['_id'] }}">{{ group['group_name'] }}</option>
+                    <option value="{{ group['_id'] }}">{{ group['group_name'] }}</option>
                 {% endfor %}
             </select>
-        </div>
+        </div>              
 
         <!-- Expense Description -->
         <div class="form-group">
@@ -26,21 +26,22 @@
         <!-- Expense Amount -->
         <div class="form-group">
             <label for="amount">Amount</label>
-            <input type="number" id="amount" name="amount" placeholder="Enter amount" required>
+            <input type="number" id="amount" name="amount" placeholder="Enter amount" step="0.01" required>
         </div>
 
         <!-- Paid By -->
-        <select id="paid-by" name="paid_by" required>
-            <option value="" disabled selected>Select who paid</option>
-            {% for group in groups %}
-                {% for member in group.group_members %}
-                    <option value="{{ member['user_id'] }}">{{ member['name'] }}</option>
+        <div class="form-group">
+            <label for="paid-by">Paid By</label>
+            <select id="paid-by" name="paid_by" required>
+                <option value="" disabled selected>Select who paid</option>
+                {% for group in groups %}
+                    {% for member in group.group_members %}
+                        <option value="{{ member.name }}">{{ member.name }}</option>
+                    {% endfor %}
                 {% endfor %}
-            {% else %}
-                <option value="" disabled>No members found</option>
-            {% endfor %}
-        </select>
-        
+            </select>
+        </div>        
+              
 
         <!-- Split Among -->
         <div class="form-group">
@@ -48,12 +49,13 @@
             <select id="split-with" name="split_with[]" multiple required>
                 {% for group in groups %}
                     {% for member in group.group_members %}
-                    <option value="{{ member['user_id'] }}">{{ member['name'] }}</option>
+                        <option value="{{ member.name }}">{{ member.name }}</option>
                     {% endfor %}
                 {% endfor %}
             </select>
             <small class="helper-text">Hold Ctrl (Windows) or Command (Mac) to select multiple members.</small>
-        </div>
+        </div>              
+        
 
         <!-- Percentages -->
         <div class="form-group">
@@ -62,7 +64,22 @@
             <small class="helper-text">Enter percentages separated by commas (total must equal 1).</small>
         </div>
 
+        <!-- Submit Button -->
         <button type="submit" class="button">Add Expense</button>
     </form>
 </section>
+
+<script>
+    // Frontend validation for percentages
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const percentages = document.getElementById('percentages').value.split(',');
+        const sum = percentages.reduce((total, p) => total + parseFloat(p), 0);
+
+        if (Math.abs(sum - 1) > 0.001) {  // Allow for floating-point precision issues
+            e.preventDefault();
+            alert('Percentages must sum to 1. Please adjust the values.');
+        }
+    });
+</script>
 {% endblock %}
+
