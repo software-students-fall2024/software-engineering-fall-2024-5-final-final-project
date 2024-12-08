@@ -1,6 +1,6 @@
 services:
   web-app:
-    build: .
+    build: ./web-app
     container_name: web-app
     ports:
       - "5001:5001"
@@ -11,8 +11,6 @@ services:
       - FLASK_DEBUG=1
       - MONGO_URI=mongodb://mongodb:27017
       - MONGO_DBNAME=flaskapp
-    volumes:
-      - .:/app
     env_file:
       - .env
     depends_on:
