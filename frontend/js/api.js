@@ -7,22 +7,38 @@ async function fetchAPI(endpoint, options = {}) {
     // 添加 Authorization header
     const headers = {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
         ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
         ...options.headers
     };
 
-    try {
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-            ...options,
-            headers
-        });
+    const config = {
+        ...options,
+        headers,
+        mode: 'cors',
+        credentials: 'include'
+    };
 
-        const data = await response.json();
+    console.log('Fetch Config:', {
+        url: `${API_BASE_URL}${endpoint}`,
+        ...config
+    });
+
+    try {
+        const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+        
+        console.log('Response status:', response.status);
+        console.log('Response headers:', [...response.headers.entries()]);
 
         if (!response.ok) {
-            throw new Error(data.message || 'Something went wrong');
+            const errorData = await response.json().catch(() => ({
+                message: `HTTP error! status: ${response.status}`
+            }));
+            throw new Error(errorData.message);
         }
 
+        const data = await response.json();
+        console.log('Response data:', data);
         return data;
     } catch (error) {
         console.error('API Error:', error);

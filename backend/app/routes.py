@@ -6,41 +6,55 @@ from app.utils import hash_password, check_password, response
 from bson import ObjectId
 import re
 from datetime import datetime
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.route('/register', methods=['POST'])
 def register():
-    data = request.get_json()
+    logger.debug("Register endpoint called")
+    logger.debug(f"Request headers: {dict(request.headers)}")
+    logger.debug(f"Request data: {request.get_data()}")
+    
+    try:
+        data = request.get_json()
+        logger.debug(f"Parsed JSON data: {data}")
 
-    # 验证必要字段
-    if not all(k in data for k in ['username', 'email', 'password']):
-        return response(message="Missing required fields", status=400)
+        # 验证必要字段
+        if not all(k in data for k in ['username', 'email', 'password']):
+            return response(message="Missing required fields", status=400)
 
-    # 验证邮箱格式
-    email_regex = r'^[\w\.-]+@[\w\.-]+\.\w+$'
-    if not re.match(email_regex, data['email']):
-        return response(message="Invalid email format", status=400)
+        # 验证邮箱格式
+        email_regex = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+        if not re.match(email_regex, data['email']):
+            return response(message="Invalid email format", status=400)
 
-    # 检查邮箱是否已存在
-    if mongo.db.users.find_one({'email': data['email']}):
-        return response(message="Email already registered", status=400)
+        # 检查邮箱是否已存在
+        if mongo.db.users.find_one({'email': data['email']}):
+            return response(message="Email already registered", status=400)
 
-    # 创建新用户
-    user = User(
-        username=data['username'],
-        email=data['email'],
-        password=hash_password(data['password'])
-    )
+        # 创建新用户
+        user = User(
+            username=data['username'],
+            email=data['email'],
+            password=hash_password(data['password'])
+        )
 
-    # 保存到数据库
-    mongo.db.users.insert_one(user.to_dict())
+        # 保存到数据库
+        mongo.db.users.insert_one(user.to_dict())
 
-    return response(
-        data={"username": user.username, "email": user.email},
-        message="User registered successfully",
-        status=201
-    )
+        return response(
+            data={"username": user.username, "email": user.email},
+            message="User registered successfully",
+            status=201
+        )
+
+    except Exception as e:
+        logger.exception("Error in register endpoint")
+        return jsonify({'message': str(e)}), 500
 
 @auth_bp.route('/login', methods=['POST'])
 def login():

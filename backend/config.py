@@ -3,7 +3,7 @@ from datetime import timedelta
 
 class Config:
     # MongoDB配置
-    MONGO_URI = f"mongodb://{os.getenv('MONGO_ROOT_USERNAME')}:{os.getenv('MONGO_ROOT_PASSWORD')}@mongodb:27017/{os.getenv('MONGO_DATABASE')}?authSource=admin"
+    MONGO_URI = 'mongodb://admin:password@mongodb:27017/bugcreator?authSource=admin'
     
     # JWT配置
     JWT_SECRET_KEY = os.getenv('SECRET_KEY', 'your-secret-key')
