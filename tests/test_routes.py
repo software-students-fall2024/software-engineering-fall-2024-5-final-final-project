@@ -102,7 +102,7 @@ def test_predict_expenses(client):
     assert response.status_code == 200
     assert response.json["success"] is True
 
-    # Add sample expenses
+    # Add the sample expenses
     response1 = client.post(
         "/api/add-expense",
         json={"amount": 100.0, "description": "Groceries"},
