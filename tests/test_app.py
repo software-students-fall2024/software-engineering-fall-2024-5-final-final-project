@@ -70,6 +70,7 @@ def test_login(client, mock_db):
         "_id": valid_user_id,
         "username": "testuser",
         "password": valid_password_hash,
+        "first-name": "test"
     }
 
     mock_db.users.find_one.return_value = mock_user_data

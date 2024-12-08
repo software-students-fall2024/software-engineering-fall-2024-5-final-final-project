@@ -1,7 +1,7 @@
 {% extends 'nav-base.html' %}
 
 {% block inner_content %}
-    <h1>{{ user.username }}'s Claimed Gifts</h1>
+    <h1>{{ user['first-name'] }}'s Claimed Gifts</h1>
     {% if wishes %}
         <ul class="wishlist">
             {% for wish in wishes %}
