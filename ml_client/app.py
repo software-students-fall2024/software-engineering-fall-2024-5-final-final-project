@@ -2,7 +2,7 @@
 Loads flask app for ml-client
 """
 
-from flask import Flask, request, jsonify, render_template, Blueprint
+from flask import Flask, request, jsonify, Blueprint
 from helpers.respond import (
     initialize_llm,
     suppress_llama_cpp_logging,
@@ -39,14 +39,6 @@ def create_app():
     test_app = Flask(__name__)
     test_app.register_blueprint(app)
     return test_app
-
-@app.route("/")
-def index():
-    """
-    Renders the main page of the application.
-    """
-    return render_template("index.html")
-
 
 @app.route("/respond", methods=["POST"])
 def handle_user_input():

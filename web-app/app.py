@@ -4,7 +4,10 @@ Loads flask app for web-app
 import os
 import logging
 import requests
+from dotenv import load_dotenv
 from flask import Flask, render_template, Blueprint, request, jsonify
+
+load_dotenv()
 
 app = Blueprint("main", __name__)
 
@@ -42,6 +45,8 @@ def call_model():
 
     try:
         # Extract user input
+        logging.info("ML_CLIENT_URL: %s", ML_CLIENT_URL)  # Add this line
+
         user_input = request.form["user_input"]
 
         if not user_input:  # Check if user_input is None or empty
@@ -52,6 +57,7 @@ def call_model():
 
         # Make a call to the /respond endpoint on port 5002
         ml_endpoint = ML_CLIENT_URL + "/respond"
+        logging.info(ml_endpoint)
         
         response = requests.post(
             ml_endpoint,
