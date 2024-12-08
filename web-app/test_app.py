@@ -287,14 +287,3 @@ def test_result_route_no_image(mock_retry_request, flask_client: FlaskClient):
 
 
 
-
-
-
-
-
-
-
-
-
-
-    

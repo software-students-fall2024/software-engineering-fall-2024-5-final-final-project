@@ -211,15 +211,3 @@ def test_predict_invalid_inference_response(
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-    
