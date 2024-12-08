@@ -1,6 +1,11 @@
+"""
+Flask API for managing wishlists.
+Handles routes for wishlist creation, retrieval, and updates.
+"""
+import os
+import pymongo
 from bson import ObjectId
 from dotenv import load_dotenv
-import os, pymongo
 from flask import Flask, redirect, render_template, request, url_for
 
 app = Flask(__name__)
@@ -14,66 +19,107 @@ db = client["wishlist"]
 
 @app.route("/")
 def home():
-    # return "Connected to MongoDB Atlas!"
+    """
+    Home route that renders the homepage.
+    """
     return render_template("home.html")
 
 
-# profile page with wishlists and resources
 @app.route("/<username>")
 def profile(username):
-    wishlists = list(db.lists.find({"username": username}))
-    return render_template("profile.html", username=username, wishlists=wishlists)
+    """
+    Profile page for a user displaying their wishlists.
+    
+    Args:
+        username (str): Username of the profile owner.
+    
+    Returns:
+        Rendered HTML template for the profile page.
+    """
+    user_wishlists = list(db.lists.find({"username": username}))
+    return render_template("profile.html", username=username, wishlists=user_wishlists)
 
 
-# profile page with wishlists and resources
 @app.route("/<username>/add_wishlist", methods=["GET", "POST"])
 def add_wishlist(username):
+    """
+    Route to add a new wishlist for a user.
+    
+    Args:
+        username (str): Username of the profile owner.
+    
+    Returns:
+        Redirects to the profile page after adding a wishlist or renders the add wishlist page.
+    """
     if request.method == "POST":
         new_wishlist = {"username": username, "items": [], "name": request.form["name"]}
         db.lists.insert_one(new_wishlist)
         return redirect(url_for("profile", username=username))
-    wishlists = list(db.lists.find({"username": username}))
-    return render_template("add-wishlist.html", username=username, wishlists=wishlists)
+    user_wishlists = list(db.lists.find({"username": username}))
+    return render_template("add-wishlist.html", username=username, wishlists=user_wishlists)
 
 
-# show wishlist with items listed
-@app.route("/wishlist/<id>")
-def wishlist(id):
-    wishlist = db.lists.find_one({"_id": ObjectId(id)})
-    return render_template("wishlist.html", wishlist=wishlist)
+@app.route("/wishlist/<wishlist_id>")
+def wishlist_view(wishlist_id):
+    """
+    Route to display a specific wishlist with its items.
+    
+    Args:
+        wishlist_id (str): ID of the wishlist.
+    
+    Returns:
+        Rendered HTML template for the wishlist page.
+    """
+    user_wishlist = db.lists.find_one({"_id": ObjectId(wishlist_id)})
+    return render_template("wishlist.html", wishlist=user_wishlist)
 
 
-# add item to wishlist
-@app.route("/wishlist/<id>/add_item", methods=["GET", "POST"])
-def add_item(id):
+@app.route("/wishlist/<wishlist_id>/add_item", methods=["GET", "POST"])
+def add_item(wishlist_id):
+    """
+    Route to add an item to a specific wishlist.
+    
+    Args:
+        wishlist_id (str): ID of the wishlist.
+    
+    Returns:
+        Redirects to the wishlist page after adding an item or renders the add item page.
+    """
     if request.method == "POST":
-        items = db.lists.find_one({"_id": ObjectId(id)})["items"]
-        new_item = {}
+        wishlist_items = db.lists.find_one({"_id": ObjectId(wishlist_id)})["items"]
         new_item = {
             "link": request.form["link"],
             "name": request.form["name"],
             "price": request.form["price"],
         }
-        items.append(new_item)
-        db.lists.update_one({"_id": ObjectId(id)}, {"$set": {"items": items}})
-        return redirect(url_for("wishlist", id=id))
-    return render_template("add-item.html", id=id)
+        wishlist_items.append(new_item)
+        db.lists.update_one({"_id": ObjectId(wishlist_id)}, {"$set": {"items": wishlist_items}})
+        return redirect(url_for("wishlist_view", wishlist_id=wishlist_id))
+    return render_template("add-item.html", id=wishlist_id)
 
 
-# log in
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    """
+    Route for user login.
+    
+    Returns:
+        Redirects to the profile page after successful login or renders the login page.
+    """
     if request.method == "POST":
-        # log in
         return redirect(url_for("profile", username=request.form["username"]))
     return render_template("login.html")
 
 
-# sign up
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
+    """
+    Route for user signup.
+    
+    Returns:
+        Redirects to the profile page after successful signup or renders the signup page.
+    """
     if request.method == "POST":
-        # placeholder output until db schema established
         new_user = {
             "username": request.form["username"],
             "password": request.form["password"],
@@ -85,4 +131,3 @@ def signup():
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=3000)
-    # app.run(debug=True, port=3000)
