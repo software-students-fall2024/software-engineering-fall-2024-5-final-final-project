@@ -1,4 +1,3 @@
-// 加载文章列表
 async function loadPosts() {
     try {
         const response = await api.posts.getAll();
@@ -19,10 +18,11 @@ async function loadPosts() {
     }
 }
 
-// 加载单篇文章详情
 async function loadPostDetail() {
     const urlParams = new URLSearchParams(window.location.search);
     const postId = urlParams.get('id');
+    
+    console.log('Post ID:', postId);
 
     if (!postId) {
         showError('Post ID not found');
@@ -32,6 +32,8 @@ async function loadPostDetail() {
     try {
         const response = await api.posts.getOne(postId);
         const post = response.data;
+        console.log('Post data:', post);
+        
         document.getElementById('post-detail').innerHTML = `
             <h1 class="post-title">${post.title}</h1>
             <div class="post-meta">
@@ -39,16 +41,37 @@ async function loadPostDetail() {
                 <span class="date">Published: ${new Date(post.created_at).toLocaleDateString()}</span>
             </div>
             <div class="post-content">${post.content}</div>
+            <div class="post-actions">
+                <button class="edit-btn" onclick="editPost('${post._id}')">Edit Post</button>
+                <button class="delete-btn" onclick="deletePost('${post._id}')">Delete Post</button>
+            </div>
             <a href="../index.html" class="back-button">Back to Posts</a>
         `;
-        // 更新页面标题
-        document.title = `${post.title} - Blog Post`;
     } catch (error) {
+        console.error('Error loading post:', error);
         showError(error.message);
     }
 }
 
-// 创建新文章
+function editPost(postId) {
+    window.location.href = `./edit-post.html?id=${postId}`;
+}
+
+async function deletePost(postId) {
+    if (!confirm('Are you sure you want to delete this post?')) {
+        return;
+    }
+
+    try {
+        await api.posts.delete(postId);
+        alert('Post deleted successfully');
+        window.location.href = '../index.html';
+    } catch (error) {
+        console.error('Error deleting post:', error);
+        showError(error.message);
+    }
+}
+
 async function createPost(event) {
     event.preventDefault();
     const title = document.getElementById('title').value;

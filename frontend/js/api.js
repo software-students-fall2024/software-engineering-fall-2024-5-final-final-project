@@ -4,29 +4,26 @@ const API_BASE_URL = 'http://localhost:5000/api';
 async function fetchAPI(endpoint, options = {}) {
     const token = localStorage.getItem('token');
     
-    const defaultHeaders = {
+    // 添加 Authorization header
+    const headers = {
         'Content-Type': 'application/json',
-        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        ...options.headers
     };
 
-    try{
-        console.log('Sending request to:', `${API_BASE_URL}${endpoint}`);
-        console.log('Request options:', options);
-
+    try {
         const response = await fetch(`${API_BASE_URL}${endpoint}`, {
             ...options,
-            headers: {
-                ...defaultHeaders,
-                ...options.headers
-            }
+            headers
         });
 
+        const data = await response.json();
+
         if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || 'Something went wrong');
+            throw new Error(data.message || 'Something went wrong');
         }
 
-        return response.json();
+        return data;
     } catch (error) {
         console.error('API Error:', error);
         throw error;
@@ -52,8 +49,8 @@ const api = {
 
     // 文章相关
     posts: {
-        getAll: (page = 1, limit = 10) => 
-            fetchAPI(`/posts?page=${page}&limit=${limit}`),
+        getAll: () => 
+            fetchAPI('/posts'),
 
         getOne: (id) => 
             fetchAPI(`/posts/${id}`),
@@ -65,6 +62,17 @@ const api = {
             }),
 
         getUserPosts: () => 
-            fetchAPI('/posts/my-posts')
+            fetchAPI('/posts/my-posts'),
+
+        delete: (id) => 
+            fetchAPI(`/posts/${id}`, {
+                method: 'DELETE'
+            }),
+        
+        update: (id, title, content, tags) =>
+            fetchAPI(`/posts/${id}`, {
+                method: 'PUT',
+                body: JSON.stringify({ title, content, tags })
+            })
     }
 }; 
