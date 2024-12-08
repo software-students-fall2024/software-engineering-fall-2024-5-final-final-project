@@ -1,5 +1,6 @@
 ![Web-App CI Workflow](https://github.com/software-students-fall2024/5-final-all-stars-v5/actions/workflows/web-app.yml/badge.svg)
 ![ML-Client CI Workflow](https://github.com/software-students-fall2024/5-final-all-stars-v5/actions/workflows/ml-client.yml/badge.svg)
+![Deployment Workflow](https://github.com/software-students-fall2024/5-final-all-stars-v5/actions/workflows/deploy.yml/badge.svg)
 
 # Containerized Mini-Chatbot App
 
