@@ -63,7 +63,6 @@ def groups():
                 "group_name": group["group_name"],
                 "group_members": group["group_members"],
                 "balances": group["balances"],
-#                "group_members": [{"name": member[0], "balance": member[1]} for member in group["group_members"]],
                 "group_id": group["_id"]
             })
 
@@ -105,9 +104,6 @@ def create_group():
         if current_user and current_user["name"] not in member_names:
             member_objects.append({"user_id": current_user["_id"], "name": current_user["name"]})
             member_names.append(current_user["name"])
-#            balances[current_user["name"]] = 0
-#        if current_user and current_user["_id"] not in [m["user_id"] for m in member_objects]:
-#            member_objects.append({"user_id": current_user["_id"], "name": current_user["name"]})
 
         # Create the group with a 2D array for group members
         new_group = {
@@ -115,7 +111,6 @@ def create_group():
             "group_name": group_name,
             "group_members": member_names,
             "balances": {name: 0 for name in member_names},
-#            "group_members": [[member["name"], 0] for member in member_objects],  # 2D array
             "expenses": []
         }
 
@@ -127,11 +122,6 @@ def create_group():
                 {"name": member_name},
                 {"$push": {"groups": str(new_group["_id"])}}
                                  )
-#        for member in member_objects:
-#            col_users.update_one(
-#                {"_id": member["user_id"]},
-#                {"$push": {"groups": new_group["_id"]}}
-#            )
 
         flash(f"Group '{group_name}' created successfully!", "success")
         return redirect(url_for("groups"))
@@ -157,7 +147,6 @@ def group_details(group_id):
         group_members = group.get("group_members", [])
         balances = group.get("balances", [])
         expenses = group.get("expenses", [])
-#        group_members = [{"name": member[0], "balance": member[1]} for member in group.get("group_members", [])]
 
         # Format expenses (paid_by and split_among)
         detailed_expenses = []
@@ -261,9 +250,6 @@ def add_expense():
                 group["balances"][paid_by] += amount
 
             # Add expense to the group
-#            col_groups.update_one({"_id": group_id}, {"$push": {"expenses": expense}})
-#            flash("Expense added successfully!", "success")
-#            return redirect(url_for("group_details", group_id=group_id))
             col_groups.update_one({"_id": group_id}, {
                 "$push": {"expenses": expense},
                 "$set": {"balances": group["balances"]}
@@ -275,19 +261,6 @@ def add_expense():
         except Exception as e:
             flash(f"Error adding expense: {str(e)}", "error")
             return redirect(url_for("add_expense"))
-
-    # Fetch groups for the user
-#    user_groups = user.get("groups", [])
-#    group_details = [
-#        {
-#            "_id": str(group["_id"]),
-#            "group_name": group["group_name"],
-#            "group_members": group["group_members"]
-##            "group_members": [{"name": member[0], "user_id": member[1]} for member in group["group_members"]]
-#        }
-#        for group_id in user_groups
-#        if (group := col_groups.find_one({"_id": ObjectId(group_id)}))
-#    ]
 
     return render_template('add-expense.html', groups=group_details)
 
