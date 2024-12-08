@@ -203,6 +203,21 @@ def add_expense():
     if not user:
         flash("User not found.", "error")
         return redirect(url_for("groups"))
+        
+    user_groups = user.get("groups", [])
+    print(f"Groups for user {username}: {user_groups}")
+    
+    group_details = []
+    for group_id in user_groups:
+        group = col_groups.find_one({"_id": group_id})
+        if group:
+            group_data = {
+                "_id": str(group["_id"]),
+                "group_name": group["group_name"],
+                "group_members": group["group_members"]
+            }
+            group_details.append(group_data)
+    print(f"Group details being sent to template: {group_details}")
 
     if request.method == "POST":
         try:
@@ -237,7 +252,9 @@ def add_expense():
                 "split_among": split_among
             }
             
-            group = col_groups.find_one({"_id": ObjectId(group_id)})
+            print(f"Expense document: {expense}")
+            
+            group = col_groups.find_one({"_id": group_id})
             for member, share in split_among.items():
                 if member != paid_by:
                     group["balances"][member] -= share
@@ -247,10 +264,11 @@ def add_expense():
 #            col_groups.update_one({"_id": group_id}, {"$push": {"expenses": expense}})
 #            flash("Expense added successfully!", "success")
 #            return redirect(url_for("group_details", group_id=group_id))
-            col_groups.update_one({"_id": ObjectId(group_id)}, {
+            col_groups.update_one({"_id": group_id}, {
                 "$push": {"expenses": expense},
                 "$set": {"balances": group["balances"]}
                                   })
+            print(f"Expense added successfully to group {group_id}")
             flash("Expense added successfully!", "success")
             return redirect(url_for("group_details", group_id=group_id))
 
@@ -259,17 +277,17 @@ def add_expense():
             return redirect(url_for("add_expense"))
 
     # Fetch groups for the user
-    user_groups = user.get("groups", [])
-    group_details = [
-        {
-            "_id": group["_id"],
-            "group_name": group["group_name"],
-            "group_members": group["group_members"]
-#            "group_members": [{"name": member[0], "user_id": member[1]} for member in group["group_members"]]
-        }
-        for group_id in user_groups
-        if (group := col_groups.find_one({"_id": ObjectId(group_id)}))
-    ]
+#    user_groups = user.get("groups", [])
+#    group_details = [
+#        {
+#            "_id": str(group["_id"]),
+#            "group_name": group["group_name"],
+#            "group_members": group["group_members"]
+##            "group_members": [{"name": member[0], "user_id": member[1]} for member in group["group_members"]]
+#        }
+#        for group_id in user_groups
+#        if (group := col_groups.find_one({"_id": ObjectId(group_id)}))
+#    ]
 
     return render_template('add-expense.html', groups=group_details)
 
