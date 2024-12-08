@@ -80,5 +80,25 @@ const api = {
                 method: 'POST',
                 body: JSON.stringify({ content })
             })
+    },
+
+    // 评论相关
+    comments: {
+        create: (postId, content) =>
+            fetchAPI(`/posts/${postId}/comments`, {
+                method: 'POST',
+                body: JSON.stringify({ content })
+            }),
+        getAll: (postId) =>
+            fetchAPI(`/posts/${postId}/comments`),
+        delete: (postId, commentId) =>
+            fetchAPI(`/posts/${postId}/comments/${commentId}`, {
+                method: 'DELETE'
+            })
     }
 }; 
+
+// 为了测试导出
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { api, fetchAPI };
+}

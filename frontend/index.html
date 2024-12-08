@@ -10,7 +10,8 @@
     <nav class="navbar">
         <div class="container">
             <h1>Blog</h1>
-            <div>
+            <div class="nav-links">
+                <span id="username-display"></span>
                 <a href="./pages/create-post.html">Create Post</a>
                 <a href="#" onclick="logout()">Logout</a>
             </div>
@@ -28,6 +29,17 @@
     <script>
         checkAuth();
         loadPosts();
+        
+        // 显示用户名
+        function displayUsername() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (user && user.username) {
+                const usernameDisplay = document.getElementById('username-display');
+                usernameDisplay.textContent = `Welcome, ${user.username}!`;
+            }
+        }
+        
+        displayUsername();
     </script>
 </body>
 </html> 

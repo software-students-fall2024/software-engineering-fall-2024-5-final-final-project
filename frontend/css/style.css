@@ -70,4 +70,16 @@ body {
     border-radius: 4px;
     margin-bottom: 20px;
     display: none;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+#username-display {
+    color: white;
+    margin-right: 1rem;
+    font-size: 0.9rem;
 } 

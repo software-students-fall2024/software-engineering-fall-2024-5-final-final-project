@@ -22,10 +22,9 @@ async function handleRegister(event) {
     const password = document.getElementById('password').value;
 
     try {
-        console.log('Attempting to register with:', { username, email });
         const response = await api.auth.register(username, email, password);
         console.log('Registration successful:', response);
-        window.location.href = '/pages/login.html';
+        window.location.href = './login.html';
     } catch (error) {
         console.error('Registration failed:', error);
         showError(error.message);
@@ -40,16 +39,27 @@ function checkAuth() {
     }
 }
 
-// 退出登录
+// 显示错误信息
+function showError(message) {
+    const errorDiv = document.getElementById('error-message');
+    errorDiv.textContent = message;
+    errorDiv.style.display = 'block';
+}
+
+// 登出功能
 function logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     window.location.href = './pages/login.html';
 }
 
-// 显示错误信息
-function showError(message) {
-    const errorDiv = document.getElementById('error-message');
-    errorDiv.textContent = message;
-    errorDiv.style.display = 'block';
+// 为了测试导出
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        handleLogin,
+        handleRegister,
+        checkAuth,
+        showError,
+        logout
+    };
 } 
