@@ -1,4 +1,4 @@
-name: CI / CD
+name: Webapp CI / CD
 
 on:
   pull_request:
@@ -28,9 +28,9 @@ jobs:
           venv/bin/pip install --upgrade pip setuptools
           venv/bin/pip install -r requirements.txt
 
-    #   - name: Run tests with coverage
-    #     run: |
-    #       venv/bin/python -m pytest tests
+      - name: Run tests with coverage
+        run: |
+          venv/bin/python -m pytest tests
 
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
