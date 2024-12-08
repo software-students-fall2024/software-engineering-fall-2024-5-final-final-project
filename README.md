@@ -26,7 +26,7 @@ Replace with configuration instructions...
 
 ## Environment Setup
 
-To run this project locally, you will need a `.env` file with the following format (dummy-data):
+To run this project locally, you will need a `.env` file (at the same directory level as this README) with the following format (dummy-data):
 
 ```
 MONGO_USERNAME=www
