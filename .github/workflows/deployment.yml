@@ -25,7 +25,9 @@ jobs:
       - name: Deploy to Droplet
         run: |
           ssh -o StrictHostKeyChecking=no root@161.35.132.193 << 'EOF'
-            docker-compose up -d
+            git pull origin main
+            ls -la
+            docker-compose -f docker-compose.yml up -d
           EOF
 
 
