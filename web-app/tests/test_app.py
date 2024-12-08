@@ -134,3 +134,150 @@ def test_journal_entry_delete(client):
     assert response.status_code == 200
     entry = journal_collection.find_one({"_id": ObjectId(entry_id)})
     assert entry is None
+
+def test_index_redirect(client):
+    """
+    Test that the index route redirects to the login page.
+    """
+    response = client.get("/")
+    assert response.status_code == 302
+    assert response.location.endswith("/login")
+
+def test_register_user(client):
+    """
+    Test user registration.
+    """
+    response = client.post("/register", data={"username": "testuser", "password": "testpass"})
+    assert response.status_code == 302
+    assert "/login" in response.location
+    user = users_collection.find_one({"username": "testuser"})
+    assert user is not None
+
+def test_register_existing_user(client):
+    """
+    Test registration fails for an existing user.
+    """
+    users_collection.insert_one({"username": "testuser", "password": "hashedpass"})
+    response = client.post("/register", data={"username": "testuser", "password": "testpass"}, follow_redirects=True)
+    assert "Username already exists. Please choose another." in response.data.decode("utf-8")
+
+def test_register_missing_data(client):
+    """
+    Test registration with missing data.
+    """
+    response = client.post("/register", data={"username": ""}, follow_redirects=True)
+    assert b"This field is required" not in response.data  # Placeholder
+
+def test_login_user(client):
+    """
+    Test user login.
+    """
+    users_collection.insert_one({
+        "username": "testuser",
+        "password": generate_password_hash("testpass", method="pbkdf2:sha256")
+    })
+    response = client.post("/login", data={"username": "testuser", "password": "testpass"})
+    assert response.status_code == 302
+    with client.session_transaction() as sess:
+        assert "user_id" in sess
+
+def test_login_missing_data(client):
+    """
+    Test login with missing data.
+    """
+    response = client.post("/login", data={"username": ""}, follow_redirects=True)
+    assert b"Invalid username or password" in response.data
+
+def test_login_invalid_user(client):
+    """
+    Test login with invalid credentials.
+    """
+    response = client.post("/login", data={"username": "fakeuser", "password": "fakepass"}, follow_redirects=True)
+    assert b"Invalid username or password" in response.data
+
+def test_logout_clears_session(client):
+    """
+    Test logout clears the session.
+    """
+    with client.session_transaction() as sess:
+        sess["user_id"] = "test_user_id"
+    response = client.get("/logout", follow_redirects=True)
+    assert "user_id" not in session
+    assert b"Login" in response.data
+
+def test_calendar_logged_out(client):
+    """
+    Test calendar access when logged out.
+    """
+    response = client.get("/calendar")
+    assert response.status_code == 302
+    assert response.location.endswith("/login")
+
+def test_calendar_logged_in(client):
+    """
+    Test calendar access when logged in.
+    """
+    with client.session_transaction() as sess:
+        sess["user_id"] = "test_user_id"
+    response = client.get("/calendar")
+    assert response.status_code == 200
+    assert b"Calendar" in response.data
+
+def test_journal_create(client):
+    """
+    Test creating a journal entry.
+    """
+    with client.session_transaction() as sess:
+        sess["user_id"] = "test_user_id"
+    response = client.post("/journal/2024/12/7", data={"content": "My first entry"})
+    assert response.status_code == 302
+    entry = journal_collection.find_one({"user_id": "test_user_id", "date": "2024-12-07"})
+    assert entry is not None
+    assert entry["content"] == "My first entry"
+
+def test_journal_edit(client):
+    """
+    Test editing a journal entry.
+    """
+    journal_collection.insert_one({
+        "user_id": "test_user_id",
+        "date": "2024-12-07",
+        "content": "Old content"
+    })
+    with client.session_transaction() as sess:
+        sess["user_id"] = "test_user_id"
+    response = client.post("/journal/2024/12/7", data={"content": "Updated content"})
+    assert response.status_code == 302
+    entry = journal_collection.find_one({"user_id": "test_user_id", "date": "2024-12-07"})
+    assert entry["content"] == "Updated content"
+
+def test_journal_view(client):
+    """
+    Test viewing a journal entry.
+    """
+    journal_collection.insert_one({
+        "user_id": "test_user_id",
+        "date": "2024-12-07",
+        "content": "Test entry"
+    })
+    with client.session_transaction() as sess:
+        sess["user_id"] = "test_user_id"
+    response = client.get("/journal/2024/12/7")
+    assert response.status_code == 200
+    assert b"Test entry" in response.data
+
+def test_delete_entry(client):
+    """
+    Test deleting a journal entry.
+    """
+    entry_id = journal_collection.insert_one({
+        "user_id": "test_user_id",
+        "date": "2024-12-07",
+        "content": "To be deleted"
+    }).inserted_id
+    with client.session_transaction() as sess:
+        sess["user_id"] = "test_user_id"
+    response = client.post(f"/delete/{entry_id}")
+    assert response.status_code == 302
+    entry = journal_collection.find_one({"_id": entry_id})
+    assert entry is None
