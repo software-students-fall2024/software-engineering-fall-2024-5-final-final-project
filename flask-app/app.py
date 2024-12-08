@@ -53,23 +53,23 @@ def redirect_home():
 
 @app.route("/login_screen", methods = ["GET","POST"])
 def show_login():
-    if request.method == 'GET':
-        return '''
-               <form action='/login_screen' method='POST'>
-                <input type='text' name='username' id='username' placeholder='username'/>
-                <input type='password' name='password' id='password' placeholder='password'/>
-                <input type='submit' name='submit'/>
-               </form>
-               '''
 
-    username = request.form['username']
-    if username in users and request.form['password'] == users[username]['password']:
-        user = User()
-        user.id = username
-        flask_login.login_user(user)
-        return redirect(url_for('user_home', username=username))
+    error_msg = None
 
-    return 'Bad login'
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        # error handling for missing/incorrect values
+        if username in users and password == users[username]['password']:
+            user = User()
+            user.id = username
+            flask_login.login_user(user)
+            return redirect(url_for('user_home', username=username))        
+        else:
+            error_msg = "Invalid credentials, please try again."
+
+    return render_template('login.html', error_msg=error_msg)
 
 @app.route('/<username>')
 @flask_login.login_required
