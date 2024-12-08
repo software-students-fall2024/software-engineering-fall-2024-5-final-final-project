@@ -12,3 +12,5 @@ python-dateutil
 python-dotenv
 flask-login
 bcrypt
+scikit-learn
+numpy

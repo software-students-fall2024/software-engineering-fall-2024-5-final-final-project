@@ -9,7 +9,7 @@ from flask import Blueprint, jsonify, request
 from flask_cors import CORS
 from flask_login import login_user, logout_user, login_required, current_user
 import bcrypt
-from backend.database import Database, User  # pylint: disable=import-error
+from backend.database import Database, MLModel, User  # pylint: disable=import-error
 
 routes = Blueprint("routes", __name__)
 CORS(routes, supports_credentials=True)
@@ -88,7 +88,7 @@ def add_expense():
     Add a new expense for the user.
     """
     data = request.json
-    db.add_expense(current_user.get_id(), float(data["amount"]), data["description"])
+    db.add_expense(current_user.username, float(data["amount"]), data["description"])
     return jsonify({"success": True})
 
 
@@ -121,3 +121,27 @@ def get_expenses():
             for exp in expenses
         ]
     )
+
+
+@routes.route("/api/predict-expenses", methods=["GET"])
+@login_required
+def predict_expenses():
+    """
+    Predict next month's expenses based on historical data.
+    """
+    # Fetch all user's current expenses
+    expenses = db.get_expenses(current_user.username)
+
+    if not expenses or all(exp.amount <= 0 for exp in expenses):
+        return jsonify({"error": "No valid expense data available for prediction"}), 400
+
+    # Get the data for training
+    months = [expense.date.month for expense in expenses]
+    totals = [expense.amount for expense in expenses]
+
+    # Train the model and make predictions
+    ml_model = MLModel()
+    ml_model.train(months, totals)
+    next_month_prediction = ml_model.predict_next_month(max(months))
+
+    return jsonify({"predicted_expenses": round(next_month_prediction, 2)})

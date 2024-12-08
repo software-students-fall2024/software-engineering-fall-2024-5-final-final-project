@@ -7,12 +7,14 @@ It includes methods for user authentication, budget management, and expense trac
 
 from typing import List, Optional
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 import os
 from pymongo import MongoClient
 from bson import ObjectId
 from flask_login import UserMixin
 import bcrypt
+from sklearn.linear_model import LinearRegression
+import numpy as np
 
 
 @dataclass
@@ -97,7 +99,7 @@ class Database:
             "username": username,  # Store username for filtering
             "amount": amount,
             "description": description,
-            "date": datetime.utcnow(),
+            "date": datetime.now(timezone.utc),
         }
         self.db.expenses.insert_one(expense)  # Actually insert the expense
 
@@ -153,3 +155,19 @@ class User(UserMixin):
     def get_id(self):
         """Return the ID."""
         return self.id
+
+
+class MLModel:
+    def __init__(self):
+        self.model = LinearRegression()
+
+    def train(self, months, expenses):
+        # Reshape data for training (sklearn expects 2D array for X)
+        X = np.array(months).reshape(-1, 1)
+        y = np.array(expenses)
+        self.model.fit(X, y)
+
+    def predict_next_month(self, current_month):
+        # Predict for the next month
+        next_month = np.array([[current_month + 1]])
+        return self.model.predict(next_month)[0]
