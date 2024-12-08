@@ -2,6 +2,7 @@
 Extended test suite for the Flask application using MagicMock.
 """
 
+import os
 from unittest.mock import MagicMock, patch
 from bson import ObjectId
 import pytest
@@ -13,18 +14,24 @@ def app_fixture():
     """
     Create and configure a new app instance for testing with mocked db.
     """
-
-    with patch("app.app.pymongo.MongoClient") as mock_mongo_client:
-        # Mock database and collection
-        mock_db = MagicMock()
-        mock_mongo_client.return_value = {"wishlist": mock_db}
-        app = create_app()
-        app.config.update(
-            {
-                "TESTING": True,
-            }
-        )
-        yield app, mock_db  # pylint: disable=redefined-outer-name
+    with patch.dict(
+        os.environ,
+        {
+            "MONGO_URI": "mongodb://localhost:27017/wishlist_db",
+            "MONGO_DBNAME": "wishlist",
+        },
+    ):
+        with patch("app.app.pymongo.MongoClient") as mock_mongo_client:
+            # Mock database and collection
+            mock_db = MagicMock()
+            mock_mongo_client.return_value = {"wishlist": mock_db}
+            app = create_app()
+            app.config.update(
+                {
+                    "TESTING": True,
+                }
+            )
+            yield app, mock_db  # pylint: disable=redefined-outer-name
 
 
 @pytest.fixture
