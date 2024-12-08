@@ -4,15 +4,11 @@ from pymongo import MongoClient
 from pytest_mock_resources import create_mongo_fixture
 from bson import ObjectId
 
-# This creates a temporary mongo instance for testing
-mongo = create_mongo_fixture()  # You can configure it if needed
+mongo = create_mongo_fixture() 
 
 @pytest.fixture
 def client():
     app = Flask(__name__)
-    # Inject test config if needed
-    # For example, you might point app to use mongo fixture credentials if your code allows it.
-    # Otherwise, you can monkeypatch the db client inside the test.
     app.config['TESTING'] = True
     with app.test_client() as client:
         yield client
@@ -23,7 +19,7 @@ def db(mongo):
     client = MongoClient(**mongo.pmr_credentials.as_mongo_kwargs())
     db = client[mongo.config["mockdb"]]
     yield db
-    # No explicit teardown needed, pmr handles it
+
 
 def test_home_logged_out(client):
     # If not logged in, home redirects to login
