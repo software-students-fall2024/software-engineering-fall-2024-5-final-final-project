@@ -158,16 +158,27 @@ class User(UserMixin):
 
 
 class MLModel:
+    """
+    ML Model to analyze predict spending habits
+    """
+
     def __init__(self):
+        """
+        Initialize the model with Linear Regression.
+        """
         self.model = LinearRegression()
 
     def train(self, months, expenses):
-        # Reshape data for training (sklearn expects 2D array for X)
-        X = np.array(months).reshape(-1, 1)
+        """
+        Reshape data for training (sklearn expects 2D array for X)
+        """
+        x = np.array(months).reshape(-1, 1)
         y = np.array(expenses)
-        self.model.fit(X, y)
+        self.model.fit(x, y)
 
     def predict_next_month(self, current_month):
-        # Predict for the next month
+        """
+        Predict for the next month
+        """
         next_month = np.array([[current_month + 1]])
         return self.model.predict(next_month)[0]
