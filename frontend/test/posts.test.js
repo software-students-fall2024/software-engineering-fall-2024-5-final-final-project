@@ -12,6 +12,7 @@ const mockApi = {
     }
 };
 
+
 // Mock global api variable
 global.api = mockApi;
 
