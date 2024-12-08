@@ -10,9 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Re-clone repository
-      run: |
-        rm -rf .git
-        git clone git@github.com:software-students-fall2024/5-final-book_of_amos.git .
+        run: |
+          rm -rf .git
+          git clone git@github.com:software-students-fall2024/5-final-book_of_amos.git .
 
       - name: Checkout code
         uses: actions/checkout@v4
