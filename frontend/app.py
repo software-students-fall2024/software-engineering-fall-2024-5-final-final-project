@@ -1,6 +1,10 @@
-from flask import Flask, render_template, request, Response, url_for
-import requests
+"""
+Defines routes for the frontend and gives entry point of the Flask application.
+"""
+
 import os
+from flask import Flask, render_template, request, Response
+import requests
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
 
@@ -24,12 +28,15 @@ def proxy_to_backend(path):
     """
     try:
         if request.method == "GET":
-            resp = requests.get(f"{BACKEND_URL}/api/{path}", cookies=request.cookies)
+            resp = requests.get(
+                f"{BACKEND_URL}/api/{path}", cookies=request.cookies, timeout=5
+            )
         else:
             resp = requests.post(
                 f"{BACKEND_URL}/api/{path}",
                 json=request.get_json(),
                 cookies=request.cookies,
+                timeout=5,
             )
         response = Response(
             resp.content,
@@ -46,7 +53,4 @@ def proxy_to_backend(path):
 
 
 if __name__ == "__main__":
-    """
-    Entry point of the Flask application.
-    """
     app.run(host="0.0.0.0", port=5000, debug=True)

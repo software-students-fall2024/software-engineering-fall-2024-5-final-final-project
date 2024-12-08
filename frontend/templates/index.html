@@ -275,6 +275,12 @@
             `).join('');
         }
 
+        async function predictExpenses() {
+            const data = await fetchJSON('/api/predict-expenses');
+            alert(`Predicted Expenses for Next Month: $${data.predicted_expenses}`);
+        }
+
+
         function toggleExpensesList() {
             const expensesList = document.getElementById('expensesList');
             if (expensesList.style.display === 'none') {
