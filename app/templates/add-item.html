@@ -4,7 +4,7 @@
 
 {% block content %}
 <section>
-    <form action="{{ url_for('add_item', id=id) }}" method="POST">
+    <form action="{{ url_for('add_item', wishlist_id=id) }}" method="POST">
         <h2>Add New Item:</h2>
         <br>
         <label for="link" class="text">Link</label>
