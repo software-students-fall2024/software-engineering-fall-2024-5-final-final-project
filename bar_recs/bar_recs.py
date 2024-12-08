@@ -6,6 +6,8 @@ from surprise import SVD, Dataset, Reader
 from surprise.model_selection import cross_validate
 from surprise.model_selection import train_test_split
 from surprise import accuracy
+import pandas as pd
+
 
 # Load environment variables
 load_dotenv()
@@ -27,17 +29,33 @@ def load_ratings_data():
     """
     ratings = list(db.ratings.find())  # Example MongoDB collection: 'ratings'
     if not ratings:
-        # Return an empty Surprise Dataset if no ratings are present
+        # Return None if no ratings are present
         return None
     
-    # Convert MongoDB ratings to Surprise-compatible format
-    data = []
-    for rating in ratings:
-        data.append((rating['user_id'], rating['bar_id'], rating['rating']))
-
+    # Convert MongoDB ratings to pandas DataFrame
+    df = pd.DataFrame(ratings)
+    
     # Define a Surprise Reader object
     reader = Reader(rating_scale=(1, 5))  # Assuming a rating scale of 1 to 5
-    return Dataset.load_from_df(data, reader)
+    return Dataset.load_from_df(df[['user_id', 'bar_id', 'rating']], reader)
+
+# def load_ratings_data():
+#     """
+#     Fetch ratings from MongoDB and prepare Surprise dataset.
+#     """
+#     ratings = list(db.ratings.find())  # Example MongoDB collection: 'ratings'
+#     if not ratings:
+#         # Return an empty Surprise Dataset if no ratings are present
+#         return None
+    
+#     # Convert MongoDB ratings to Surprise-compatible format
+#     data = []
+#     for rating in ratings:
+#         data.append((rating['user_id'], rating['bar_id'], rating['rating']))
+
+#     # Define a Surprise Reader object
+#     reader = Reader(rating_scale=(1, 5))  # Assuming a rating scale of 1 to 5
+#     return Dataset.load_from_df(data, reader)
 
 # Initialize the recommender system
 def train_recommender_system():
