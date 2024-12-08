@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Group Details - SplitSmart{% endblock %}
+
+{% block content %}
+<section id="group-details" class="row site-container">
+    <div class="group-header">
+        <h1>{{ group_name }}</h1>
+    </div>
+    
+    <div class="group-section">
+        <h2>Members</h2>
+        <ul class="member-list">
+            {% for member in group_members %}
+                <li>{{ member }}:
+                    {% if balances[member] < 0 %}
+                        Owes ${{ balances[member] | abs }}
+                    {% elif balances[member] > 0 %}
+                        Owed ${{ balances[member] }}
+                    {% else %}
+                        Settled
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    
+    <div class="group-section">
+        <h2>Expenses</h2>
+        {% if expenses %}
+            <ul class="expense-list">
+                {% for expense in expenses %}
+                    <li class="group-item">
+                        <p><strong>{{ expense.description }}</strong>: ${{ expense.amount }}</p>
+                        <p>Paid by: <span class="small">{{ expense.paid_by }}</span></p>
+                        <p>Split among:</p>
+                        <ul class="member-list">
+                            {% for member in expense.split_among %}
+                                <li>{{ member.name }}: ${{ member.amount }}</li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No expenses added yet for this group.</p>
+        {% endif %}
+    </div>    
+    
+    
+    <div class="action-buttons">
+        <a href="{{ url_for('add_expense') }}" class="button">Add Expense</a>
+        <a href="{{ url_for('groups') }}" class="button secondary">Back to Groups</a>
+    </div>
+</section>
+{% endblock %}
+

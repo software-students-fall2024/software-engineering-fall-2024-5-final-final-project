@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Add Expense - SplitSmart{% endblock %}
+
+{% block content %}
+<section class="row">
+    <h1>Add Expense</h1>
+    <form action="/add-expense" method="post" class="form">
+        <!-- Select Group -->
+        <div class="form-group">
+            <label for="group">Select Group</label>
+            <select id="group" name="group_id" required onchange="updateGroupMembers()">
+                <option value="" disabled selected>Choose a group</option>
+                {% for group in groups %}
+                    <option value="{{ group['_id'] }}" data-members='{{ group["group_members"] | tojson | safe }}'>{{ group['group_name'] }}</option>
+                {% endfor %}
+            </select>
+        </div>              
+
+        <!-- Expense Description -->
+        <div class="form-group">
+            <label for="description">Expense Description</label>
+            <input type="text" id="description" name="description" placeholder="Enter description" required>
+        </div>
+
+        <!-- Expense Amount -->
+        <div class="form-group">
+            <label for="amount">Amount</label>
+            <input type="number" id="amount" name="amount" placeholder="Enter amount" step="0.01" required>
+        </div>
+
+        <!-- Paid By -->
+        <div class="form-group">
+            <label for="paid-by">Paid By</label>
+            <select id="paid-by" name="paid_by" required>
+                <option value="" disabled selected>Select who paid</option>
+            </select>
+        </div>        
+              
+
+        <!-- Split Among -->
+        <div class="form-group">
+            <label for="split-with">Split With</label>
+            <div id="split-with">
+            </div>
+            <small class="helper-text">Select members to split the expense with.</small>
+        </div>
+        
+
+        <!-- Percentages -->
+        <div class="form-group">
+            <label for="percentages">Split Percentages</label>
+            <input type="text" id="percentages" name="percentages" placeholder="e.g. 0.50, 0.25, 0.25" required>
+            <small class="helper-text">Enter percentages separated by commas (total must equal 1).</small>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="button">Add Expense</button>
+    </form>
+</section>
+
+<script>
+    
+    function updateGroupMembers() {
+        const group = document.getElementById('group');
+        const selected = group.options[group.selectedIndex];
+        
+        if(!selected || !selected.getAttribute('data-members')) {
+            console.error("No group selected or no members available.");
+            return;
+        }
+        const membersData = selected.getAttribute('data-members');
+        
+        let members = [];
+        try {
+            members = JSON.parse(membersData);
+            console.log("Parsed members:", members);
+        } catch(e) {
+            console.error("failed to parse group memebrs:", e);
+            return;
+        }
+        
+        const paidBy = document.getElementById('paid-by');
+        paidBy.innerHTML = '<option value="" disabled selected>Select who paid</option>';
+        members.forEach(member => {
+            const option = document.createElement('option');
+            option.value = member;
+            option.textContent = member;
+            paidBy.appendChild(option);
+        });
+        
+        const splitWith = document.getElementById('split-with');
+        splitWith.innerHTML = '';
+        members.forEach(member => {
+            const container = document.createElement('div');
+            container.className = 'member-checkbox';
+            container.tabIndex = 0;
+            
+            const label = document.createElement('label');
+            label.className = 'checkbox-label';
+            label.textContent = member;
+            
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.name = 'split_with[]';
+            checkbox.value = member;
+            checkbox.id = `checkbox-${member}`;
+            
+            container.appendChild(checkbox);
+            container.appendChild(label);
+            
+            container.addEventListener('click', () => {
+                checkbox.checked = !checkbox.checked;
+                container.classList.toggle('selected', checkbox.checked);
+            });
+            
+            splitWith.appendChild(container);
+        });
+    }
+    // Frontend validation for percentages
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const percentages = document.getElementById('percentages').value.split(',');
+        const sum = percentages.reduce((total, p) => total + parseFloat(p), 0);
+
+        if (Math.abs(sum - 1) > 0.001) {  // Allow for floating-point precision issues
+            e.preventDefault();
+            alert('Percentages must sum to 1. Please adjust the values.');
+        }
+    });
+</script>
+{% endblock %}
+
