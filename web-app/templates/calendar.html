@@ -7,7 +7,7 @@
 <body>
     <div class="container">
         <h1 class="welcome">Your Calendar</h1>
-        <p class="intro">Here is your calendar for {{ month }}/{{ year }}. Click on a day to view or add a journal entry.</p>
+        <p class="intro">Here is your calendar for {{ month }}/{{ year }}. Click on a day to view, edit, or add a journal entry.</p>
 
         <div class="calendar-container">
             <table class="calendar">
@@ -17,8 +17,26 @@
                     <td>
                         {% if day != 0 %}
                             {% if day in journal_entries %}
+                                {% set mood = journal_entries[day]['analysis']['top_emotion']['label'] %}
                                 <a href="{{ url_for('journal', year=year, month=month, day=day) }}">
-                                    <button class="calendar-day entry-day">{{ day }}</button>
+                                    <button class="calendar-day entry-day {{ mood }}">
+                                        {{ day }}
+                                        {% if mood == 'joy' %}
+                                            😊
+                                        {% elif mood == 'sadness' %}
+                                            😢
+                                        {% elif mood == 'anger' %}
+                                            😡
+                                        {% elif mood == 'love' %}
+                                            ❤️
+                                        {% elif mood == 'fear' %}
+                                            😨
+                                        {% elif mood == 'surprise' %}
+                                            😲
+                                        {% else %}
+                                            📝
+                                        {% endif %}
+                                    </button>
                                 </a>
                             {% else %}
                                 <a href="{{ url_for('journal', year=year, month=month, day=day) }}">
@@ -39,4 +57,5 @@
     </div>
 </body>
 </html>
+
 

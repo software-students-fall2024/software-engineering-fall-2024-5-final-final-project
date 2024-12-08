@@ -98,9 +98,6 @@ def logout():
 
 @app.route("/calendar", methods=["GET"])
 def calendar_():
-    """
-    Calendar page displaying the current month with journal entry buttons.
-    """
     if "user_id" not in session:
         return redirect(url_for("login"))
 
@@ -110,7 +107,10 @@ def calendar_():
 
     user_id = session["user_id"]
     journal_entries = {
-        entry["date"]: entry["_id"]
+        entry["day"]: {
+            "id": entry["_id"],
+            "analysis": entry.get("analysis", {"top_emotion": {"label": "default"}})
+        }
         for entry in journal_collection.find({"user_id": user_id, "month": month, "year": year})
     }
 
@@ -121,6 +121,7 @@ def calendar_():
         month_days=month_days,
         journal_entries=journal_entries,
     )
+
 
 
 def perform_analysis(content):
@@ -142,9 +143,6 @@ def perform_analysis(content):
 
 @app.route("/journal/<int:year>/<int:month>/<int:day>", methods=["GET", "POST"])
 def journal(year, month, day):
-    """
-    Add, edit, or delete a journal entry for a specific day.
-    """
     if "user_id" not in session:
         return redirect(url_for("login"))
 
@@ -154,17 +152,22 @@ def journal(year, month, day):
 
     if request.method == "POST":
         content = request.form.get("content")
+        if not content:
+            flash("Content cannot be empty.", "error")
+            return redirect(url_for("journal", year=year, month=month, day=day))
 
-        # Perform ML analysis
+        # Analyze the content
         analysis = perform_analysis(content)
 
         if entry:
+            # Update existing entry
             journal_collection.update_one(
-                {"_id": entry["_id"]}, 
+                {"_id": entry["_id"]},
                 {"$set": {"content": content, "analysis": analysis}}
             )
             flash("Journal entry updated.", "success")
         else:
+            # Create a new entry
             journal_collection.insert_one({
                 "user_id": user_id,
                 "date": date,
@@ -174,11 +177,11 @@ def journal(year, month, day):
                 "month": month,
                 "day": day,
             })
-            flash("Journal entry added with analysis.", "success")
-
-        return redirect(url_for("calendar_"))
+            flash("Journal entry added.", "success")
+        return redirect(url_for("journal", year=year, month=month, day=day))
 
     return render_template("journal.html", date=date, entry=entry)
+
 
 
 @app.route("/delete/<entry_id>", methods=["POST"])

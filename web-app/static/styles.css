@@ -65,6 +65,7 @@ button {
     font-size: 1em;
     cursor: pointer;
     margin-top: 10px;
+    transition: background 0.3s ease;
 }
 
 button:hover {
@@ -77,6 +78,25 @@ button.delete {
 
 button.delete:hover {
     background: #ff4d4d;
+}
+
+/* Back Button Styling */
+.btn-back {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 15px;
+    background: #4c5fd7;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1em;
+}
+
+.btn-back:hover {
+    background: #6c8ffb;
+    color: #fff;
 }
 
 /* Calendar Table */
@@ -107,6 +127,7 @@ button.delete:hover {
     font-size: 1em;
     cursor: pointer;
     border-radius: 5px;
+    transition: background 0.3s ease, color 0.3s ease;
 }
 
 .calendar-day:hover {
@@ -114,8 +135,38 @@ button.delete:hover {
     color: white;
 }
 
+/* Mood-Based Styles for Calendar Entries */
 .entry-day {
-    background: #ff6b6b;
+    border: 2px solid white;
+}
+
+.entry-day.joy {
+    background-color: #ffeb3b; /* Yellow */
+    color: #333;
+}
+
+.entry-day.sadness {
+    background-color: #2196f3; /* Blue */
+    color: white;
+}
+
+.entry-day.anger {
+    background-color: #f44336; /* Red */
+    color: white;
+}
+
+.entry-day.love {
+    background-color: #e91e63; /* Pink */
+    color: white;
+}
+
+.entry-day.fear {
+    background-color: #9c27b0; /* Purple */
+    color: white;
+}
+
+.entry-day.surprise {
+    background-color: #4caf50; /* Green */
     color: white;
 }
 
@@ -124,15 +175,46 @@ button.delete:hover {
     height: 50px;
 }
 
+/* Entry and Analysis Styling */
+.entry-container {
+    background: #f7f7f7;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    word-wrap: break-word;
+}
+
+.analysis-container {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.analysis-container ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.analysis-container ul li {
+    margin: 5px 0;
+    font-size: 0.9em;
+    color: #555;
+}
+
 /* Links */
 a {
     color: #4c5fd7;
     text-decoration: none;
     font-weight: bold;
+    transition: color 0.2s ease;
 }
 
 a:hover {
     text-decoration: underline;
+    color: #6c8ffb;
 }
 
 .back-link {
@@ -169,35 +251,6 @@ h2 {
     text-align: center;
 }
 
-/* Entry and Analysis Styling */
-.entry-container {
-    background: #f7f7f7;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    word-wrap: break-word;
-}
-
-.analysis-container {
-    background: #f9f9f9;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.analysis-container ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-.analysis-container ul li {
-    margin: 5px 0;
-    font-size: 0.9em;
-    color: #555;
-}
-
 /* Responsive Design */
 @media (max-width: 768px) {
     .container {
@@ -213,4 +266,6 @@ h2 {
         font-size: 0.9em;
     }
 }
+
+
 

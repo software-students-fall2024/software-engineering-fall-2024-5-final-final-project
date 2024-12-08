@@ -1,0 +1,55 @@
+name: Main CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  integration-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set Up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Integration Tests
+        run: |
+          pytest integration-tests
+
+  deploy:
+    needs: integration-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy All Services
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.DO_SERVER_IP }}
+          username: root
+          password: ${{ secrets.DO_SERVER_PASSWORD }}
+          port: 22
+          script: |
+            # Deploy web-app
+            docker pull ${{ secrets.DOCKER_USERNAME }}/web-app:latest
+            docker stop web-app || true
+            docker rm web-app || true
+            docker run -d -p 5001:5001 --name web-app ${{ secrets.DOCKER_USERNAME }}/web-app:latest
+            # Deploy machine-learning-client
+            docker pull ${{ secrets.DOCKER_USERNAME }}/machine-learning-client:latest
+            docker stop machine-learning-client || true
+            docker rm machine-learning-client || true
+            docker run -d -p 5002:5002 --name machine-learning-client ${{ secrets.DOCKER_USERNAME }}/machine-learning-client:latest
