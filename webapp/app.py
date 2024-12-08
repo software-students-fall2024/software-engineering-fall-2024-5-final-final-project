@@ -239,7 +239,7 @@ def add_expense():
 
             # Prepare split_among
             split_among = {
-                member: round(percentages[i] * amount, 2) for i, member in enumerate(split_with)
+                member: round(amount * percentages[i], 2) for i, member in enumerate(split_with)
             }
 
             # Create expense document
@@ -258,7 +258,7 @@ def add_expense():
             for member, share in split_among.items():
                 if member != paid_by:
                     group["balances"][member] -= share
-                group["balances"][paid_by] += share
+                group["balances"][paid_by] += amount
 
             # Add expense to the group
 #            col_groups.update_one({"_id": group_id}, {"$push": {"expenses": expense}})
