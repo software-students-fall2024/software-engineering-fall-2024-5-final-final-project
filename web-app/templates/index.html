@@ -44,10 +44,10 @@
     <div class="content">
         <h1>Today's Weather & Outfits</h1>
         <div id="outfit-suggestions">
-            <!-- Replace this with dynamic data -->
-            <p><strong>Location:</strong> New York</p>
-            <img src="images/snow_jacket.png" alt="Snow Jacket" style="width: 200px;">
-            <p><strong>Temperature:</strong> -5°C</p>
+            <p><strong>Location:</strong> {{ city }}</p>
+            <img src="/static/images/snow_jacket.png" alt="Outfit" style="width: 200px;">
+            <p><strong>Temperature:</strong> {{ temperature }}</p>
+            <p><strong>Description:</strong> {{ description }}</p>
         </div>
     </div>
 
