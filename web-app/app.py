@@ -249,6 +249,9 @@ def fetch_weather():
 
 
 def seed_database():
+    """
+    Populate the database with outfits based on temperature range, gender, and weather condition.
+    """
     categories = {
         "cold": {"min": -10, "max": 0},
         "cool": {"min": 1, "max": 15},
@@ -258,14 +261,15 @@ def seed_database():
 
     genders = ["male", "female"]
     images_folder = "./static/images"
+    genders = ["female", "male"]  # Include genders here
     outfit_data = []
 
-    for gender in genders:
-        for category, temp_range in categories.items():
+    for category, temp_range in categories.items():
+        for gender in genders:
             category_folder = os.path.join(images_folder, category, gender)
             if os.path.exists(category_folder):
                 images = [
-                    img for img in os.listdir(category_folder) 
+                    img for img in os.listdir(category_folder)
                     if img.lower().endswith((".jpg", ".jpeg", ".png"))
                 ]
                 for image in images:
@@ -274,16 +278,16 @@ def seed_database():
                         "temperature_range_max": temp_range["max"],
                         "weather_condition": category,
                         "gender": gender,  # Store gender information
-                        "image_url": f"/static/images/{category}/{gender}/{image}"
+                        "image_url": f"/static/images/{category}/{gender}/{image}"  # Construct gender-specific URL
                     })
             else:
-                print(f"Folder for category '{category}' does not exist. Skipping...")
+                print(f"Folder for category '{category}' and gender '{gender}' does not exist. Skipping...")
 
     if outfit_data:
         db.outfits.insert_many(outfit_data)
         print(f"Inserted {len(outfit_data)} entries into the database!")
     else:
-        print("Failed to put pics in database")
+        print("No outfit data was inserted. Check your folder structure.")
 
 def get_outfit_from_db(temp, gender):
     # Query for matching temperature range and gender
