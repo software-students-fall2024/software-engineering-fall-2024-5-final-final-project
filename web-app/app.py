@@ -197,7 +197,7 @@ def index():
 
     if temperature is not None:
         temperature = int(temperature)
-        outfit = get_outfit_from_db(temperature, current_user.gender)
+        outfit = get_outfit_from_db(temperature)
         
         return render_template(
             'index.html',
@@ -253,7 +253,7 @@ def seed_database():
         "warm": {"min": 16, "max": 25},
         "hot": {"min": 26, "max": 40}
     }
-    images_folder = "./images"
+    images_folder = "./static/images"
     outfit_data = []
 
     for category, temp_range in categories.items():
@@ -261,13 +261,13 @@ def seed_database():
         if os.path.exists(category_folder):
             images = [
                 img for img in os.listdir(category_folder) 
-                if img.lower().endswith((".jpg", ".png"))
+                if img.lower().endswith((".jpg", ".jpeg", ".png"))
             ]
             for image in images:
                 outfit_data.append({
                     "temperature_range": temp_range,
                     "weather_condition": category,
-                    "image_url": f"/images/{category}/{image}" 
+                    "image_url": f"/static/images/{category}/{image}" 
                 })
         else:
             print(f"Folder for category '{category}' does not exist. Skipping...")
@@ -278,17 +278,17 @@ def seed_database():
     else:
         print("Failed to put pics in database")
 
-def get_outfit_from_db(temp, gender="all"):
+def get_outfit_from_db(temp):
     # Query for matching temperature range and gender
     outfit = db.outfits.find_one({
         "temperature_range.min": {"$lte": temp},
-        "temperature_range.max": {"$gte": temp},
-        "gender": {"$in": [gender, "all"]}
+        "temperature_range.max": {"$gte": temp}
     })
+
     if outfit:
         return {
             "image": outfit["image_url"],
-            "description": f"Outfit for {gender.capitalize()} in this temperature range"
+            "description": f"Outfit for this temperature range"
         }
     else:
         return {
@@ -299,7 +299,7 @@ def get_outfit_from_db(temp, gender="all"):
 
 # Run the app
 if __name__ == "__main__":
-    seed_database() 
+    seed_database()
     FLASK_PORT = os.getenv("FLASK_PORT", "5000")
     app.run(debug=True)
 
