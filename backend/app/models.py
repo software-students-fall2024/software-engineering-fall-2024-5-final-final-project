@@ -128,14 +128,14 @@ class Post:
 
 
 class Comment:
-    def __init__(self, content, author_id):
+    def __init__(self, content, author_username):
         self.content = content
-        self.author_id = author_id
+        self.author_username = author_username
         self.created_at = datetime.now(timezone.utc)
 
     def to_dict(self):
         return {
             "content": self.content,
-            "author_id": str(self.author_id),
+            "author_username": str(self.author_username),
             "created_at": self.created_at,
         }

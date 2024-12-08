@@ -35,7 +35,11 @@ async function loadPostDetail() {
         console.log('Post data:', post);
         
         document.getElementById('post-detail').innerHTML = `
-            <h1 class="post-title">${post.title}</h1>
+        <a href="../index.html" class="back-button">Back to Posts</a>
+            <div class="post-header">
+                <h3 class="post-title">${post.title}</h3>
+                <h4 class="author">By ${post.author_username}</h4>
+            </div>
             <div class="post-meta">
                 <span class="tags">Tags: ${post.tags.join(', ')}</span>
                 <span class="date">Published: ${new Date(post.created_at).toLocaleDateString()}</span>
@@ -45,12 +49,37 @@ async function loadPostDetail() {
                 <button class="edit-btn" onclick="editPost('${post._id}')">Edit Post</button>
                 <button class="delete-btn" onclick="deletePost('${post._id}')">Delete Post</button>
             </div>
-            <a href="../index.html" class="back-button">Back to Posts</a>
+            <div class="comments">
+                <h5>Comments</h5>
+                <div class="comment-form">
+                    <textarea id="comment-content" placeholder="Write a comment..."></textarea>
+                    <button onclick="addComment('${post._id}')" class="comment-btn">Submit Comment</button>
+                </div>
+                <div id="comments-list" class="comments-list">
+                    ${renderComments(post.comments)}
+                </div>
+            </div>
         `;
     } catch (error) {
         console.error('Error loading post:', error);
         showError(error.message);
     }
+}
+
+function renderComments(comments) {
+    if (!comments || comments.length === 0) {
+        return '<p>No comments yet</p>';
+    }
+    
+    return comments.map(comment => `
+        <div class="comment">
+            <div class="comment-header">
+                <strong class="comment-author">${comment.author_username || 'Anonymous'}</strong>
+                <small class="comment-date">Posted on ${new Date(comment.created_at).toLocaleDateString()}</small>
+            </div>
+            <p class="comment-content">${comment.content}</p>
+        </div>
+    `).join('');
 }
 
 function editPost(postId) {
@@ -85,3 +114,28 @@ async function createPost(event) {
         showError(error.message);
     }
 } 
+
+async function addComment(postId) {
+    const contentElement = document.getElementById('comment-content');
+    const content = contentElement.value;
+    
+    if (!content.trim()) {
+        showError('Comment cannot be empty');
+        return;
+    }
+
+    try {
+        await api.posts.comment(postId, content);
+        
+        contentElement.value = '';
+        
+        const response = await api.posts.getOne(postId);
+        const post = response.data;
+        
+        const commentsListElement = document.getElementById('comments-list');
+        commentsListElement.innerHTML = renderComments(post.comments);
+        
+    } catch (error) {
+        showError(error.message);
+    }
+}

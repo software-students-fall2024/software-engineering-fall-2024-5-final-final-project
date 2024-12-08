@@ -137,8 +137,14 @@ def get_post(post_id):
         post["_id"] = str(post["_id"])
         post["author_id"] = str(post["author_id"])
 
+        author = mongo.db.users.find_one({"_id": ObjectId(post["author_id"])})
+        if author:
+            post["author_username"] = author["username"]
+        else:
+            post["author_username"] = "Anonymous"
+
         return jsonify({"data": post}), 200
-    except:
+    except Exception as e:
         return jsonify({"message": "Invalid post ID"}), 400
 
 
@@ -200,10 +206,15 @@ def create_comment(post_id):
             return jsonify({"message": "Missing required fields"}), 400
 
         current_user_id = ObjectId(get_jwt_identity())
+        author = mongo.db.users.find_one({"_id": current_user_id})
+        if author:
+            username = author["username"]
+        else:
+            username = "Anonymous"
 
         comment = Comment(
             content=data["content"],
-            author_id=current_user_id,
+            author_username=username,
         )
 
         mongo.db.posts.update_one(

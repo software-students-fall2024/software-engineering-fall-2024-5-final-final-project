@@ -13,14 +13,19 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
+        .post-header {
+            margin-top: 20px;
+        }
+
         .post-title {
-            margin-bottom: 20px;
             color: #333;
         }
 
+        .author {
+            color: #666;
+        }
+
         .post-meta {
-            margin: 15px 0;
-            padding: 10px 0;
             border-top: 1px solid #eee;
             border-bottom: 1px solid #eee;
         }
@@ -50,7 +55,7 @@
             gap: 10px;
         }
 
-        .edit-btn, .delete-btn {
+        .comment-btn, .edit-btn, .delete-btn {
             padding: 8px 16px;
             border: none;
             border-radius: 4px;
@@ -65,6 +70,35 @@
         .delete-btn {
             background: #dc3545;
             color: white;
+        }
+
+        .comments {
+            margin-top: 30px;
+            background: #f9f9f9;
+        }
+
+        .comment-form textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        .comment-btn {
+            background: #3d3d3d;
+            color: white;
+        }
+
+        .comments-list {
+            margin-top: 20px;
+        }
+
+        .comment {
+            border-bottom: 1px solid #eee;
+            margin-top: 10px;
+            margin-bottom: 10px;
         }
     </style>
 </head>
