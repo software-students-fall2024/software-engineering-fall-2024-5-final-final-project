@@ -22,25 +22,25 @@ jobs:
       run: pip install pipenv
 
     - name: Install dependencies
-      working-directory: ./flask-api
+      working-directory: ./app
       run: pipenv install --dev
 
     - name: Run linting
-      working-directory: ./flask-api
+      working-directory: ./app
       run: pipenv run pylint app.py
 
     - name: Format code with Black
-      working-directory: ./flask-api
+      working-directory: ./app
       run: pipenv run black .
 
     - name: Run tests
-      working-directory: ./flask-api
+      working-directory: ./app
       run: pipenv run pytest
 
     - name: Build Docker image
-      working-directory: ./flask-api
+      working-directory: ./app
       run: |
-        docker build -t wishlist-flask-api .
+        docker build -t arm9129/flask-api .
 
     - name: Push Docker image to Docker Hub
       env:
@@ -48,4 +48,4 @@ jobs:
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       run: |
         echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-        docker push wishlist-flask-api
+        docker push arm9129/flask-api
