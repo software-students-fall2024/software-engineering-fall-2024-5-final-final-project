@@ -137,7 +137,7 @@ def group_details(group_id):
 
     try:
         # Fetch group details
-        group = col_groups.find_one({"_id": ObjectId(group_id)})
+        group = col_groups.find_one({"_id": group_id})
         if not group:
             flash("Group not found.", "error")
             return redirect(url_for("groups"))
