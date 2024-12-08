@@ -253,34 +253,6 @@ p {
 }
 
 
-/* ----------ADD PAGE---------- */
-.add {
-    padding: 5rem 4rem;
-    background: var(--bg-color);
-    color: var(--text-color);
-}
-.add h2 {
-    font-size: 2.5rem; /* Heading font size */
-    text-align: center;
-    margin-bottom: -1rem;
-    text-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-}
-
-
-/* ----------EDIT PAGE---------- */
-.edit {
-    padding: 5rem 4rem;
-    background: var(--bg-color);
-    color: var(--text-color);
-}
-.edit h2 {
-    font-size: 2rem; /* Heading font size */
-    text-align: center;
-    margin-bottom: -1rem;
-    text-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-}
-
-
 /* ----------DELETE PAGE---------- */
 .delete {
     padding: 5rem 4rem;
@@ -321,8 +293,8 @@ p {
 .button.cancel:hover {background-color: #555;}
 
 
-/* ----------SEARCH & SORT PAGES---------- */
-.search-container, .sort-container {
+/* ----------ADD, EDIT, SEARCH, SORT---------- */
+.add-container, .edit-container, .search-container, .sort-container {
     padding: 3rem 2rem;        
     margin-bottom: 1rem;   
     display: flex;
@@ -333,7 +305,7 @@ p {
     text-align: center;
     margin: 0 auto; /* Center horizontall */
 }
-.search-container h2, .sort-container h2 {
+.add-container h2, .edit-container h2, .search-container h2, .sort-container h2 {
     font-size: 2.5rem;   
     text-align: center;
     margin-bottom: 1rem; 
@@ -346,7 +318,7 @@ p {
     margin-bottom: 4rem; /* Spacing btwn header/form */
     text-align: center;
 }
-.search-container form, .sort-container form {
+.add-container form, .edit-container form, .search-container form, .sort-container form {
     background: white;
     margin-top: -2rem;
     padding: 2rem;
@@ -355,16 +327,16 @@ p {
     width: 90%;
     max-width: 400px;
     text-align: center;
-    flex-direction: row; /* Align in a row */
+    flex-direction: row; /* Align in row */
 }
-.search-container label, .sort-container label {
+.add-container label, .edit-container label, .search-container label, .sort-container label {
     color: var(--heading-color2);
     font-weight: bold;
     font-size: 1.6rem;
     margin-bottom: 1rem;
     display: block; /* Ensure labels are on their own line */
 }
-.search-container select, .sort-container select {
+.add-container select, .edit-container select, .search-container select, .sort-container select {
     width: 100%;
     padding: 0.8rem;
     margin-bottom: 1rem;
@@ -372,7 +344,7 @@ p {
     border-radius: 5px;
     font-size: 1.4rem;
 }
-.search-container button, .sort-container button {
+.add-container button, .edit-container button, .search-container button, .sort-container button {
     background: linear-gradient(90deg, var(--heading-color), var(--heading-color2));
     color: white;
     font-size: 1.8rem;
@@ -384,7 +356,7 @@ p {
     transition: all 0.3s ease-in-out;
     margin-top: 1rem;
 }
-.search-container button:hover, .sort-container button:hover {
+.add-container button:hover, .edit-container button:hover, .search-container button:hover, .sort-container button:hover {
     background: var(--heading-color);
     transform: scale(1.05);
 }
@@ -395,6 +367,23 @@ p {
     margin-bottom: 2rem;     
     color: var(--text-color);         
     font-style: italic;     
+}
+
+
+/* ----------ADD & EDIT FORMS---------- */
+.add-container form, .edit-container form {
+    display: flex;           
+    flex-direction: column; /* Vertical alignment */
+    align-items: center;    /* Center form */
+    gap: 2rem;              /* Space btwn rows */
+}
+.add-container .form-group, .edit-container .form-group {
+    display: flex;                  /* Flexbox for each row */
+    align-items: center;            /* Vertically align label/dropdown */
+    justify-content: space-between; /* Space btwn elements */
+    width: 100%;                   
+    max-width: 400px;               /* Limit width */
+    gap: 2rem;                      /* Space btwn label/dropdown */
 }
 
 
