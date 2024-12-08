@@ -9,6 +9,12 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+
+      - name: Re-clone repository
+      run: |
+        rm -rf .git
+        git clone git@github.com:software-students-fall2024/5-final-book_of_amos.git .
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -26,5 +32,6 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no root@161.35.132.193 << 'EOF'
             git pull origin main
-            docker-compose -f ./docker-compose.yml up -d
+            docker-compose -f docker-compose.yml up -d
           EOF
+
