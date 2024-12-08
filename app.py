@@ -36,6 +36,7 @@ def create_app(test_config=None):
         def __init__(self, user_data):
             self.id = str(user_data['_id'])
             self.username = user_data['username']
+            self.first_name = user_data['first-name']
 
         @staticmethod
         def get(user_id):
@@ -118,7 +119,7 @@ def create_app(test_config=None):
     @app.route("/")
     @login_required
     def home():
-        wishes = db.wishes.find({"user_id": current_user.id, "claimed_by": None}).sort("created_at", -1)
+        wishes = db.wishes.find({"user_id": current_user.id }).sort([("claimed_by", 1), ("created_at", -1) ])
         return render_template("index.html", wishes=wishes, user=current_user)
     
     @app.route("/wishlist/<username>")
@@ -129,7 +130,7 @@ def create_app(test_config=None):
             flash("user not found")
             return redirect(url_for("home"))
         
-        wishes = db.wishes.find({"user_id": str(user["_id"]), "claimed_by": None}).sort("created_at", -1)
+        wishes = db.wishes.find({"user_id": str(user["_id"]) }).sort([("claimed_by", 1), ("created_at", -1) ])
         return render_template("wishlist.html", wishes=wishes, user=user)
 
     
@@ -222,8 +223,7 @@ def create_app(test_config=None):
             {"$set": {"claimed_by": current_user.id}}
         )
         flash("Gift claimed successfully!")
-        return redirect(url_for('home'))
-
+        return redirect(url_for('claimed', username=current_user.username))
 
     # Claimed gifts route
     @app.route("/claimed/<username>")
@@ -235,7 +235,7 @@ def create_app(test_config=None):
             return redirect(url_for("home"))
         
         # Fetch gifts claimed by others from this user's wishlist
-        claimed_wishes = db.wishes.find({"user_id": str(user["_id"]), "claimed_by": {"$ne": None}}).sort("created_at", -1)
+        claimed_wishes = db.wishes.find({"claimed_by": str(user["_id"])}).sort("created_at", -1)
         return render_template("claimed.html", wishes=claimed_wishes, user=user)
     
     return app

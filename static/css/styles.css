@@ -173,6 +173,7 @@ a {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    position: relative;
 }
 
 .wish img {
@@ -193,6 +194,25 @@ a {
     color: var(--beige-darkest);
     border: 1px solid var(--beige-dark);
     width: 100%;
+}
+
+.claimed-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.64);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+}
+
+.claimed-text {
+    color: var(--white);
+    font-size: 24px;
+    font-weight: bold;
 }
 
 #add-wish {

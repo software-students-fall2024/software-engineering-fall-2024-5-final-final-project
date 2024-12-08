@@ -1,7 +1,7 @@
 {% extends 'nav-base.html' %}
 
 {% block inner_content %}
-    <h1>{{ user['username'] }}'s Wishlist</h1>
+    <h1>{{ user['first-name'] }}'s Wishlist</h1>
     {% if wishes %}
         <ul class="wishlist">
             {% for wish in wishes %}
@@ -11,11 +11,16 @@
                         <b>{{ wish['name'] }}</b>
                         <p>${{ wish['price'] }}</p>
                         <p><i>Comments: {{ wish['comments'] }}</i></p> 
-                        <form action="{{ url_for('claim', wish_id=wish._id) }}" method="POST">
-                            <button type="submit">Claim</button>
-                        </form>
                     </div>
+                    <form action="{{ url_for('claim', wish_id=wish._id) }}" method="POST">
+                        <button type="submit">Claim</button>
+                    </form>
                     <a target="_blank" href="{{ wish['link'] }}"><button role="link">Item link</button></a>
+                    {% if wish.claimed_by %}
+                        <div class="claimed-overlay">
+                            <span class="claimed-text">Claimed!</span>
+                        </div>
+                    {% endif %}    
                 </li>
             {% endfor %}
         </ul>

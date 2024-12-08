@@ -6,7 +6,7 @@
                 <a href="{{ url_for('home') }}" class="logo">Happylist</a>
                 <ul>
                     <li><a href="{{ url_for('home') }}">My wishlist</a></li>
-                    <li><a href="{{ url_for('claimed', username=user.username) }}">Claimed gifts</a></li>
+                    <li><a href="{{ url_for('claimed', username=current_user.username) }}">Claimed gifts</a></li>
                     {% if current_user.is_authenticated %}
                     <li>
                         <form method="POST" action="{{ url_for('logout') }}">
