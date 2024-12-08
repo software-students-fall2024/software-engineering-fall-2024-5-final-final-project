@@ -47,15 +47,6 @@ This project consists of two main subsystems:
 1. Install Docker and Docker Compose.
 2. Ensure MongoDB is running locally or available as a service.
 
-### Environment Variables
-
-Create a `.env` file in the project root with the following variables:
-
-```plaintext
-SECRET_KEY=your-secret-key
-MONGO_URI=mongodb://<your-mongo-host>:27017/finance_db
-BACKEND_URL=http://localhost:5001
-```
 
 ### Running the Project
 
@@ -71,10 +62,7 @@ BACKEND_URL=http://localhost:5001
    ```
 
 3. Access the application:
-   - Frontend: [http://localhost:5000](http://localhost:5000)
-   - Backend API: [http://localhost:5001](http://localhost:5001)
 
----
 
 ## Starter Data
 
@@ -87,7 +75,7 @@ To initialize the database with starter data:
    ```python
    from backend.database import Database
    db = Database()
-   db._ensure_default_user()  # Initializes the default user
+   db._ensure_default_user()
    ```
 
 ## Team members
