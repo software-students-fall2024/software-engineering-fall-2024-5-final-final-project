@@ -8,6 +8,8 @@ flask = "*"
 gunicorn = "*"
 flask-pymongo = "*"
 python-dotenv = "*"
+certifi = "*"
+pymongo = "*"
 
 [dev-packages]
 

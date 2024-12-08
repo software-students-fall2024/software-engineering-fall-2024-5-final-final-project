@@ -4,7 +4,8 @@ import os;
 import random;
 import os
 from dotenv import load_dotenv
-from flask_pymongo import PyMongo
+from pymongo import MongoClient, server_api
+import certifi
 
 
 load_dotenv()
@@ -14,8 +15,10 @@ MONGO_URI = os.getenv('MONGO_URI')
 app = Flask(__name__)
 
 app.config["MONGO_URI"] = MONGO_URI
-
-mongo = PyMongo(app)
+client = MongoClient(MONGO_URI, tlsCAFile=certifi.where(), server_api=server_api.ServerApi('1'))
+db = client["movie_db"]
+users_collection = db.users
+# mongo = PyMongo(app)
 
 def create_user(username, password):
     user = {
@@ -36,7 +39,8 @@ def read_movies():
 
 @app.route('/')
 def index():
-    # user = create_user('test','unhashedpass')
+    user = create_user('WilliamTest','unhashedpass')
+    users_collection.insert_one(user);
     # mongo.db.users.insert_one(user)
     movie_picked = False
     if not movie_picked:
