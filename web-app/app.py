@@ -28,7 +28,8 @@ db = client[MONGO_DBNAME]
 users_collection = db["users"]
 journal_collection = db["journals"]
 
-ML_CLIENT_URL = "http://ml-client:5002/analyze"
+# ML Client configuration
+ML_CLIENT_URL = os.getenv("ML_CLIENT_URL", "http://ml-client:5002/analyze")
 
 
 @app.route("/")
@@ -37,6 +38,7 @@ def index():
     Redirect to the login page.
     """
     return redirect(url_for("login"))
+
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -47,13 +49,11 @@ def register():
         username = request.form.get("username")
         password = request.form.get("password")
 
-        # Check if username already exists
         if users_collection.find_one({"username": username}):
             flash("Username already exists. Please choose another.", "error")
             return redirect(url_for("register"))
 
         try:
-            # Create new user with hashed password
             hashed_password = generate_password_hash(password, method="pbkdf2:sha256")
             users_collection.insert_one({"username": username, "password": hashed_password})
             flash("Registration successful. Please log in.", "success")
@@ -63,6 +63,7 @@ def register():
             return redirect(url_for("register"))
 
     return render_template("register.html")
+
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -84,6 +85,7 @@ def login():
 
     return render_template("login.html")
 
+
 @app.route("/logout")
 def logout():
     """
@@ -93,6 +95,7 @@ def logout():
     flash("You have been logged out.", "success")
     return redirect(url_for("login"))
 
+
 @app.route("/calendar", methods=["GET"])
 def calendar_():
     """
@@ -101,12 +104,10 @@ def calendar_():
     if "user_id" not in session:
         return redirect(url_for("login"))
 
-    # Get the current month and year
     now = datetime.utcnow()
     year, month = now.year, now.month
     month_days = calendar.monthcalendar(year, month)
 
-    # Fetch existing journal entries for the user
     user_id = session["user_id"]
     journal_entries = {
         entry["date"]: entry["_id"]
@@ -124,7 +125,7 @@ def calendar_():
 
 def perform_analysis(content):
     """
-    Perform machine-learning analysis on the provided content.
+    Perform ML analysis on the provided content.
     Sends the content to the ML client and retrieves the analysis results.
     """
     try:
@@ -137,7 +138,7 @@ def perform_analysis(content):
     except Exception as e:
         flash(f"Failed to analyze journal entry: {e}", "error")
         return {}
-    
+
 
 @app.route("/journal/<int:year>/<int:month>/<int:day>", methods=["GET", "POST"])
 def journal(year, month, day):
@@ -158,29 +159,27 @@ def journal(year, month, day):
         analysis = perform_analysis(content)
 
         if entry:
-            # Update existing entry
             journal_collection.update_one(
                 {"_id": entry["_id"]}, 
-                {"$set": {"content": content,
-                          "analysis": analysis
-                          }}
-                )
+                {"$set": {"content": content, "analysis": analysis}}
+            )
             flash("Journal entry updated.", "success")
         else:
-            # Create new entry with ML analysis
             journal_collection.insert_one({
                 "user_id": user_id,
                 "date": date,
                 "content": content,
-                "analysis": analysis,  
+                "analysis": analysis,
                 "year": year,
                 "month": month,
                 "day": day,
             })
             flash("Journal entry added with analysis.", "success")
+
         return redirect(url_for("calendar_"))
 
     return render_template("journal.html", date=date, entry=entry)
+
 
 @app.route("/delete/<entry_id>", methods=["POST"])
 def delete_entry(entry_id):
@@ -194,9 +193,11 @@ def delete_entry(entry_id):
     flash("Journal entry deleted.", "success")
     return redirect(url_for("calendar_"))
 
+
 if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
         port=int(os.getenv("FLASK_PORT", 5001)),
-        debug=bool(int(os.getenv("FLASK_DEBUG", 0))),
+        debug=bool(int(os.getenv("FLASK_DEBUG", 1))),
     )
+

@@ -1,20 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Journal</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journal Entry</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>Journal Entry for {{ date }}</h1>
-    <form method="POST">
-        <textarea name="content" rows="10" cols="50">{{ entry.content if entry else "" }}</textarea>
-        <button type="submit">Save</button>
-    </form>
-    {% if entry %}
-    <form method="POST" action="{{ url_for('delete_entry', entry_id=entry._id) }}">
-        <button type="submit" class="delete">Delete Entry</button>
-    </form>
-    {% endif %}
-    <a href="{{ url_for('calendar_') }}">Back to Calendar</a>
+    <div class="container">
+        <h1>Journal Entry for {{ date }}</h1>
+
+        {% if entry %}
+        <div class="entry-container">
+            <h2>Your Entry</h2>
+            <p>{{ entry.content }}</p>
+        </div>
+        
+        {% if entry.analysis and entry.analysis.top_emotion %}
+        <div class="analysis-container">
+            <h2>Emotion Analysis</h2>
+            <p><strong>Top Emotion:</strong> {{ entry.analysis.top_emotion.label }} 
+                ({{ "%.2f" | format(entry.analysis.top_emotion.score * 100) }}%)</p>
+            
+            <h3>All Emotions:</h3>
+            <ul>
+                {% for emotion in entry.analysis.all_emotions %}
+                <li>{{ emotion.label }}: {{ "%.2f" | format(emotion.score * 100) }}%</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        {% endif %}
+
+        <div class="form-container">
+            <h2>Add or Edit Your Entry</h2>
+            <form method="POST">
+                <textarea name="content" rows="10" placeholder="Write your thoughts here..." required>{{ entry.content if entry else "" }}</textarea>
+                <button type="submit" class="btn-save">Save</button>
+            </form>
+        </div>
+
+        {% if entry %}
+        <form method="POST" action="{{ url_for('delete_entry', entry_id=entry._id) }}">
+            <button type="submit" class="btn-delete">Delete Entry</button>
+        </form>
+        {% endif %}
+
+        <a href="{{ url_for('calendar_') }}" class="btn-back">Back to Calendar</a>
+    </div>
 </body>
 </html>
+
+
