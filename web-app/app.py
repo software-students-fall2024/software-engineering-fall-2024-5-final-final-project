@@ -11,6 +11,7 @@ from pymongo.server_api import ServerApi
 from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash, check_password_hash
 from bson.objectid import ObjectId
+import requests
 
 # Load environment variables
 load_dotenv()
@@ -26,6 +27,9 @@ client = MongoClient(MONGO_URI, server_api=ServerApi("1"))
 db = client[MONGO_DBNAME]
 users_collection = db["users"]
 journal_collection = db["journals"]
+
+ML_CLIENT_URL = "http://ml-client:5002/analyze"
+
 
 @app.route("/")
 def index():
@@ -117,6 +121,24 @@ def calendar_():
         journal_entries=journal_entries,
     )
 
+
+def perform_analysis(content):
+    """
+    Perform machine-learning analysis on the provided content.
+    Sends the content to the ML client and retrieves the analysis results.
+    """
+    try:
+        response = requests.post(ML_CLIENT_URL, json={"text": content})
+        if response.status_code == 200:
+            return response.json()  # Return the analysis result
+        else:
+            flash("Error in ML analysis.", "error")
+            return {}
+    except Exception as e:
+        flash(f"Failed to analyze journal entry: {e}", "error")
+        return {}
+    
+
 @app.route("/journal/<int:year>/<int:month>/<int:day>", methods=["GET", "POST"])
 def journal(year, month, day):
     """
@@ -131,21 +153,31 @@ def journal(year, month, day):
 
     if request.method == "POST":
         content = request.form.get("content")
+
+        # Perform ML analysis
+        analysis = perform_analysis(content)
+
         if entry:
             # Update existing entry
-            journal_collection.update_one({"_id": entry["_id"]}, {"$set": {"content": content}})
+            journal_collection.update_one(
+                {"_id": entry["_id"]}, 
+                {"$set": {"content": content,
+                          "analysis": analysis
+                          }}
+                )
             flash("Journal entry updated.", "success")
         else:
-            # Create new entry
+            # Create new entry with ML analysis
             journal_collection.insert_one({
                 "user_id": user_id,
                 "date": date,
                 "content": content,
+                "analysis": analysis,  
                 "year": year,
                 "month": month,
                 "day": day,
             })
-            flash("Journal entry added.", "success")
+            flash("Journal entry added with analysis.", "success")
         return redirect(url_for("calendar_"))
 
     return render_template("journal.html", date=date, entry=entry)
