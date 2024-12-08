@@ -41,12 +41,10 @@ global.showError = jest.fn();
 // Import the functions after setting up mocks
 import {
     loadPosts,
-    createPost,
     loadPostDetail,
     editPost,
     deletePost,
-    addComment,
-    renderComments
+    addComment
 } from '../js/posts';
 
 describe('Posts Module', () => {
@@ -165,7 +163,7 @@ describe('Posts Module', () => {
         });
     });
 
-    
+
 
     describe('deletePost', () => {
         it('should delete post and redirect', async () => {
