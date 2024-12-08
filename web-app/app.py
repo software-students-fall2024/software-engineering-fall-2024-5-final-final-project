@@ -11,7 +11,6 @@ load_dotenv()
 
 app = Blueprint("main", __name__)
 
-# logging for dev -- delete later
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
