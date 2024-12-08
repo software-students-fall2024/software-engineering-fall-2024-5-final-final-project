@@ -30,7 +30,7 @@ loader.start()  # Start the loading spinner
 try:
     llm = initialize_llm(MODEL_PATH, DEFAULT_TEMPERATURE)
 finally:
-    loader.stop()  # Stop the loading spinner when the task completes
+    loader.stop()
 
 def create_app():
     """
