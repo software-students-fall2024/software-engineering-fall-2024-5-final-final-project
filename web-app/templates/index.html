@@ -12,7 +12,7 @@
     <body>
         <!-- BLUE HEADING SECTION -->
         <header class="header">
-            <a href="#home" class="webName"><i class='bx bx-drink' id="logo"></i>Home-Brewed</a>
+            <a href="#home" class="webName"><i class='bx bx-drink' id="logo"></i><i>Home-Brewed</i></a>
             <i class="bx bx-menu" id="menu-icon"></i> <!-- Menu icon -->
 
             <!-- Logout button -->
@@ -25,12 +25,13 @@
                 <a href="{{ url_for('index') }}">Edit/Delete</a> <!-- link to Edit/Delete -->
                 <a href="{{ url_for('search') }}">Search</a>
                 <a href="{{ url_for('sort') }}">Sort</a>
+                <a href="{{ url_for('recommend') }}">Recs</a>
             </nav>
         </header>
 
         <!-- HOME PAGE -->
-        <h2>Welcome, {{ username }}!</h2>
-        <p>Let's get drinking! 旦_(･o･)</p>
+        <h2>Let's get drinking, {{ username }}!</h2>
+        <p>旦_(･o･)</p>
         
         <!-- Dashboard of user's applications -->
         <div class="table-wrapper">
@@ -52,9 +53,13 @@
                     <tr>
                         <!-- Edit/Delete -->
                         <td class="action-cell">
-                            <a href="{{ url_for('edit', bar_id=bar._id) }}">Edit</a> | 
-                            <a href="{{ url_for('delete', bar_id=bar._id) }}">Delete</a>
-                        </td>                        
+                            <select onchange="handleAction(this, '{{ bar._id }}')"> <!-- script.js function -->
+                                <option value="" disabled selected>--Choose--</option>
+                                <option value="add">Add</option>
+                                <option value="edit">Edit</option>
+                                <option value="delete">Delete</option>
+                            </select>
+                        </td>              
 
                         <td>{{ bar.name }}</td>
                         <td>{{ bar.type }}</td>
@@ -65,9 +70,9 @@
                         <td>{{ bar.status }}</td>
                     </tr>
                     {% else %}
-                        <tr>
-                            <td colspan="8" style="text-align: center;">No bars found</td>                           
-                        </tr>
+                        <td colspan="8" style="text-align: center;">
+                            <a href="{{ url_for('add') }}" class="add-bar-button">Add a Bar!</a>
+                        </td>
                     {% endfor %}
                 </tbody>
             </table>

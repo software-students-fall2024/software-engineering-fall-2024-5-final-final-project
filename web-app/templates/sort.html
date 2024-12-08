@@ -12,7 +12,7 @@
     <body>
         <!-- BLUE HEADING SECTION -->
         <header class="header">
-            <a href="#home" class="webName"><i class='bx bx-drink' id="logo"></i>Home-Brewed</a>
+            <a href="#home" class="webName"><i class='bx bx-drink' id="logo"></i><i>Home-Brewed</i></a>
             <i class="bx bx-menu" id="menu-icon"></i> <!-- Menu icon -->
 
             <!-- Logout button -->
@@ -25,6 +25,7 @@
                 <a href="{{ url_for('index') }}">Edit/Delete</a> <!-- link to Edit/Delete -->
                 <a href="{{ url_for('search') }}">Search</a>
                 <a href="{{ url_for('sort') }}" class="active">Sort</a> <!-- current page -->
+                <a href="{{ url_for('recommend') }}">Recs</a>
             </nav>
         </header>
 
@@ -49,6 +50,7 @@
                 <!-- Ascending/Descending order -->
                 <label for="order">Sort Order:</label>
                 <select name="order" id="order">
+                    <option value="">--Choose--</option>
                     <option value="asc">Ascending</option>
                     <option value="desc">Descending</option>
                 </select><br><br>

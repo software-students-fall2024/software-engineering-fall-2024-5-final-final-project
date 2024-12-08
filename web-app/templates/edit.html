@@ -12,7 +12,7 @@
     <body>
         <!-- BLUE HEADING SECTION -->
         <header class="header">
-            <a href="#home" class="webName"><i class='bx bx-drink' id="logo"></i>Home-Brewed</a>
+            <a href="#home" class="webName"><i class='bx bx-drink' id="logo"></i><i>Home-Brewed</i></a>
             <i class="bx bx-menu" id="menu-icon"></i> <!-- Menu icon -->
 
             <!-- Logout button -->
@@ -25,23 +25,19 @@
                 <a href="{{ url_for('index') }}" class="active">Edit/Delete</a> <!-- current page -->
                 <a href="{{ url_for('search') }}">Search</a>
                 <a href="{{ url_for('sort') }}">Sort</a>
+                <a href="{{ url_for('recommend') }}">Recs</a>
             </nav>
         </header>
 
         <!-- CONTENT -->
         <div class="edit-container" id="edit-container">
-            <h2 class="heading">Edit a Bar!</h2>
+            <h2 class="heading">Edit <i>{{ bar.name }}</i>!</h2>
             <form action="{{ url_for('edit', bar_id=bar._id) }}" method="POST">
-                <!-- Name -->
-                <div class="form-group">
-                    <label for="name">Name:</label>
-                    <input type="text" id="name" name="name" value="{{ bar.name }}" required><br><br>
-                </div>
-
                 <!-- Type -->
                 <div class="form-group">
                     <label for="type">Type</label>
                     <select id="type" name="type" required>
+                        <option value="">--Choose--</option>
                         <option value="Cocktail" {% if bar.type == 'cocktail' %}selected{% endif %}>Cocktail</option>
                         <option value="Wine" {% if bar.type == 'wine' %}selected{% endif %}>Wine</option>
                         <option value="Speakeasy" {% if bar.type == 'speakeasy' %}selected{% endif %}>Speakeasy</option>
@@ -49,6 +45,7 @@
                         <option value="Sports" {% if bar.type == 'sports' %}selected{% endif %}>Sports</option>
                         <option value="Dive" {% if bar.type == 'dive' %}selected{% endif %}>Dive</option>
                         <option value="Pub" {% if bar.type == 'pub' %}selected{% endif %}>Pub</option>
+                        <option value="Other" {% if bar.type == 'other' %}selected{% endif %}>Other</option>
                     </select><br><br>
                 </div>
 
@@ -56,11 +53,13 @@
                 <div class="form-group">
                     <label for="occasion">Occasion</label>
                     <select id="occasion" name="occasion" required>
+                        <option value="">--Choose--</option>
                         <option value="Casual" {% if bar.occasion == 'cocktail' %}selected{% endif %}>Casual</option>
                         <option value="Formal" {% if bar.occasion == 'formal' %}selected{% endif %}>Formal</option>
                         <option value="Happy Hour" {% if bar.occasion == 'happyhour' %}selected{% endif %}>Happy Hour</option>
                         <option value="Date" {% if bar.occasion == 'date' %}selected{% endif %}>Date</option>
                         <option value="Dancing" {% if bar.occasion == 'dancing' %}selected{% endif %}>Dancing</option>
+                        <option value="Other" {% if bar.occasion == 'other' %}selected{% endif %}>Other</option>
                     </select><br><br>
                 </div>
 
@@ -68,6 +67,7 @@
                 <div class="form-group">
                     <label for="area">Area</label>
                     <select id="area" name="area" required>
+                        <option value="">--Choose--</option>
                         <option value="FiDi" {% if bar.area == 'FiDi' %}selected{% endif %}>FiDi</option>
                         <option value="East Village" {% if bar.area == 'East Village' %}selected{% endif %}>East Village</option>
                         <option value="Greenwich Village" {% if bar.area == 'Greenwich Village' %}selected{% endif %}>Greenwich</option>
@@ -78,6 +78,7 @@
                         <option value="Midtown" {% if bar.area == 'Midtown' %}selected{% endif %}>Midtown</option>
                         <option value="Upper East Side" {% if bar.area == 'Upper East Side' %}selected{% endif %}>Upper East Side</option>
                         <option value="Upper West Side" {% if bar.area == 'Upper West Side' %}selected{% endif %}>Upper West Side</option>
+                        <option value="Other" {% if bar.area == 'other' %}selected{% endif %}>Other</option>
                     </select><br><br>
                 </div>
 
@@ -85,8 +86,9 @@
                 <div class="form-group">
                     <label for="reservation">Reservation</label>
                     <select id="reservation" name="reservation" required>
-                        <option value="No" {% if bar.reservation == 'no' %}selected{% endif %}>No</option>
+                        <option value="">--Choose--</option>
                         <option value="Yes" {% if bar.reservation == 'yes' %}selected{% endif %}>Yes</option>
+                        <option value="No" {% if bar.reservation == 'no' %}selected{% endif %}>No</option>
                     </select><br><br>
                 </div>
 
@@ -94,6 +96,7 @@
                 <div class="form-group">
                     <label for="cost">Cost</label>
                     <select id="cost" name="cost" required>
+                        <option value="">--Choose--</option>
                         <option value="$" {% if bar.cost == '$' %}selected{% endif %}>$</option>
                         <option value="$$" {% if bar.cost == '$$' %}selected{% endif %}>$$</option>
                         <option value="$$$" {% if bar.cost == '$$$' %}selected{% endif %}>$$$</option>
@@ -105,12 +108,13 @@
                 <div class="form-group">
                     <label for="status">Visited?</label>
                     <select id="status" name="status" required>
-                        <option value="No" {% if bar.status == 'no' %}selected{% endif %}>No</option>
+                        <option value="">--Choose--</option>
                         <option value="Yes" {% if bar.status == 'yes' %}selected{% endif %}>Yes</option>
+                        <option value="No" {% if bar.status == 'no' %}selected{% endif %}>No</option>
                     </select><br><br>
                 </div>
 
-                <button type="submit">Add Bar</button> <!-- Add bar -->
+                <button type="submit">Add Bar</button> <!-- Add bar -->   
             </form>
         </div>
         <script src="{{ url_for('static', filename='script.js') }}" defer></script>
