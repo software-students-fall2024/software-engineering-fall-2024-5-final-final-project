@@ -198,7 +198,7 @@ def index():
 
     if temperature is not None:
         temperature = int(temperature)
-        outfit = get_outfit_from_db(temperature)
+        outfit = get_outfit_from_db(temperature, current_user.gender)
         
         return render_template(
             'index.html',
@@ -247,6 +247,7 @@ def fetch_weather():
     else:
         return jsonify({"error": "Could not fetch weather data"}), 400
 
+
 def seed_database():
     """
     Populate the database with outfits based on temperature range, gender, and weather condition.
@@ -257,6 +258,8 @@ def seed_database():
         "warm": {"min": 16, "max": 25},
         "hot": {"min": 26, "max": 40}
     }
+
+    genders = ["male", "female"]
     images_folder = "./static/images"
     genders = ["female", "male"]  # Include genders here
     outfit_data = []
@@ -286,11 +289,12 @@ def seed_database():
     else:
         print("No outfit data was inserted. Check your folder structure.")
 
-def get_outfit_from_db(temp):
+def get_outfit_from_db(temp, gender):
     # Query for matching temperature range and gender
     outfit = db.outfits.find_one({
         "temperature_range_min": {"$lte": int(temp)},
-        "temperature_range_max": {"$gte": int(temp)}
+        "temperature_range_max": {"$gte": int(temp)},
+        "gender": gender
     })
     if outfit:
         return {
@@ -302,11 +306,8 @@ def get_outfit_from_db(temp):
             "image": "/images/default.png",
             "description": "Default Outfit"
         }
-
-
 # Run the app
 if __name__ == "__main__":
     seed_database()
     FLASK_PORT = os.getenv("FLASK_PORT", "5000")
     app.run(debug=True)
-

@@ -8,11 +8,31 @@
         body {
             margin: 0;
             font-family: Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: url('{{ outfit_image }}') no-repeat center center fixed; /* Background image */
+            background-size: cover; /* Make it cover the whole page */
+            color: white; /* Text color for readability on dark backgrounds */
         }
 
         .content {
             text-align: center;
             padding: 20px;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background for text readability */
+            border-radius: 10px;
+            margin: auto;
+            max-width: 600px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        p {
+            margin: 10px 0;
+            font-size: 1.2em;
         }
 
         .bottom-nav {
@@ -20,7 +40,7 @@
             bottom: 0;
             left: 0;
             width: 100%;
-            background-color: #333;
+            background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent black background */
             display: flex;
             justify-content: space-around;
             align-items: center;
@@ -33,11 +53,29 @@
             text-align: center;
             flex-grow: 1;
             padding: 10px 0;
+            font-size: 1.1em;
         }
 
         .bottom-nav a:hover, .bottom-nav a.active {
-            background-color: #555;
+            background-color: rgba(255, 255, 255, 0.2); /* Subtle hover effect */
+            border-radius: 5px;
         }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            p {
+                font-size: 1em;
+            }
+
+            .content {
+                padding: 15px;
+            }
+        }
+
     </style>
 </head>
 <body>
