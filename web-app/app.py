@@ -200,15 +200,30 @@ def index():
         temperature = int(temperature)
         outfit = get_outfit_from_db(temperature, current_user.gender)
         
+        if temperature <= 0:
+            category = "cold"
+        elif 1 <= temperature <= 15:
+            category = "cool"
+        elif 16 <= temperature <= 25:
+            category = "warm"
+        else:
+            category = "hot"
+
+        # Pass the background image URL for the category
+        
+        background_image = f"/static/background_images/{category}.jpg"
+
         return render_template(
             'index.html',
             city=city,
             temperature=f"{temperature}°C",
             description=description,
             outfit_image=outfit["image"],
-            outfit_description=outfit["description"]
+            outfit_description=outfit["description"],
+            background_image=background_image
         )
     else:
+
         return render_template(
             'index.html',
             city=city,
