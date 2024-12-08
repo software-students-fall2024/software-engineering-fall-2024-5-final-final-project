@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ username }}{% endblock %}
+
+{% block content %}
+<section>
+    <h1>Wishlist: {{ wishlist['name'] }}</h1>
+    <div>
+        {% for item in items %}
+            <div style="margin-bottom: 20px;">
+                <p><strong>{{ item['name'] }}</strong></p>
+                <a href="{{ item.link }}" target="_blank">View Product</a>
+                <button onclick="markAsPurchased('{{ item._id }}')" {% if item.purchased %}disabled{% endif %}>
+                    {% if item.purchased %}Purchased{% else %}Buy Now{% endif %}
+                </button>
+            </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        function markAsPurchased(itemId) {
+            console.log(itemId)
+            // const str = "view/mark_purchased"+itemId
+            fetch(`mark_purchased/${itemId}`, { method: "POST" })
+                .then(response => {
+                    if (response.ok) {
+                        alert("Item marked as purchased!");
+                        location.reload();
+                    }
+                });
+        }
+    </script>
+</section>
+{% endblock %}

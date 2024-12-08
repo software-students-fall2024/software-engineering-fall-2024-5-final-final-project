@@ -6,7 +6,10 @@
 <section>
     <h3>Wishlist</h3>
     <p> {{ wishlist['name'] }}</p>
-    {% for item in wishlist['items'] %}
+    {% for item in items %}
+        <div {% if item.purchased %} style="background-color: #eaffea;" {% endif %}>
+            <p>{{ item.name }} - {% if item['purchased'] %}Purchased{% else %}Not Purchased{% endif %}</p>
+        </div>
         <p>
             <a href="{{ item['link'] }}">{{ item['name'] }}</a>
             ${{ item['price'] }}

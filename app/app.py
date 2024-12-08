@@ -4,6 +4,7 @@ Handles routes for wishlist creation, retrieval, and updates.
 """
 
 import os
+import uuid
 import pymongo
 from bson import ObjectId
 from dotenv import load_dotenv
@@ -80,6 +81,7 @@ def register_routes(app, db):
                 "username": username,
                 "items": [],
                 "name": request.form["name"],
+                "public_id": str(uuid.uuid4()),  # Generate a unique public ID
             }
             db.lists.insert_one(new_wishlist)
             return redirect(url_for("profile", username=username))
@@ -100,7 +102,8 @@ def register_routes(app, db):
             Rendered HTML template for the wishlist page.
         """
         user_wishlist = db.lists.find_one({"_id": ObjectId(wishlist_id)})
-        return render_template("wishlist.html", wishlist=user_wishlist)
+        items = list(db.items.find({"wishlist":ObjectId(wishlist_id)}))
+        return render_template("wishlist.html", wishlist=user_wishlist, items=items)
 
     @app.route("/wishlist/<wishlist_id>/add_item", methods=["GET", "POST"])
     def add_item(wishlist_id):
@@ -116,6 +119,7 @@ def register_routes(app, db):
         if request.method == "POST":
             wishlist_items = db.lists.find_one({"_id": ObjectId(wishlist_id)})["items"]
             new_item = {
+                "wishlist": ObjectId(wishlist_id),
                 "link": request.form["link"],
                 "name": request.form["name"],
                 "price": request.form["price"],
@@ -124,6 +128,7 @@ def register_routes(app, db):
             db.lists.update_one(
                 {"_id": ObjectId(wishlist_id)}, {"$set": {"items": wishlist_items}}
             )
+            db.items.insert_one(new_item)
             return redirect(url_for("wishlist_view", wishlist_id=wishlist_id))
         return render_template("add-item.html", id=wishlist_id)
 
@@ -155,6 +160,25 @@ def register_routes(app, db):
             db.users.insert_one(new_user)
             return redirect(url_for("profile", username=request.form["username"]))
         return render_template("signup.html")
+
+    @app.route("/view/<public_id>")
+    def public_view(public_id):
+        """
+        Public view to show a shared wishlist.
+        """
+        wishlist = db.lists.find_one({"public_id": public_id})
+        if not wishlist:
+            return "Wishlist not found", 404
+        items = db.items.find({"wishlist":wishlist['_id']})
+        return render_template("public_wishlist.html", wishlist=wishlist, items=items)
+    
+    @app.route('/view/mark_purchased/<item_id>', methods=['POST'])
+    def mark_as_purchased(item_id):
+        db.items.update_one(
+            {"_id": ObjectId(item_id)},
+            {"$set": {"purchased": True}}
+        )
+        return "Item marked as purchased", 200
 
 
 if __name__ == "__main__":
