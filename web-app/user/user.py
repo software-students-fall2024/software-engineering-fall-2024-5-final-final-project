@@ -75,11 +75,12 @@ class User(UserMixin):
         user_data = db.users.find_one({"email": self.email})
         return user_data.get("events", [])
 
-    def delete_event(self, db, event_id):
+    def delete_event(self, event_id):
         """user-side delete event"""
         db.users.update_one(
             {"email": self.email}, {"$pull": {"events": {"_id": event_id}}}
         )
+
 
     def edit_event(self, db, event_id, updated_event):
         """user-side in database edit event by ID"""
@@ -121,7 +122,6 @@ DEFAULT_CATEGORIES = [
 
 # user routes
 
-
 @user.route("/add-event", methods=["POST"])
 @login_required
 def add_event():
@@ -148,8 +148,8 @@ def add_event():
 @user.route("/delete-event/<event_id>", methods=["DELETE"])
 @login_required
 def delete_event(event_id):
-    """DELETE request to remove an event by ID"""
-    current_user.delete_event(db, event_id)
+    """DELETE request to remove an event by ID."""
+    current_user.delete_event(event_id)  # Pass only the event_id
     return jsonify({"message": "Event deleted successfully"}), 200
 
 

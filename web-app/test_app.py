@@ -8,40 +8,51 @@ import pytest
 from unittest.mock import MagicMock, patch
 from flask import url_for
 
-from app import app as flask_app
+from app import app as create_app
 from user.user import User
+from app import create_app
 
+@pytest.fixture
+def flask_app():
+    """Create a Flask app instance for testing."""
+    app = create_app()
+    app.config["TESTING"] = True
+    return app
+
+@pytest.fixture
+def client(flask_app):
+    """Create a test client for the Flask app."""
+    with flask_app.test_client() as client:
+        with flask_app.app_context():
+            yield client
 
 @pytest.fixture
 def mock_db(monkeypatch):
     """Mock MongoDB."""
     mock_db = MagicMock()
     mock_users = mock_db.users
+
     mock_users.find_one.side_effect = lambda query: (
         {
+            "_id": "mock-user-id",
             "email": "testuser@example.com",
             "password": "hashedpassword",
             "firstname": "Test",
             "lastname": "User",
             "events": [
                 {
+                    "_id": "mock-event-id",
                     "Amount": 50.75,
                     "Category": "Food",
                     "Date": "2024-12-06",
                     "Memo": "Dinner at a restaurant",
-                },
-                {
-                    "Amount": 50.75,
-                    "Category": "Transportation",
-                    "Date": "2024-12-06",
-                    "Memo": "Train",
-                },
+                }
             ],
         }
         if query.get("email") == "testuser@example.com"
         else None
     )
-    mock_db.users = mock_users
+
     monkeypatch.setattr("database.db", mock_db)
     return mock_db
 
@@ -57,13 +68,15 @@ def mock_user(monkeypatch):
     mock_user.is_authenticated = True
     mock_user.get_events.return_value = [
         {
+            "_id": "mock-event-id",
             "Amount": 50.75,
             "Category": "Food",
             "Date": "2024-12-06",
             "Memo": "Dinner at a restaurant",
         },
         {
-            "Amount": 50.75,
+            "_id": "mock-event-id-2",
+            "Amount": 30.0,
             "Category": "Transportation",
             "Date": "2024-12-06",
             "Memo": "Train",
@@ -71,15 +84,6 @@ def mock_user(monkeypatch):
     ]
     monkeypatch.setattr("flask_login.utils._get_user", lambda: mock_user)
     return mock_user
-
-
-@pytest.fixture
-def client(mock_db):
-    """Test client for Flask app."""
-    flask_app.config["TESTING"] = True
-    with flask_app.test_client() as client:
-        with flask_app.app_context():
-            yield client
 
 
 class Tests:
@@ -156,3 +160,21 @@ class Tests:
         analytics = response.json
         assert "2024-12" in analytics
         assert analytics["2024-12"]["Food"] == 50.75
+
+    def test_delete_event(self, client, mock_user, mock_db):
+        """Test deleting an event."""
+        mock_event_id = "mock-event-id"
+
+        # Mock the delete_event method on the current_user
+        mock_user.delete_event = MagicMock()
+
+        # Call the delete-event endpoint
+        response = client.delete(f"/user/delete-event/{mock_event_id}")
+
+        # Assert the response
+        assert response.status_code == 200
+        assert response.json == {"message": "Event deleted successfully"}
+
+        # Ensure delete_event was called with the correct event ID
+        mock_user.delete_event.assert_called_once_with(mock_event_id)
+
