@@ -17,18 +17,19 @@ import json
 
 # --------SETUP FLASK & MONGODB--------
 from dotenv import load_dotenv
-load_dotenv() # load .env file
+
+load_dotenv()  # load .env file
 app = Flask(__name__)
-app.secret_key = ("this_is_my_random_secret_key_987654321")
-MONGO_URI = ("mongodb+srv://eh96:finalfour123@bars.ygsrg.mongodb.net/finalfour?tlsAllowInvalidCertificates=true")
+app.secret_key = "this_is_my_random_secret_key_987654321"
+MONGO_URI = "mongodb+srv://eh96:finalfour123@bars.ygsrg.mongodb.net/finalfour?tlsAllowInvalidCertificates=true"
 MONGO_DBNAME = os.getenv("MONGO_DBNAME", "default_db_name")
 
 # Connect to MongoDB
 try:
-    client = MongoClient(MONGO_URI) # create MongoDB client
-    db = client[MONGO_DBNAME]       # access database
+    client = MongoClient(MONGO_URI)  # create MongoDB client
+    db = client[MONGO_DBNAME]  # access database
     users_collection = db["users"]  # collection of users
-    bars_collection = db["bars"]    # collection of bars
+    bars_collection = db["bars"]  # collection of bars
 except Exception as e:
     print(f"Error connecting to MongoDB: {e}")
     raise
@@ -37,7 +38,7 @@ except Exception as e:
 # --------ACCOUNT PAGE--------
 @app.route("/account")
 def account():
-    return render_template("account.html") # link to account.html
+    return render_template("account.html")  # link to account.html
 
 
 # # --------LOGIN PAGE--------
@@ -56,6 +57,7 @@ def account():
 #             session["username"] = user["username"]  # set session username
 #             return redirect(url_for("index"))       # direct to index.html
 #         else: return redirect(url_for("login"))
+
 
 #     return render_template("login.html") # link to login.html
 @app.route("/login", methods=["GET", "POST"])
@@ -86,26 +88,27 @@ def signup():
         password = request.form.get("password")
 
         # check if user exists
-        existing_user = users_collection.find_one({"username":username})
-        if existing_user: return redirect(url_for("signup"))
-        
-        # insert new user into users collection
-        users_collection.insert_one({"username":username, "password":password})
-        return redirect(url_for("login")) # direct to login.html
+        existing_user = users_collection.find_one({"username": username})
+        if existing_user:
+            return redirect(url_for("signup"))
 
-    return render_template("signup.html") # link to signup.html
+        # insert new user into users collection
+        users_collection.insert_one({"username": username, "password": password})
+        return redirect(url_for("login"))  # direct to login.html
+
+    return render_template("signup.html")  # link to signup.html
 
 
 # --------HOME PAGE--------
 @app.route("/")
 def index():
-    if "user_id" not in session: 
-        return redirect(url_for("account")) # direct to login.html
-    
+    if "user_id" not in session:
+        return redirect(url_for("account"))  # direct to login.html
+
     # get all bars from current user
     user_id = session.get("user_id")
     bars = bars_collection.find({"user_id": user_id})
-    
+
     return render_template("index.html", bars=bars, username=session.get("username"))
 
 
@@ -131,26 +134,26 @@ def add():
             "area": area,
             "reservation": reservation,
             "cost": cost,
-            "status": status
+            "status": status,
         }
         bars_collection.insert_one(new_bar)
-        return redirect(url_for("index")) # direct to index.html
-    
-    return render_template("add.html") # link to add.html
+        return redirect(url_for("index"))  # direct to index.html
+
+    return render_template("add.html")  # link to add.html
 
 
-# --------EDIT PAGE-------- 
+# --------EDIT PAGE--------
 @app.route("/edit/<bar_id>", methods=["GET", "POST"])
 def edit(bar_id):
-    if "user_id" not in session: return redirect(url_for("login")) # direct to login.html
+    if "user_id" not in session:
+        return redirect(url_for("login"))  # direct to login.html
 
     # ensure it's current user's bars
     bar = bars_collection.find_one(
-        {"_id": ObjectId(bar_id),
-        "user_id": session.get("user_id")}
+        {"_id": ObjectId(bar_id), "user_id": session.get("user_id")}
     )
-    if not bar: 
-        return redirect(url_for("index")) # direct to index.html
+    if not bar:
+        return redirect(url_for("index"))  # direct to index.html
 
     if request.method == "POST":
         # get data
@@ -165,80 +168,86 @@ def edit(bar_id):
         # update bar
         bars_collection.update_one(
             {"_id": ObjectId(bar_id), "user_id": session.get("user_id")},
-            {"$set": {
-                "name": name,
-                "type": type,
-                "occasion": occasion,
-                "area": area,
-                "reservation": reservation,
-                "cost": cost,
-                "status": status
-            }}
+            {
+                "$set": {
+                    "name": name,
+                    "type": type,
+                    "occasion": occasion,
+                    "area": area,
+                    "reservation": reservation,
+                    "cost": cost,
+                    "status": status,
+                }
+            },
         )
-        return redirect(url_for("index")) # direct to home page
+        return redirect(url_for("index"))  # direct to home page
 
-    return render_template("edit.html", bar=bar) # link to html
+    return render_template("edit.html", bar=bar)  # link to html
 
 
 # --------DELETE PAGE--------
 @app.route("/delete/<bar_id>", methods=["GET", "POST"])
 def delete(bar_id):
-    if "user_id" not in session: 
-        return redirect(url_for("login")) # direct to login.html
+    if "user_id" not in session:
+        return redirect(url_for("login"))  # direct to login.html
 
     # ensure it's current user's bar
-    bar = bars_collection.find_one({
-        "_id": ObjectId(bar_id),
-        "user_id": session.get("user_id")}
+    bar = bars_collection.find_one(
+        {"_id": ObjectId(bar_id), "user_id": session.get("user_id")}
     )
-    if not bar: 
-        return redirect(url_for("index")) # direct to index.html
+    if not bar:
+        return redirect(url_for("index"))  # direct to index.html
 
     # delete bar
     if request.method == "POST":
-        bars_collection.delete_one({"_id": ObjectId(bar_id), "user_id": session.get("user_id")})
-        return redirect(url_for("index")) # direct to index.html
+        bars_collection.delete_one(
+            {"_id": ObjectId(bar_id), "user_id": session.get("user_id")}
+        )
+        return redirect(url_for("index"))  # direct to index.html
 
-    return render_template("delete.html", bar=bar) # link to delete.html
+    return render_template("delete.html", bar=bar)  # link to delete.html
 
 
 # --------SEARCH PAGE--------
 @app.route("/search", methods=["GET", "POST"])
 def search():
-    if "user_id" not in session: 
-        return redirect(url_for("login")) # direct to login.html
+    if "user_id" not in session:
+        return redirect(url_for("login"))  # direct to login.html
 
     # query variables
-    query = {"user_id": session.get("user_id")} # user-specific
+    query = {"user_id": session.get("user_id")}  # user-specific
     category = request.form.get("category")
     search_value = request.form.get(category)
 
     # query based on chosen category (partial vs exact matching)
     if category:
         if category == "Name":
-            if isinstance(search_value, str): query[category] = {"$regex": search_value, "$options": "i"} 
-        else: 
-            query[category] = search_value # exact matching (drown-drop cats)
+            if isinstance(search_value, str):
+                query[category] = {"$regex": search_value, "$options": "i"}
+        else:
+            query[category] = search_value  # exact matching (drown-drop cats)
 
-    bars = list(bars_collection.find(query)) # search by category
+    bars = list(bars_collection.find(query))  # search by category
 
-    return render_template('search.html', bars=bars, category=category) # link to html
+    return render_template("search.html", bars=bars, category=category)  # link to html
 
 
 # --------SORT PAGE--------
 @app.route("/sort", methods=["GET", "POST"])
 def sort():
-    if "user_id" not in session: 
-        return redirect(url_for("login")) # direct to login.html
+    if "user_id" not in session:
+        return redirect(url_for("login"))  # direct to login.html
 
     if request.method == "POST":
         # get data
         category = request.form.get("category")
         order = request.form.get("order")
-        
+
         # set sort order: 1 = ascending, -1 = descending
-        if order == "asc": sort_order = 1
-        else: sort_order = -1
+        if order == "asc":
+            sort_order = 1
+        else:
+            sort_order = -1
 
         # query sort bars
         query = {"user_id": session.get("user_id")}
@@ -246,54 +255,68 @@ def sort():
 
         # noramlize status field
         for bar in bars:
-            if bar.get("status") == "Not Visited": bar["status"] = "No"
-            elif bar.get("status") == "Visited": bar["status"] = "Yes"
+            if bar.get("status") == "Not Visited":
+                bar["status"] = "No"
+            elif bar.get("status") == "Visited":
+                bar["status"] = "Yes"
 
         return render_template("sort.html", bars=bars)
 
-    return render_template("sort.html", bars=[]) # link to sort.html
+    return render_template("sort.html", bars=[])  # link to sort.html
 
 
 # --------RECOMMENDATIONS PAGE--------
 import sys
-sys.path.append('./recommender')  # parent directory
+
+sys.path.append("./recommender")  # parent directory
 from recommender import load_bars, preprocess_bars, compute_sim_matrix, recommend_bars
 
-@app.route('/recs', methods=['GET', 'POST'])
+
+@app.route("/recs", methods=["GET", "POST"])
 def recommend():
-    user_id = session.get('user_id')
+    user_id = session.get("user_id")
     if not user_id:
-        return redirect(url_for('login'))
+        return redirect(url_for("login"))
 
     # Get user's bars from MongoDB
     user_bars = list(bars_collection.find({"user_id": user_id}))
-    user_bar_names = [bar['name'] for bar in user_bars]
+    user_bar_names = [bar["name"] for bar in user_bars]
 
     # Load and preprocess bar data
     current_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.dirname(current_dir)
-    bars_json_path = os.path.join(project_root, 'recommender', 'bars.json')
+    bars_json_path = os.path.join(project_root, "recommender", "bars.json")
 
     if not os.path.exists(bars_json_path):
         raise FileNotFoundError(f"bars.json file not found at {bars_json_path}")
 
     # Load JSON file and create DataFrame
-    with open(bars_json_path, 'r') as file:
+    with open(bars_json_path, "r") as file:
         bars_data = json.load(file)
 
     # Normalize JSON structure into a DataFrame
     bars_df = pd.json_normalize(bars_data)
 
     # Ensure proper columns exist
-    required_columns = ['Name', 'Type', 'Occasion', 'Area', 'Reservation', 'Cost', 'Rating']
+    required_columns = [
+        "Name",
+        "Type",
+        "Occasion",
+        "Area",
+        "Reservation",
+        "Cost",
+        "Rating",
+    ]
     if not all(col in bars_df.columns for col in required_columns):
-        raise ValueError(f"The JSON data is missing required columns: {required_columns}")
+        raise ValueError(
+            f"The JSON data is missing required columns: {required_columns}"
+        )
 
     # Select only the required columns
     bars_df = bars_df[required_columns]
 
     # Remove user's existing bars from recommendations
-    bars_df = bars_df[~bars_df['Name'].isin(user_bar_names)]
+    bars_df = bars_df[~bars_df["Name"].isin(user_bar_names)]
 
     # Preprocess and compute recommendations
     bars_df = preprocess_bars(bars_df)
@@ -301,47 +324,50 @@ def recommend():
     recommendations = recommend_bars(user_bar_names, bars_df, cosine_sim)
     while len(recommendations) < 5 and len(bars_df) > len(recommendations):
         for _, bar in bars_df.iterrows():
-            if bar['Name'] not in [rec['name'] for rec in recommendations]:
-                recommendations.append({
-                    "name": bar['Name'],
-                    "type": bar['Type'],
-                    "occasion": bar['Occasion'],
-                    "area": bar['Area'],
-                    "reservation": bar['Reservation'],
-                    "cost": bar['Cost']
-                })
+            if bar["Name"] not in [rec["name"] for rec in recommendations]:
+                recommendations.append(
+                    {
+                        "name": bar["Name"],
+                        "type": bar["Type"],
+                        "occasion": bar["Occasion"],
+                        "area": bar["Area"],
+                        "reservation": bar["Reservation"],
+                        "cost": bar["Cost"],
+                    }
+                )
                 if len(recommendations) == 5:
                     break
 
-    if request.method == 'POST':
-        bar_name = request.form.get('bar_name')
+    if request.method == "POST":
+        bar_name = request.form.get("bar_name")
         if bar_name:
-            bar_to_add = next((bar for bar in recommendations if bar['name'] == bar_name), None)
+            bar_to_add = next(
+                (bar for bar in recommendations if bar["name"] == bar_name), None
+            )
             if bar_to_add:
                 # Add bar to the user's database
                 new_bar = {
                     "user_id": user_id,
-                    "name": bar_to_add['name'],
-                    "type": bar_to_add['type'],
-                    "occasion": bar_to_add['occasion'],
-                    "area": bar_to_add['area'],
-                    "reservation": bar_to_add['reservation'],
-                    "cost": bar_to_add['cost'],
-                    "status": "Not Visited"
+                    "name": bar_to_add["name"],
+                    "type": bar_to_add["type"],
+                    "occasion": bar_to_add["occasion"],
+                    "area": bar_to_add["area"],
+                    "reservation": bar_to_add["reservation"],
+                    "cost": bar_to_add["cost"],
+                    "status": "Not Visited",
                 }
                 bars_collection.insert_one(new_bar)
-                flash(f"Added {bar_name} to your list!", 'success')
-                return redirect(url_for('recommend'))
+                flash(f"Added {bar_name} to your list!", "success")
+                return redirect(url_for("recommend"))
 
-    return render_template('recommend.html', bars=recommendations)
-
+    return render_template("recommend.html", bars=recommendations)
 
 
 # --------LOGOUT PAGE--------
 @app.route("/logout")
 def logout():
     session.clear()
-    return redirect(url_for("account")) # link to account.html
+    return redirect(url_for("account"))  # link to account.html
 
 
 # MAIN METHOD

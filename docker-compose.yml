@@ -1,41 +1,24 @@
 version: '3'
 
 services:
-  webapp:
-    build:
-      context: ./web-app
-      dockerfile: Dockerfile
+  web-app:
+    image: emilyhuang19/web-app:latest
+    container_name: web-app
+    restart: always
+    ports:
+      - "5000:5000"
+    env_file:
+      - /root/.env
+
+  bar-recs:
+    image: emilyhuang19/bar-recs:latest
+    container_name: bar-recs-app
+    restart: always
     ports:
       - "5001:5001"
-    environment:
-      - MONGO_URI=mongodb+srv://eh96:finalfour123@bars.ygsrg.mongodb.net/finalfour?tlsAllowInvalidCertificates=true
-      - MONGO_DBNAME=finalfour
-    depends_on:
-      - mongo
-    command: ["python", "app.py"]
+    env_file:
+      - /root/.env
 
-  # bar_recs:
-  #   build:
-  #     context: .
-  #     dockerfile: bar_recs/Dockerfile  # Ensure you are using the right Dockerfile
-  #   ports:
-  #     - "5002:5000"
-  #   environment:
-  #     - MONGO_URI=${MONGO_URI}
-  #     - MONGO_DBNAME=${MONGO_DBNAME}
-  #   depends_on:
-  #     - mongo
-  #   command: ["python", "bar_recs.py"]  # Change this if needed for the specific app entry point
-
-  mongo:
-    image: mongo:latest
-    container_name: mongodb
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
-    environment:
-      - MONGO_INITDB_DATABASE=${MONGO_DBNAME}
-
-volumes:
-  mongo_data:
+networks:
+  app-network:
+    driver: bridge

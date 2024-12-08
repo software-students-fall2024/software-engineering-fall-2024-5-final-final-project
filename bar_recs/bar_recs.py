@@ -23,6 +23,7 @@ app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 mongo = PyMongo(app)
 db = mongo.db
 
+
 def load_ratings_data():
     """
     Fetch ratings from MongoDB and prepare Surprise dataset.
@@ -31,13 +32,14 @@ def load_ratings_data():
     if not ratings:
         # Return None if no ratings are present
         return None
-    
+
     # Convert MongoDB ratings to pandas DataFrame
     df = pd.DataFrame(ratings)
-    
+
     # Define a Surprise Reader object
     reader = Reader(rating_scale=(1, 5))  # Assuming a rating scale of 1 to 5
-    return Dataset.load_from_df(df[['user_id', 'bar_id', 'rating']], reader)
+    return Dataset.load_from_df(df[["user_id", "bar_id", "rating"]], reader)
+
 
 # def load_ratings_data():
 #     """
@@ -47,7 +49,7 @@ def load_ratings_data():
 #     if not ratings:
 #         # Return an empty Surprise Dataset if no ratings are present
 #         return None
-    
+
 #     # Convert MongoDB ratings to Surprise-compatible format
 #     data = []
 #     for rating in ratings:
@@ -56,6 +58,7 @@ def load_ratings_data():
 #     # Define a Surprise Reader object
 #     reader = Reader(rating_scale=(1, 5))  # Assuming a rating scale of 1 to 5
 #     return Dataset.load_from_df(data, reader)
+
 
 # Initialize the recommender system
 def train_recommender_system():
@@ -76,16 +79,20 @@ def train_recommender_system():
 
     return algo, trainset
 
+
 recommender_algo, recommender_trainset = train_recommender_system()
+
 
 # Models
 def add_bar(bar_data):
     """Add a new bar to the database."""
     return db.bars.insert_one(bar_data)
 
+
 def get_all_bars():
     """Fetch all bars from the database."""
     return list(db.bars.find())
+
 
 def add_rating(rating_data):
     """
@@ -94,13 +101,14 @@ def add_rating(rating_data):
     """
     return db.ratings.insert_one(rating_data)
 
+
 def recommend_bars_for_user(user_id):
     """
     Recommend bars for a specific user using collaborative filtering.
-    
+
     Parameters:
         user_id: ID of the user requesting recommendations.
-    
+
     Returns:
         List of recommended bar IDs.
     """
@@ -122,6 +130,7 @@ def recommend_bars_for_user(user_id):
     recommendations.sort(key=lambda x: x[1], reverse=True)
     return [rec[0] for rec in recommendations[:5]]  # Return top 5 recommendations
 
+
 # Routes
 @app.route("/add_bar", methods=["POST"])
 def add_bar_route():
@@ -130,6 +139,7 @@ def add_bar_route():
     result = add_bar(data)
     return jsonify({"success": True, "bar_id": str(result.inserted_id)}), 201
 
+
 @app.route("/add_rating", methods=["POST"])
 def add_rating_route():
     """Add a user rating for a bar."""
@@ -137,22 +147,25 @@ def add_rating_route():
     result = add_rating(data)
     return jsonify({"success": True, "rating_id": str(result.inserted_id)}), 201
 
+
 @app.route("/get_bars", methods=["GET"])
 def get_bars():
     """Get all bars."""
     bars = get_all_bars()
     return jsonify(bars), 200
 
+
 @app.route("/recommend/<user_id>", methods=["GET"])
 def recommend(user_id):
     """
     Get bar recommendations for a user.
-    
+
     Parameters:
         user_id: ID of the user requesting recommendations.
     """
     recommendations = recommend_bars_for_user(user_id)
     return jsonify(recommendations), 200
+
 
 # Run the Flask app
 if __name__ == "__main__":

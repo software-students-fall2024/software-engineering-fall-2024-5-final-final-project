@@ -16,6 +16,8 @@ RUN pip uninstall -y flask jinja2 markupsafe werkzeug itsdangerous
 # Rest of your Dockerfile remains the same
 WORKDIR /web-app
 COPY requirements.txt .
+COPY ../recommender /web-app/recommender
+
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 EXPOSE 5000
