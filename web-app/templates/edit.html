@@ -1,0 +1,104 @@
+<!-- EDIT DATA PAGE -->
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Home-Brewed</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+        <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    </head>
+
+    <body>
+        <!-- BLUE HEADING SECTION -->
+        <header class="header">
+            <a href="#home" class="webName"><i class='bx bx-drink' id="logo"></i>Home-Brewed</a>
+            <i class="bx bx-menu" id="menu-icon"></i> <!-- Menu icon -->
+
+            <!-- Logout button -->
+            <div class="logout-button"><a href="{{ url_for('logout') }}">Logout</a></div>
+            
+            <!-- Navbar content -->
+            <nav class="navbar">
+                <a href="{{ url_for('index') }}">Home</a>
+                <a href="{{ url_for('add') }}">Add</a>
+                <a href="{{ url_for('index') }}">Edit/Delete</a> <!-- link to Edit/Delete -->
+                <a href="{{ url_for('search') }}">Search</a>
+                <a href="{{ url_for('sort') }}">Sort</a>
+            </nav>
+        </header>
+
+        <!-- CONTENT -->
+        <section class="edit" id="edit">
+            <h2 class="heading">Edit a Bar</h2>
+            <form action="{{ url_for('edit', bar_id=bar._id) }}" method="POST">
+                <!-- Name -->
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" value="{{ bar.name }}" required><br><br>
+
+                <!-- Type -->
+                <label for="type">Type</label>
+                <select id="type" name="type" required>
+                    <option value="Cocktail" {% if bar.type == 'cocktail' %}selected{% endif %}>Cocktail</option>
+                    <option value="Wine" {% if bar.type == 'wine' %}selected{% endif %}>Wine</option>
+                    <option value="Speakeasy" {% if bar.type == 'speakeasy' %}selected{% endif %}>Speakeasy</option>
+                    <option value="Live Music" {% if bar.type == 'livemusic' %}selected{% endif %}>Live Music</option>
+                    <option value="Sports" {% if bar.type == 'sports' %}selected{% endif %}>Sports</option>
+                    <option value="Dive" {% if bar.type == 'dive' %}selected{% endif %}>Dive</option>
+                    <option value="Pub" {% if bar.type == 'pub' %}selected{% endif %}>Pub</option>
+                </select><br><br>
+
+                <!-- Occasion -->
+                <label for="occasion">Occasion</label>
+                <select id="occasion" name="occasion" required>
+                    <option value="Casual" {% if bar.occasion == 'cocktail' %}selected{% endif %}>Casual</option>
+                    <option value="Formal" {% if bar.occasion == 'formal' %}selected{% endif %}>Formal</option>
+                    <option value="Happy Hour" {% if bar.occasion == 'happyhour' %}selected{% endif %}>Happy Hour</option>
+                    <option value="Date" {% if bar.occasion == 'date' %}selected{% endif %}>Date</option>
+                    <option value="Dancing" {% if bar.occasion == 'dancing' %}selected{% endif %}>Dancing</option>
+                </select><br><br>
+
+                <!-- Area -->
+                <label for="area">Area</label>
+                <select id="area" name="area" required>
+                    <option value="FiDi" {% if bar.area == 'FiDi' %}selected{% endif %}>FiDi</option>
+                    <option value="East Village" {% if bar.area == 'East Village' %}selected{% endif %}>East Village</option>
+                    <option value="Greenwich Village" {% if bar.area == 'Greenwich Village' %}selected{% endif %}>Greenwich</option>
+                    <option value="West Village" {% if bar.area == 'West Village' %}selected{% endif %}>West Village</option>
+                    <option value="SoHo" {% if bar.area == 'SoHo' %}selected{% endif %}>SoHo</option>
+                    <option value="NoMad" {% if bar.area == 'NoMad' %}selected{% endif %}>NoMad</option>
+                    <option value="Chelsea" {% if bar.area == 'Chelsea' %}selected{% endif %}>Chelsea</option>
+                    <option value="Midtown" {% if bar.area == 'Midtown' %}selected{% endif %}>Midtown</option>
+                    <option value="Upper East Side" {% if bar.area == 'Upper East Side' %}selected{% endif %}>Upper East Side</option>
+                    <option value="Upper West Side" {% if bar.area == 'Upper West Side' %}selected{% endif %}>Upper West Side</option>
+                </select><br><br>
+
+                <!-- Need Reservation? -->
+                <label for="reservation">Reservation</label>
+                <select id="reservation" name="reservation" required>
+                    <option value="No" {% if bar.reservation == 'no' %}selected{% endif %}>No</option>
+                    <option value="Yes" {% if bar.reservation == 'yes' %}selected{% endif %}>Yes</option>
+                </select><br><br>
+
+                <!-- Cost -->
+                <label for="cost">Cost</label>
+                <select id="cost" name="cost" required>
+                    <option value="$" {% if bar.cost == '$' %}selected{% endif %}>$</option>
+                    <option value="$$" {% if bar.cost == '$$' %}selected{% endif %}>$$</option>
+                    <option value="$$$" {% if bar.cost == '$$$' %}selected{% endif %}>$$$</option>
+                    <option value="$$$$" {% if bar.cost == '$$$$' %}selected{% endif %}>$$$$</option>
+                </select><br><br>
+
+                <!-- Status -->
+                <label for="status">Visited?</label>
+                <select id="status" name="status" required>
+                    <option value="No" {% if bar.status == 'no' %}selected{% endif %}>No</option>
+                    <option value="Yes" {% if bar.status == 'yes' %}selected{% endif %}>Yes</option>
+                </select><br><br>
+    
+                <button type="submit">Update Bar</button> <!-- Edit bar -->
+            </form>
+        </section>
+        <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+    </body>
+</html>

@@ -1,0 +1,169 @@
+<!-- SEARCH DATA PAGE -->
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Home-Brewed</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+        <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    </head>
+
+    <body>
+        <!-- BLUE HEADING SECTION -->
+        <header class="header">
+            <a href="#home" class="webName"><i class='bx bx-drink' id="logo"></i>Home-Brewed</a>
+            <i class="bx bx-menu" id="menu-icon"></i> <!-- Menu icon -->
+
+            <!-- Logout button -->
+            <div class="logout-button"><a href="{{ url_for('logout') }}">Logout</a></div>
+            
+            <!-- Navbar content -->
+            <nav class="navbar">
+                <a href="{{ url_for('index') }}">Home</a>
+                <a href="{{ url_for('add') }}">Add</a>
+                <a href="{{ url_for('index') }}">Edit/Delete</a>            <!-- link to Edit/Delete -->
+                <a href="{{ url_for('search') }}" class="active">Search</a> <!-- current page -->
+                <a href="{{ url_for('sort') }}">Sort</a>
+            </nav>
+        </header>
+
+        <!-- SEARCH -->
+        <div class="search-container">
+            <h2 class="heading">Search by Category</h2>
+
+            <!-- Choose what to search by -->
+            <form class="form" action="{{ url_for('search') }}" method="POST">
+                <label for="category">Select a Category:</label>
+                <select id="category" name="category" required onchange="this.form.submit()">
+                    <option value="">--Choose--</option>
+                    <option value="name" {% if category == 'name' %}selected{% endif %}>Name</option>
+                    <option value="type" {% if category == 'type' %}selected{% endif %}>Type</option>
+                    <option value="occasion" {% if category == 'occasion' %}selected{% endif %}>Occasion</option>
+                    <option value="area" {% if category == 'area' %}selected{% endif %}>Area</option>
+                    <option value="reservation" {% if category == 'reservation' %}selected{% endif %}>Reservation</option>
+                    <option value="cost" {% if category == 'cost' %}selected{% endif %}>Cost</option>
+                    <option value="status" {% if category == 'status' %}selected{% endif %}>Status</option>
+                </select><br><br>
+
+                <!-- Search by Name -->
+                {% if category == 'name' %}
+                    <label for="name">Enter Name:</label>
+                    <input type="text" id="name" name="name" required><br><br>
+
+                <!-- Search by Type -->
+                {% elif category == 'type' %}
+                    <label for="type">Select Type:</label>
+                    <select id="type" name="type" required>
+                        <option value="Cocktail">Cocktail</option>
+                        <option value="Wine">Wine</option>
+                        <option value="Speakeasy">Speakeasy</option>
+                        <option value="Live Music">Live Music</option>
+                        <option value="Sports">Sports</option>
+                        <option value="Dive">Dive</option>
+                        <option value="Pub">Pub</option>
+                    </select><br><br>
+
+                <!-- Search by Occasion -->
+                {% elif category == 'occasion' %}
+                    <label for="occasion">Select Occasion:</label>
+                    <select id="occasion" name="occasion" required>
+                        <option value="Casual">Casual</option>
+                        <option value="Formal">Formal</option>
+                        <option value="Happy Hour">Happy Hour</option>
+                        <option value="Date">Date</option>
+                        <option value="Dancing">Dancing</option>
+                    </select><br><br>
+
+                <!-- Search by Area -->
+                {% elif category == 'area' %}
+                    <label for="area">Select Area:</label>
+                    <select id="area" name="area" required>
+                        <option value="FiDi">FiDi</option>
+                        <option value="East Village">East Village</option>
+                        <option value="Greenwich Village">Greenwich Village</option>
+                        <option value="West Village">West Village</option>
+                        <option value="SoHo">SoHo</option>
+                        <option value="NoMad">NoMad</option>
+                        <option value="Chelsea">Chelsea</option>
+                        <option value="Midtown">Midtown</option>
+                        <option value="Upper East Side">Upper East Side</option>
+                        <option value="Upper West Side">Upper West Side</option>
+                    </select><br><br>
+
+                <!-- Search by Reservation -->
+                {% elif category == 'reservation' %}
+                    <label for="reservation">Select Reservation Option:</label>
+                    <select id="reservation" name="reservation" required>
+                        <option value="No">No</option>
+                        <option value="Yes">Yes</option>
+                    </select><br><br>
+
+                <!-- Search by Cost -->
+                {% elif category == 'cost' %}
+                    <label for="cost">Select Cost:</label>
+                    <select id="cost" name="cost" required>
+                        <option value="$">$</option>
+                        <option value="$$">$$</option>
+                        <option value="$$$">$$$</option>
+                        <option value="$$$$">$$$$</option>
+                    </select><br><br>
+
+                <!-- Search by Status -->
+                {% elif category == 'status' %}
+                    <label for="status">Select Status:</label>
+                    <select id="status" name="status" required>
+                        <option value="No">Not Visited</option>
+                        <option value="Yes">Visited</option>
+                    </select><br><br>
+                {% endif %}
+    
+                <button type="submit">Search</button> <!-- Search bars -->
+            </form>
+        </div>
+
+        <!-- DISPLAY FILTERED BARS -->
+        {% if bars %}
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Action</th> <!-- For Edit/Delete -->
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Occasion</th>
+                            <th>Area</th>
+                            <th>Reservation</th>
+                            <th>Cost</th>
+                            <th>Visited?</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for bar in bars %}
+                        <tr>
+                            <!-- Edit/Delete -->
+                            <td class="action-cell">
+                                <a href="{{ url_for('edit', bar_id=bar._id) }}">Edit</a> | 
+                                <a href="{{ url_for('delete', bar_id=bar._id) }}">Delete</a>
+                            </td>                            
+                            
+                            <td>{{ bar.name }}</td>
+                            <td>{{ bar.type }}</td>
+                            <td>{{ bar.occasion }}</td>
+                            <td>{{ bar.area }}</td>
+                            <td>{{ bar.reservation }}</td>
+                            <td>{{ bar.cost }}</td>
+                            <td>{{ bar.status }}</td>
+                        </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="8" style="text-align: center;">No bars found</td> 
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>   
+        {% endif %}         
+        <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+    </body>
+</html>

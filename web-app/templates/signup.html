@@ -1,55 +1,48 @@
+<!-- SIGNUP PAGE -->
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <!-- Specifies the character encoding for the document -->
-    <meta charset="UTF-8">
-    <!-- Sets the viewport for responsive design -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Sets the title of the page displayed in the browser tab -->
-    <title>Sign Up</title>
-    <!-- Links the external CSS file for styling -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
-    <!-- Main container to center content -->
-    <div class="container">
-        <!-- Header for the Sign-Up page -->
-        <h2 class="text-center">Sign Up</h2>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Home-Brewed</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+        <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    </head>
 
-        <!-- Section to display flash messages (success or error) -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="alerts">
-                <!-- Loop through all messages and display them dynamically -->
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
-                {% endfor %}
-            </div>
-        {% endif %}
-        {% endwith %}
+    <body>
+        <!-- BLUE HEADING SECTION -->
+        <header class="header">
+            <a href="#home" class="webName"><i class='bx bx-drink' id="logo"></i>Home-Brewed</a> <!-- Heading -->
+            <div class="logout-button"><a href="{{ url_for('logout') }}">Logout</a></div>        <!-- Logout button -->
+            
+            <!-- Don't display menu -->
+            <nav class="dont-display">
+                <i class="bx bx-menu" id="menu-icon"></i> <!-- Menu icon -->
+            </nav>     
+        </header>
 
-        <!-- Sign-Up form -->
-        <form action="/signup" method="POST" class="form">
-            <!-- Username input field -->
-            <div class="form-group">
-                <label for="username">Username</label>
-                <!-- Input for entering the username -->
-                <input type="text" id="username" name="username" required>
+        <!-- SIGNUP PAGE -->
+        <div class="signup-container">
+            <h1 class="signup-header">Create an Account</h1>
+        
+            <div class="signup-form">
+                <form action="{{ url_for('signup') }}" method="post">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username">
+
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password">
+                    
+                    <button type="submit">Signup</button>
+                </form>
             </div>
-            <!-- Password input field -->
-            <div class="form-group">
-                <label for="password">Password</label>
-                <!-- Input for entering the password -->
-                <input type="password" id="password" name="password" required>
+        
+            <!-- Link to login.html -->
+            <div class="login-link">
+                <a href="{{ url_for('login') }}">Already have an account?</a>
             </div>
-            <!-- Form action buttons -->
-            <div class="form-actions">
-                <!-- Submit button to create an account -->
-                <button type="submit" class="btn">Sign Up</button>
-                <!-- Link to the login page for existing users -->
-                <a href="/login" class="btn-link">Already have an account? Login</a>
-            </div>
-        </form>
-    </div>
-</body>
+        </div>        
+
+        <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+    </body>
 </html>
