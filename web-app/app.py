@@ -40,6 +40,8 @@ load_dotenv()
 app = Flask(__name__)
 cxn = MongoClient(os.getenv("MONGO_URI"))
 db = cxn[os.getenv("MONGO_DBNAME")]
+app.secret_key = os.getenv("SECRET_KEY", "supersecretkey123")
+
 
 # User Class
 class User(UserMixin):
@@ -161,6 +163,7 @@ def login():
                 user_id=str(user_data["_id"]),
                 username=user_data["username"],
                 password=user_data["password"],
+                gender=user_data["gender"]  # Add this line
             )
             login_user(user)
             flash("Login successful!")
@@ -194,18 +197,24 @@ def index():
 
     if temperature is not None:
         temperature = int(temperature)
+        outfit = get_outfit_from_db(temperature, current_user.gender)
+        
         return render_template(
             'index.html',
             city=city,
             temperature=f"{temperature}°C",
-            description=description
+            description=description,
+            outfit_image=outfit["image"],
+            outfit_description=outfit["description"]
         )
     else:
         return render_template(
             'index.html',
             city=city,
             temperature="N/A",
-            description="Weather data unavailable"
+            description="Weather data unavailable",
+            outfit_image="/images/default.png",
+            outfit_description="No outfit found"
         )
       
 # Function to get weather data
@@ -237,8 +246,60 @@ def fetch_weather():
     else:
         return jsonify({"error": "Could not fetch weather data"}), 400
 
+def seed_database():
+    categories = {
+        "cold": {"min": -10, "max": 0},
+        "cool": {"min": 1, "max": 15},
+        "warm": {"min": 16, "max": 25},
+        "hot": {"min": 26, "max": 40}
+    }
+    images_folder = "./images"
+    outfit_data = []
+
+    for category, temp_range in categories.items():
+        category_folder = os.path.join(images_folder, category)
+        if os.path.exists(category_folder):
+            images = [
+                img for img in os.listdir(category_folder) 
+                if img.lower().endswith((".jpg", ".png"))
+            ]
+            for image in images:
+                outfit_data.append({
+                    "temperature_range": temp_range,
+                    "weather_condition": category,
+                    "image_url": f"/images/{category}/{image}" 
+                })
+        else:
+            print(f"Folder for category '{category}' does not exist. Skipping...")
+
+    if outfit_data:
+        db.outfits.insert_many(outfit_data)
+        print(f"Inserted {len(outfit_data)} entries into the database!")
+    else:
+        print("Failed to put pics in database")
+
+def get_outfit_from_db(temp, gender="all"):
+    # Query for matching temperature range and gender
+    outfit = db.outfits.find_one({
+        "temperature_range.min": {"$lte": temp},
+        "temperature_range.max": {"$gte": temp},
+        "gender": {"$in": [gender, "all"]}
+    })
+    if outfit:
+        return {
+            "image": outfit["image_url"],
+            "description": f"Outfit for {gender.capitalize()} in this temperature range"
+        }
+    else:
+        return {
+            "image": "/images/default.png",
+            "description": "Default Outfit"
+        }
+
+
 # Run the app
 if __name__ == "__main__":
+    seed_database() 
     FLASK_PORT = os.getenv("FLASK_PORT", "5000")
     app.run(debug=True)
 
