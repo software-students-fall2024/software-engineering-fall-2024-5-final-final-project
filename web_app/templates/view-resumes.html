@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Resumes</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="resumes-container">
+        <h1>Your Resumes</h1>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="flash-message {{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        {% if resumes|length > 0 %}
+        <ul class="resumes-list">
+            {% for resume in resumes %}
+            <li class="resume-item">
+                <h2>{{ resume.name }}</h2>
+                <a href="/download_resume/{{ resume._id }}" class="download-button">Download PDF</a>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p>No resumes available. <a href="/generate_resume">Create your first resume here.</a></p>
+        {% endif %}
+    </div>
+</body>
+</html>
