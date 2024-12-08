@@ -18,6 +18,23 @@
     {% endfor %}
     <a href="{{ url_for('add_item', wishlist_id=wishlist['_id']) }}">Add Item</button>
     <button type="button">Browse recommended items</button>
-    <button type="button">Export wish list</button>
+    <button onclick="exportWishlist('{{ wishlist.public_id }}')">Export Wishlist</button>
+    <input id="export-link-{{ wishlist.public_id }}" type="text" readonly style="width: 300px; margin-left: 10px;"/>
+
+    <script>
+        function exportWishlist(publicId) {
+            const baseUrl = window.location.origin;
+            const link = `${baseUrl}/view/${publicId}`;
+
+            const inputField = document.getElementById(`export-link-${publicId}`);
+            inputField.value = link;
+
+            inputField.select();
+            inputField.setSelectionRange(0, 99999);  // For mobile devices
+            document.execCommand('copy');
+
+            alert('Wishlist link copied to clipboard: ' + link);
+        }
+    </script>
 </section>
 {% endblock %}
