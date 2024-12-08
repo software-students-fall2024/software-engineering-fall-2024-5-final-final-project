@@ -114,11 +114,12 @@ def add_event():
         date = request.form["date"]
 
         datetime_str = datetime.strptime(date + " " + hour + ":" + minute, '%m/%d/%Y %H:%M')
+        formatted_time = datetime_str.strftime('%Y-%m-%dT%H:%M:%S')
 
         doc = {
             "name": name,
             "description": description,
-            "time": datetime_str,
+            "time": formatted_time,
             "user": current_user.username
         }
         events.insert_one(doc)
@@ -132,7 +133,8 @@ def database():
     user_events = list(events.find({"user": current_user.username}))
     return jsonify(json_util.dumps(user_events))
     
-@app.route('/event/<event_id>/edit', methods=['POST'])
+@app.route('/event/<event_id>/edit', methods=['POST', 'GET'])
+@login_required
 def edit_event(event_id):
     """
     Route for POST requests to the edit page.
@@ -142,29 +144,37 @@ def edit_event(event_id):
     Returns:
         Redirect (Response): A redirect response to the home page.
     """
-    if not request.form["fname"] :
-        start = request.form["start"]
-        events.update_one({"_id": ObjectId(event_id)}, {"$set": {time: start}})
-    else :
-        name = request.form["fname"]
-        description = request.form["fmessage"]
-        hour = request.form["hours"]
-        minute = request.form["minutes"]
-        date = request.form["date"]
+    if request.method == 'GET':
+        doc = events.find_one({"_id": ObjectId(event_id)})
+        return render_template("item.html", doc=doc)
 
-        datetime_str = datetime.strptime(date + " " + hour + ":" + minute, '%m/%d/%Y %H:%M')
+    name = request.form["fname"]
+    description = request.form["fmessage"]
+    hour = request.form["hours"]
+    minute = request.form["minutes"]
+    date = request.form["date"]
 
-        doc = {
-            "name": name,
-            "description": description,
-            "time": datetime_str,
-            "user": current_user.username
-        }
+    datetime_str = datetime.strptime(date + " " + hour + ":" + minute, '%m/%d/%Y %H:%M')
 
-        events.update_one({"_id": ObjectId(event_id)}, {"$set": doc})
+    doc = {
+        "name": name,
+        "description": description,
+        "time": datetime_str,
+        "user": current_user.username
+    }
+
+    events.update_one({"_id": ObjectId(event_id)}, {"$set": doc})
     return redirect(url_for("home"))
 
-@app.route('/event/<event_id>/delete', methods=['POST'])
+@app.route('/event/<event_id>/time', methods=['POST'])
+@login_required
+def edit_time(event_id):
+    start = request.form["start"]
+    events.update_one({"_id": ObjectId(event_id)}, {"$set": {"time": start}})
+
+    return redirect(url_for("home"))
+
+@app.route('/event/<event_id>/delete', methods=['GET'])
 def delete_event(event_id):
     """
     Route for GET requests to the delete page.
