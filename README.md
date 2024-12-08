@@ -10,12 +10,6 @@ An exercise to put to practice software development teamwork, subsystem communic
 
 ## Description
 
-# Personal Finance Tracker
-
-[![CI / CD](https://github.com/software-students-fall2024/5-final-super-awesome-team-name-2/actions/workflows/build.yml/badge.svg)](https://github.com/software-students-fall2024/5-final-super-awesome-team-name-2/actions/workflows/build.yml)
-
-## Description
-
 Our Personal Finance Tracker is a web application meant to assist users in managing their finances. The application will help users:
 
 - Log in securely and manage their personal profiles
