@@ -1,0 +1,104 @@
+<!-- SORT DATA PAGE -->
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Home-Brewed</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+        <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    </head>
+
+    <body>
+        <!-- BLUE HEADING SECTION -->
+        <header class="header">
+            <a href="#home" class="webName"><i class='bx bx-drink' id="logo"></i>Home-Brewed</a>
+            <i class="bx bx-menu" id="menu-icon"></i> <!-- Menu icon -->
+
+            <!-- Logout button -->
+            <div class="logout-button"><a href="{{ url_for('logout') }}">Logout</a></div>
+            
+            <!-- Navbar content -->
+            <nav class="navbar">
+                <a href="{{ url_for('index') }}">Home</a>
+                <a href="{{ url_for('add') }}">Add</a>
+                <a href="{{ url_for('index') }}">Edit/Delete</a> <!-- link to Edit/Delete -->
+                <a href="{{ url_for('search') }}">Search</a>
+                <a href="{{ url_for('sort') }}" class="active">Sort</a> <!-- current page -->
+            </nav>
+        </header>
+
+        <!-- CONTENT -->
+        <div class="sort-container">
+            <h2 class="heading">Sort Data by Category</h2>
+            
+            <!-- Choose what to filter by -->
+            <form class="form" action="{{ url_for('sort') }}" method="POST">
+                <label for="category">Select a Category:</label>
+                <select name="category" id="category">
+                    <option value="">--Choose--</option>
+                    <option value="name">Name</option>
+                    <option value="type">Type</option>
+                    <option value="occasion">Occasion</option>
+                    <option value="area">Area</option>
+                    <option value="reservation">Reservation</option>
+                    <option value="cost">Cost</option>
+                    <option value="status">Status</option>
+                </select><br><br>
+
+                <!-- Ascending/Descending order -->
+                <label for="order">Sort Order:</label>
+                <select name="order" id="order">
+                    <option value="asc">Ascending</option>
+                    <option value="desc">Descending</option>
+                </select><br><br>
+
+                <button type="submit">Sort</button> <!-- Sort bars -->
+            </form>
+        </div>
+
+        <!-- DISPLAY SORTED BARS -->
+        {% if bars %}
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Action</th> <!-- For Edit/Delete -->
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Occasion</th>
+                            <th>Area</th>
+                            <th>Reservation</th>
+                            <th>Cost</th>
+                            <th>Visited?</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for bar in bars %}
+                        <tr>
+                            <!-- Edit/Delete -->
+                            <td class="action-cell">
+                                <a href="{{ url_for('edit', bar_id=bar._id) }}">Edit</a> | 
+                                <a href="{{ url_for('delete', bar_id=bar._id) }}">Delete</a>
+                            </td>                            
+                            
+                            <td>{{ bar.name }}</td>
+                            <td>{{ bar.type }}</td>
+                            <td>{{ bar.occasion }}</td>
+                            <td>{{ bar.area }}</td>
+                            <td>{{ bar.reservation }}</td>
+                            <td>{{ bar.cost }}</td>
+                            <td>{{ bar.status }}</td>
+                        </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="8" style="text-align: center;">No bars found</td> 
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>  
+        {% endif %}
+        <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+    </body>
+</html>
