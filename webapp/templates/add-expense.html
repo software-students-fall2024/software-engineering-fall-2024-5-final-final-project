@@ -41,10 +41,10 @@
         <!-- Split Among -->
         <div class="form-group">
             <label for="split-with">Split With</label>
-            <select id="split-with" name="split_with[]" multiple required>
-            </select>
-            <small class="helper-text">Hold Ctrl (Windows) or Command (Mac) to select multiple members.</small>
-        </div>              
+            <div id="split-with">
+            </div>
+            <small class="helper-text">Select members to split the expense with.</small>
+        </div>
         
 
         <!-- Percentages -->
@@ -92,10 +92,29 @@
         const splitWith = document.getElementById('split-with');
         splitWith.innerHTML = '';
         members.forEach(member => {
-            const option = document.createElement('option');
-            option.value = member;
-            option.textContent = member;
-            splitWith.appendChild(option);
+            const container = document.createElement('div');
+            container.className = 'member-checkbox';
+            container.tabIndex = 0;
+            
+            const label = document.createElement('label');
+            label.className = 'checkbox-label';
+            label.textContent = member;
+            
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.name = 'split_with[]';
+            checkbox.value = member;
+            checkbox.id = `checkbox-${member}`;
+            
+            container.appendChild(checkbox);
+            container.appendChild(label);
+            
+            container.addEventListener('click', () => {
+                checkbox.checked = !checkbox.checked;
+                container.classList.toggle('selected', checkbox.checked);
+            });
+            
+            splitWith.appendChild(container);
         });
     }
     // Frontend validation for percentages
