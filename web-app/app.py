@@ -270,7 +270,7 @@ def seed_database():
     Populate the database with outfits based on temperature range, gender, and weather condition.
     """
     categories = {
-        "cold": {"min": -10, "max": 0},
+        "cold": {"min": -100, "max": 0},
         "cool": {"min": 1, "max": 15},
         "warm": {"min": 16, "max": 25},
         "hot": {"min": 26, "max": 40}
