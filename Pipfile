@@ -22,6 +22,7 @@ pymongo = "*"
 black = "*"
 pylint = "*"
 pytest = "*"
+tomli = "*"
 
 [dev-packages]
 pytest = "*"
