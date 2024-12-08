@@ -36,7 +36,7 @@
                 <option value="" disabled selected>Select who paid</option>
                 {% for group in groups %}
                     {% for member in group.group_members %}
-                        <option value="{{ member.name }}">{{ member.name }}</option>
+                        <option value="{{ member }}">{{ member }}</option>
                     {% endfor %}
                 {% endfor %}
             </select>
@@ -49,7 +49,7 @@
             <select id="split-with" name="split_with[]" multiple required>
                 {% for group in groups %}
                     {% for member in group.group_members %}
-                        <option value="{{ member.name }}">{{ member.name }}</option>
+                        <option value="{{ member }}">{{ member }}</option>
                     {% endfor %}
                 {% endfor %}
             </select>

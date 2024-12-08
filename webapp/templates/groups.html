@@ -16,7 +16,7 @@
                 <p>Members: {{ group.group_members | length }}</p>
                 <ul class="member-list">
                     {% for member in group.group_members %}
-                        <li>{{ member.name }}: {{ member.balance }}</li>
+                        <li>{{ member }}: ${{ group.balances[member] }}</li>
                     {% endfor %}
                 </ul>
             </li>

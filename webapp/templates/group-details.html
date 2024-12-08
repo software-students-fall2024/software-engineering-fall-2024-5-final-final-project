@@ -12,7 +12,7 @@
         <h2>Members</h2>
         <ul class="member-list">
             {% for member in group_members %}
-                <li>{{ member.name }}: ${{ member.balance }}</li>
+                <li>{{ member}}: ${{ balances[member] }}</li>
             {% endfor %}
         </ul>
     </div>
