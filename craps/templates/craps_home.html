@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+
+<head>
+    <title>Craps Home</title>
+
+    <style>
+        .hoveritem {position: relative; display: inline-block;}
+
+        .hovertext {
+            visibility: hidden;
+            position:initial;
+        }
+
+        .hoveritem:hover .hovertext{
+            visibility:visible;
+        }
+    </style>
+    
+</head>
+
+<body>
+    <h1 style="align-content: center;">Let's Play Craps!</h1>
+    <h2 style="align-content: center;">Please Select a Bet Type and Amount:</h2>
+    <form method="POST" action="{{url_for('playline', username=username)}}" style = "text-align: center;">
+        <div style="float: left;">
+            <input type="radio" id="pass" name="bettype" value="p" required/>
+            <label for="pass">
+                <div style="display: block;border-width: 4px;border-color: black;" class="hoveritem">Pass
+                    <span class="hovertext">Explain1</span>
+                </div>
+            </label> 
+        </div>
+        <div>
+            <input type="radio" id="dontpass" name="bettype" value="d"/>
+            <label for="pass">
+                <div style="display: block;border-width: 4px;border-color: black;" class="hoveritem">Don't Pass
+                    <span class="hovertext">Explain2</span>
+                </div>
+            </label> 
+        </div>
+        <input type="number" style="align-content: center;" id="betamount" name="betamount" placeholder="Enter bet amount" required/>
+        <input type="hidden" name="balance" value="{{balance}}"/>
+        <input type="submit" value = "Place Bet"/>
+
+    </form>
+    <form method="POST" action="{{url_for('playbuy', username=username)}}" style = "text-align: center;">
+        <div style="float: left;">
+            <input type="radio" id="buy" name="bettype" value="b" required/>
+            <label for="pass">
+                <div style="display: block;border-width: 4px;border-color: black;" class="hoveritem">Buy
+                    <span class="hovertext">Explain3</span>
+                </div>
+            </label> 
+        </div>
+        <div>
+            <input type="radio" id="lay" name="bettype" value="l"/>
+            <label for="pass">
+                <div style="display: block;border-width: 4px;border-color: black;" class="hoveritem">Lay
+                    <span class="hovertext">Explain4</span>
+                </div>
+            </label> 
+        </div>
+
+        <input type="number" style="align-content: center;" id="betamount" name="betamount" placeholder="Enter bet amount" required/>
+        <input type="radio" id="4buy" name="buynum" value="4" style="float: left;" required/>
+        <label for="4buy">4</label>
+        <input type="radio" id="5buy" name="buynum" value="5" style="float: left;"/>
+        <label for="5buy">5</label>
+        <input type="radio" id="6buy" name="buynum" value="6" style="float: left;"/>
+        <label for="6buy">6</label>
+        <input type="radio" id="8buy" name="buynum" value="8" style="float: left;"/>
+        <label for="8buy">8</label>
+        <input type="radio" id="9buy" name="buynum" value="9" style="float: left;"/>
+        <label for="9buy">9</label>
+        <input type="radio" id="10buy" name="buynum" value="10" style="float: left;"/>
+        <label for="10buy">10</label>
+
+        <input type="hidden" name="balance" value="{{balance}}"/>
+
+        <input type="submit" value = "Place Bet"/>
+
+
+    </form>
+</body>
+
+<script>
+    
+</script>
