@@ -36,7 +36,7 @@ This project consists of two main subsystems:
    - Fully containerized with its own `Dockerfile` and an integrated CI/CD pipeline
 
 2. **Frontend**:
-   - A lightweight Flask app serving a user-friendly interface
+   - A Flask app serving a user-friendly interface
    - Proxies API requests to the backend for seamless integration
    - Includes interactive forms and modals for updating budgets and managing expenses
 
