@@ -102,7 +102,7 @@ def register_routes(app, db):
             Rendered HTML template for the wishlist page.
         """
         user_wishlist = db.lists.find_one({"_id": ObjectId(wishlist_id)})
-        items = list(db.items.find({"wishlist":ObjectId(wishlist_id)}))
+        items = list(db.items.find({"wishlist": ObjectId(wishlist_id)}))
         return render_template("wishlist.html", wishlist=user_wishlist, items=items)
 
     @app.route("/wishlist/<wishlist_id>/add_item", methods=["GET", "POST"])
@@ -169,15 +169,12 @@ def register_routes(app, db):
         wishlist = db.lists.find_one({"public_id": public_id})
         if not wishlist:
             return "Wishlist not found", 404
-        items = db.items.find({"wishlist":wishlist['_id']})
+        items = db.items.find({"wishlist": wishlist["_id"]})
         return render_template("public_wishlist.html", wishlist=wishlist, items=items)
-    
-    @app.route('/view/mark_purchased/<item_id>', methods=['POST'])
+
+    @app.route("/view/mark_purchased/<item_id>", methods=["POST"])
     def mark_as_purchased(item_id):
-        db.items.update_one(
-            {"_id": ObjectId(item_id)},
-            {"$set": {"purchased": True}}
-        )
+        db.items.update_one({"_id": ObjectId(item_id)}, {"$set": {"purchased": True}})
         return "Item marked as purchased", 200
 
 
