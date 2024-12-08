@@ -9,6 +9,7 @@ pymongo = "*"
 bcrypt = "*"
 nltk = "*"
 python-dotenv = "*"
+requests = "*"
 
 [dev-packages]
 

@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+
+  web-app:
+    build:
+      context: ./web-app  # Path to the web-app directory
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5001"  # Map local port 5001 to the container
+    environment:
+      - MONGO_URI=mongodb://mongo:27017  # MongoDB connection string
+      - ML_CLIENT_URL=http://ml-client:5002/analyze  # ML client endpoint
+    depends_on:
+      - mongo  # Ensure MongoDB starts first
+      - machine-learning-client  # Ensure ML client starts first
+
+  machine-learning-client:
+    build:
+      context: ./machine-learning-client  # Path to the ml-client directory
+      dockerfile: Dockerfile
+    ports:
+      - "5002:5002"  # Map local port 5002 to the container
+
+  mongo:
+    image: mongo # Use a stable MongoDB image
+    container_name: mongo  # Name the MongoDB container
+    ports:
+      - "27017:27017"  # Map local port 27017 to the container
+    volumes:
+      - mongo-data:/data/db  # Persistent storage for MongoDB data
+
+volumes:
+  mongo-data:  # Define the volume for MongoDB data persistence
