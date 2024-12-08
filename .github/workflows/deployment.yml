@@ -24,7 +24,7 @@ jobs:
 
       - name: Deploy to Droplet
         run: |
-          ssh -o -T StrictHostKeyChecking=no root@161.35.132.193 << 'EOF'
+          ssh -o StrictHostKeyChecking=no root@161.35.132.193 << 'EOF'
             docker-compose up -d
           EOF
 
