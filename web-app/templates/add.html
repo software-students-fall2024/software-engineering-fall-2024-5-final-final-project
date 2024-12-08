@@ -12,7 +12,7 @@
     <body>
         <!-- BLUE HEADING SECTION -->
         <header class="header">
-            <a href="#home" class="webName"><i class='bx bx-drink' id="logo"></i>Home-Brewed</a>
+            <a href="#home" class="webName"><i class='bx bx-drink' id="logo"></i><i>Home-Brewed</i></a>
             <i class="bx bx-menu" id="menu-icon"></i> <!-- Menu icon -->
 
             <!-- Logout button -->
@@ -25,6 +25,7 @@
                 <a href="{{ url_for('index') }}">Edit/Delete</a> <!-- link to Edit/Delete -->
                 <a href="{{ url_for('search') }}">Search</a>
                 <a href="{{ url_for('sort') }}">Sort</a>
+                <a href="{{ url_for('recommend') }}">Recs</a>
             </nav>
         </header>
 
@@ -42,6 +43,7 @@
                 <div class="form-group">
                     <label for="type">Type</label>
                     <select id="type" name="type" required>
+                        <option value="">--Choose--</option>
                         <option value="Cocktail">Cocktail</option>
                         <option value="Wine">Wine</option>
                         <option value="Speakeasy">Speakeasy</option>
@@ -49,6 +51,7 @@
                         <option value="Sports">Sports</option>
                         <option value="Dive">Dive</option>
                         <option value="Pub">Pub</option>
+                        <option value="Other">Other</option>
                     </select><br><br>
                 </div>
 
@@ -56,11 +59,13 @@
                 <div class="form-group">
                     <label for="occasion">Occasion</label>
                     <select id="occasion" name="occasion" required>
+                        <option value="">--Choose--</option>
                         <option value="Casual">Casual</option>
                         <option value="Formal">Formal</option>
                         <option value="Happy Hour">Happy Hour</option>
                         <option value="Date">Date</option>
                         <option value="Dancing">Dancing</option>
+                        <option value="Other">Other</option>
                     </select><br><br>
                 </div>
 
@@ -68,6 +73,7 @@
                 <div class="form-group">
                     <label for="area">Area</label>
                     <select id="area" name="area" required>
+                        <option value="">--Choose--</option>
                         <option value="FiDi">FiDi</option>
                         <option value="East Village">East Village</option>
                         <option value="Greenwich Village">Greenwich Village</option>
@@ -78,6 +84,7 @@
                         <option value="Midtown">Midtown</option>
                         <option value="Upper East Side">Upper East Side</option>
                         <option value="Upper West Side">Upper West Side</option>
+                        <option value="Other">Other</option>
                     </select><br><br>
                 </div>
 
@@ -85,8 +92,9 @@
                 <div class="form-group">
                     <label for="reservation">Reservation</label>
                     <select id="reservation" name="reservation" required>
-                        <option value="No">No</option>
+                        <option value="">--Choose--</option>
                         <option value="Yes">Yes</option>
+                        <option value="No">No</option>
                     </select><br><br>
                 </div>
 
@@ -94,6 +102,7 @@
                 <div class="form-group">
                     <label for="cost">Cost</label>
                     <select id="cost" name="cost" required>
+                        <option value="">--Choose--</option>
                         <option value="$">$</option>
                         <option value="$$">$$</option>
                         <option value="$$$">$$$</option>
@@ -105,8 +114,9 @@
                 <div class="form-group">
                     <label for="status">Visited?</label>
                     <select id="status" name="status" required>
-                        <option value="No">No</option>
+                        <option value="">--Choose--</option>
                         <option value="Yes">Yes</option>
+                        <option value="No">No</option>
                     </select><br><br>
                 </div>
 

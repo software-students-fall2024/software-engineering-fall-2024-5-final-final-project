@@ -12,7 +12,7 @@
     <body>
         <!-- BLUE HEADING SECTION -->
         <header class="header">
-            <a href="#home" class="webName"><i class='bx bx-drink' id="logo"></i>Home-Brewed</a>
+            <a href="#home" class="webName"><i class='bx bx-drink' id="logo"></i><i>Home-Brewed</i></a>
             <i class="bx bx-menu" id="menu-icon"></i> <!-- Menu icon -->
 
             <!-- Logout button -->
@@ -25,6 +25,7 @@
                 <a href="{{ url_for('index') }}">Edit/Delete</a>            <!-- link to Edit/Delete -->
                 <a href="{{ url_for('search') }}" class="active">Search</a> <!-- current page -->
                 <a href="{{ url_for('sort') }}">Sort</a>
+                <a href="{{ url_for('recommend') }}">Recs</a>
             </nav>
         </header>
 
@@ -55,6 +56,7 @@
                 {% elif category == 'type' %}
                     <label for="type">Select Type:</label>
                     <select id="type" name="type" required>
+                        <option value="">--Choose--</option>
                         <option value="Cocktail">Cocktail</option>
                         <option value="Wine">Wine</option>
                         <option value="Speakeasy">Speakeasy</option>
@@ -68,6 +70,7 @@
                 {% elif category == 'occasion' %}
                     <label for="occasion">Select Occasion:</label>
                     <select id="occasion" name="occasion" required>
+                        <option value="">--Choose--</option>
                         <option value="Casual">Casual</option>
                         <option value="Formal">Formal</option>
                         <option value="Happy Hour">Happy Hour</option>
@@ -79,6 +82,7 @@
                 {% elif category == 'area' %}
                     <label for="area">Select Area:</label>
                     <select id="area" name="area" required>
+                        <option value="">--Choose--</option>
                         <option value="FiDi">FiDi</option>
                         <option value="East Village">East Village</option>
                         <option value="Greenwich Village">Greenwich Village</option>
@@ -95,14 +99,16 @@
                 {% elif category == 'reservation' %}
                     <label for="reservation">Select Reservation Option:</label>
                     <select id="reservation" name="reservation" required>
-                        <option value="No">No</option>
+                        <option value="">--Choose--</option>
                         <option value="Yes">Yes</option>
+                        <option value="No">No</option>
                     </select><br><br>
 
                 <!-- Search by Cost -->
                 {% elif category == 'cost' %}
                     <label for="cost">Select Cost:</label>
                     <select id="cost" name="cost" required>
+                        <option value="">--Choose--</option>
                         <option value="$">$</option>
                         <option value="$$">$$</option>
                         <option value="$$$">$$$</option>
@@ -113,8 +119,9 @@
                 {% elif category == 'status' %}
                     <label for="status">Select Status:</label>
                     <select id="status" name="status" required>
-                        <option value="No">Not Visited</option>
+                        <option value="">--Choose--</option>
                         <option value="Yes">Visited</option>
+                        <option value="No">Not Visited</option>
                     </select><br><br>
                 {% endif %}
     

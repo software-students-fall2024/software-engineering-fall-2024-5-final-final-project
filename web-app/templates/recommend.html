@@ -12,7 +12,7 @@
     <body>
         <!-- BLUE HEADING SECTION -->
         <header class="header">
-            <a href="#home" class="webName"><i class='bx bx-drink' id="logo"></i>Home-Brewed</a>
+            <a href="#home" class="webName"><i class='bx bx-drink' id="logo"></i><i>Home-Brewed</i></a>
             <i class="bx bx-menu" id="menu-icon"></i> <!-- Menu icon -->
 
             <!-- Logout button -->
@@ -20,57 +20,39 @@
             
             <!-- Navbar content -->
             <nav class="navbar">
-                <a href="{{ url_for('index') }}" class="active">Home</a> <!-- current page -->
+                <a href="{{ url_for('index') }}">Home</a>
                 <a href="{{ url_for('add') }}">Add</a>
                 <a href="{{ url_for('index') }}">Edit/Delete</a> <!-- link to Edit/Delete -->
                 <a href="{{ url_for('search') }}">Search</a>
                 <a href="{{ url_for('sort') }}">Sort</a>
+                <a href="{{ url_for('recommend') }}" class="active">Recs</a> <!-- current page -->
             </nav>
         </header>
 
         <!-- RECOMMEND PAGE -->
-        <h2>Welcome to your dashboard, {{ username }}!</h2>
-        <p>Here are all of your current bars...</p>
-        
-        <!-- Dashboard of user's applications -->
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Action</th> <!-- For Edit/Delete -->
-                        <th>Name</th>
-                        <th>Type</th>
-                        <th>Occasion</th>
-                        <th>Area</th>
-                        <th>Reservation</th>
-                        <th>Cost</th>
-                        <th>Visited?</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for bar in bars %}
-                    <tr>
-                        <!-- Edit/Delete -->
-                        <td class="action-cell">
-                            <a href="{{ url_for('edit', bar_id=bar._id) }}">Edit</a> | 
-                            <a href="{{ url_for('delete', bar_id=bar._id) }}">Delete</a>
-                        </td>                        
+        <h2>Recommended Bars</h2>
+        <p>Based on your preferences, here are some bars you might enjoy:</p>
 
-                        <td>{{ bar.name }}</td>
-                        <td>{{ bar.type }}</td>
-                        <td>{{ bar.occasion }}</td>
-                        <td>{{ bar.area }}</td>
-                        <td>{{ bar.reservation }}</td>
-                        <td>{{ bar.cost }}</td>
-                        <td>{{ bar.status }}</td>
-                    </tr>
-                    {% else %}
-                        <tr>
-                            <td colspan="6">No bars found</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div class="card-container">
+            {% if bars %}
+                {% for bar in bars %}
+                <div class="card">
+                    <h3><i>{{ bar.name }}</i></h3>
+                    <p>Type: {{ bar.type }}</p>
+                    <p>Occasion: {{ bar.occasion }}</p>
+                    <p>Area: {{ bar.area }}</p>
+                    <p>Reservation: {{ bar.reservation }}</p>
+                    <p>Cost: {{ bar.cost }}</p>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div style="text-align: center; margin-top: 20px;">
+                    <p>No bars found for recommendations!</p>
+                    <a href="{{ url_for('add') }}" class="add-bar-button">Add a Bar!</a>
+                </div>
+            {% endif %}
+        </div>
+        
         </div>
         <script src="{{ url_for('static', filename='script.js') }}" defer></script>
     </body>

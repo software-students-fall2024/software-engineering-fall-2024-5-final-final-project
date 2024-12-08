@@ -236,6 +236,29 @@ def sort():
     return render_template("sort.html", bars=[]) # link to sort.html
 
 
+# --------RECOMMENDATIONS PAGE--------
+import sys
+sys.path.append('../bar-recs')  # parent directory
+from recommender import load_bars, preprocess_bars, compute_sim_matrix, recommend_bars
+
+@app.route('/recs', methods=['GET'])
+def recommend():
+    user_id = session.get('user_id')  # get current user_ID
+
+    # get user's visited bars from MongoDB
+    user_bars = list(bars_collection.find({"user_id": ObjectId(user_id), "visited": "Yes"}))
+    user_bar_names = [bar['name'] for bar in user_bars]
+
+    # load bar data and preprocess
+    bars_df = load_bars('../bar-recs/bars.json') # get bars
+    bars_df = preprocess_bars(bars_df)           # preprocess
+    cosine_sim = compute_sim_matrix(bars_df)     # sim matrix
+
+    recommendations = recommend_bars(user_bar_names, bars_df, cosine_sim) # top 5 recs
+
+    return render_template('recommend.html', bars=recommendations)
+
+
 # --------LOGOUT PAGE--------
 @app.route("/logout")
 def logout():
