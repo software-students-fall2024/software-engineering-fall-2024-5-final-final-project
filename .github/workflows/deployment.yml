@@ -19,7 +19,7 @@ jobs:
       - name: Re-clone repository
         run: |
           rm -rf .git
-          git clone https://github.com/yourusername/your-repository.git .
+          git clone https://github.com/yourusername/your-repository.git .src
       - name: Print working directory
         run: pwd
 
@@ -32,4 +32,5 @@ jobs:
             git pull origin main
             docker-compose -f docker-compose.yml up -d
           EOF
+        working-directory: src
 
