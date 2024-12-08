@@ -220,7 +220,8 @@ def index():
             description=description,
             outfit_image=outfit["image"],
             outfit_description=outfit["description"],
-            background_image=background_image
+            background_image=background_image,
+            username=current_user.username
         )
     else:
 
@@ -230,7 +231,8 @@ def index():
             temperature="N/A",
             description="Weather data unavailable",
             outfit_image="/images/default.png",
-            outfit_description="No outfit found"
+            outfit_description="No outfit found",
+            username=current_user.username
         )
       
 # Function to get weather data
