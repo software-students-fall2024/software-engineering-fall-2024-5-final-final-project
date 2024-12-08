@@ -1,0 +1,48 @@
+{% extends 'nav-base.html' %}
+
+{% block inner_content %}
+    {% if current_user.is_authenticated %}
+    <!-- TODO: make this functional -->
+    <div class="icon-button">
+        <img src="/static/images/link.svg" alt="link icon">
+        <button id="copy-link-button">Copy wishlist link</button>
+    </div>
+    <h1>{{ user.first_name }}'s Wishlist</h1>
+        <ul class="wishlist">
+            <li id="add-wish">
+                <img src="/static/images/gift.svg" alt="gift icon">
+                <a href="{{ url_for('add') }}"><button role="link">Add wish</button></a>
+            </li>
+            {% for wish in wishes %}
+                <li class="wish">
+                    <img src="{{ wish.image }}" alt="item image">
+                    <div>
+                        <b>{{ wish.name }}</b>
+                        <p>${{ wish.price }}</p>   
+                        <p><i>Comments: {{ wish.comments or '' }}</i></p> 
+                    </div>
+                    <a target="_blank" href="{{ wish.link }}"><button role="link">Open item link</button></a>
+                    <a href="{{ url_for('edit', wish_id=wish._id) }}"><button role="link">Edit wish</button></a>
+                    <form method="POST" action="{{ url_for('delete', wish_id=wish._id) }}" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this wish?');">
+                        <button id="danger-button" type="submit">Delete wish</button>
+                    </form>
+                    {% if wish.claimed_by %}
+                        <div class="claimed-overlay">
+                            <span class="claimed-text">Claimed!</span>
+                        </div>
+                    {% endif %}                    
+                </li>
+            {% endfor %}
+        </ul>
+        <script>
+            document.getElementById('copy-link-button').addEventListener('click', function() {
+                const username = "{{ current_user.username }}";
+                const link = `http://127.0.0.1:5001//wishlist/${username}`;
+
+                navigator.clipboard.writeText(link).then(() => {
+                    alert('Wishlist link copied to clipboard!');
+                })
+            });
+        </script>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'nav-base.html' %}
+
+{% block inner_content %}
+    <h1>{{ user['first-name'] }}'s Claimed Gifts</h1>
+    {% if wishes %}
+        <ul class="wishlist">
+            {% for wish in wishes %}
+                <li class="wish">
+                    <img src="{{ wish['image'] }}" alt="item image">
+                    <div>
+                        <b>{{ wish['name'] }}</b>
+                        <p>${{ wish['price'] }}</p>
+                        <p><i>Comments: {{ wish['comments'] }}</i></p>
+                    </div>
+                    <a target="_blank" href="{{ wish['link'] }}"><button role="link">Item link</button></a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No items in this wishlist.</p>
+    {% endif %}
+{% endblock %}

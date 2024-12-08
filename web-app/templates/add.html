@@ -1,0 +1,28 @@
+{% extends "nav-base.html" %}
+
+{% block inner_content %}
+<h1>Add item to wishlist</h1>
+<form class="inputs" method="POST" action="{{ url_for('add') }}">
+    <div class="labeled-input">
+        <label for="item_image">Item image</label>
+        <input type="text" id="item_image" name="item_image" placeholder="Add image url" required>
+    </div>
+    <div class="labeled-input">
+        <label for="item_name">Name</label>
+        <input type="text" id="item_name" name="item_name" placeholder="Enter name of item" required>
+    </div>
+    <div class="labeled-input">
+        <label for="item_price">Price</label>
+        <input type="number" step="0.01" id="item_price" name="item_price" placeholder="Enter price of item" required>
+    </div>
+    <div class="labeled-input">
+        <label for="item_link">Item link</label>
+        <input type="url" id="item_link" name="item_link" placeholder="Enter item link">
+    </div>
+    <div class="labeled-input">
+        <label for="item_comments">Additional Info</label>
+        <input type="text" id="item_comments" name="item_comments" placeholder="Add any extra info about the item">
+    </div>
+    <button type="submit">Add new wish</button>
+</form>
+{% endblock %}
