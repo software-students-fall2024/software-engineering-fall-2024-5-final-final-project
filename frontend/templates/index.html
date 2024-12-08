@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Planner</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background-color: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin: 20px;
+        }
+
+        .login-container {
+            max-width: 400px;
+            width: 100%;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .header {
+            background-color: #007bff;
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .stat {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            width: 400px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+
+        .expenses-list {
+            margin-top: 30px;
+        }
+
+        .expense-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .expense-item button {
+            background-color: #e74c3c;
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+
+        .expense-item button:hover {
+            background-color: #c0392b;
+        }
+
+        .error {
+            color: #e74c3c;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+
+        .modal button {
+            margin: 10px 5px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            .buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .login-container {
+                padding: 20px;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Login Form -->
+    <div id="loginContainer" class="login-container">
+        <h2>Login</h2>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="login()">Login</button>
+        <div id="loginError" class="error"></div>
+    </div>
+
+    <!-- Main App -->
+    <div id="appContainer" class="container" style="display: none;">
+        <div class="header">
+            <div class="stat">Budget: $<span id="budget">0.00</span></div>
+            <div class="stat">Total Expenses: $<span id="expenses">0.00</span></div>
+            <div class="stat">Remaining: $<span id="remaining">0.00</span></div>
+        </div>
+
+        <div class="buttons">
+            <button onclick="showBudgetModal()">Update Budget</button>
+            <button onclick="showExpenseModal()">Add Expense</button>
+            <button onclick="toggleExpensesList()">View Expenses</button>
+            <button onclick="logout()">Logout</button>
+        </div>
+
+        <div id="expensesList" class="expenses-list" style="display: none;"></div>
+    </div>
+
+    <!-- Budget Modal -->
+    <div id="budgetModal" class="modal">
+        <div class="modal-content">
+            <h3>Update Budget</h3>
+            <input type="number" id="budgetAmount" placeholder="Enter new budget amount" min="0" step="0.01" required>
+            <button onclick="updateBudget()">Update</button>
+            <button onclick="closeBudgetModal()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Expense Modal -->
+    <div id="expenseModal" class="modal">
+        <div class="modal-content">
+            <h3>Add Expense</h3>
+            <input type="number" id="expenseAmount" placeholder="Amount" min="0" step="0.01" required>
+            <input type="text" id="expenseDescription" placeholder="Description">
+            <button onclick="addExpense()">Add</button>
+            <button onclick="closeExpenseModal()">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        // Utility functions
+        const formatMoney = (amount) => parseFloat(amount).toFixed(2);
+
+        async function fetchJSON(url, options = {}) {
+            const response = await fetch(url, {
+                ...options,
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                }
+            });
+            return response.json();
+        }
+
+        // Authentication
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const data = await fetchJSON('/api/login', {
+                    method: 'POST',
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (data.success) {
+                    document.getElementById('loginContainer').style.display = 'none';
+                    document.getElementById('appContainer').style.display = 'block';
+                    updateDisplay();
+                } else {
+                    document.getElementById('loginError').textContent = 'Invalid credentials';
+                }
+            } catch (error) {
+                document.getElementById('loginError').textContent = 'Login failed';
+            }
+        }
+
+        async function logout() {
+            await fetchJSON('/api/logout', { method: 'POST' });
+            document.getElementById('loginContainer').style.display = 'block';
+            document.getElementById('appContainer').style.display = 'none';
+        }
+
+        // Display updates
+        async function updateDisplay() {
+            const data = await fetchJSON('/api/user-data');
+            document.getElementById('budget').textContent = formatMoney(data.budget);
+            document.getElementById('expenses').textContent = formatMoney(data.total_expenses);
+            document.getElementById('remaining').textContent = formatMoney(data.remaining);
+        }
+
+        // Budget operations
+        function showBudgetModal() {
+            document.getElementById('budgetModal').style.display = 'block';
+        }
+
+        function closeBudgetModal() {
+            document.getElementById('budgetModal').style.display = 'none';
+        }
+
+        async function updateBudget() {
+            const amount = document.getElementById('budgetAmount').value;
+            await fetchJSON('/api/update-budget', {
+                method: 'POST',
+                body: JSON.stringify({ budget: amount })
+            });
+            closeBudgetModal();
+            updateDisplay();
+        }
+
+        // Expense operations
+        function showExpenseModal() {
+            document.getElementById('expenseModal').style.display = 'block';
+        }
+
+        function closeExpenseModal() {
+            document.getElementById('expenseModal').style.display = 'none';
+        }
+
+        async function addExpense() {
+            const amount = document.getElementById('expenseAmount').value;
+            const description = document.getElementById('expenseDescription').value;
+
+            await fetchJSON('/api/add-expense', {
+                method: 'POST',
+                body: JSON.stringify({ amount, description })
+            });
+
+            closeExpenseModal();
+            updateDisplay();
+            if (document.getElementById('expensesList').style.display === 'block') {
+                loadExpenses();
+            }
+        }
+
+        async function removeExpense(expenseId) {
+            await fetchJSON('/api/remove-expense', {
+                method: 'POST',
+                body: JSON.stringify({ expense_id: expenseId })
+            });
+            loadExpenses();
+            updateDisplay();
+        }
+
+        async function loadExpenses() {
+            const expenses = await fetchJSON('/api/expenses');
+            const expensesList = document.getElementById('expensesList');
+            expensesList.innerHTML = expenses.map(expense => `
+                <div class="expense-item">
+                    <div>
+                        <strong>$${formatMoney(expense.amount)}</strong> - ${expense.description}
+                        <br>
+                        <small>${new Date(expense.date).toLocaleDateString()}</small>
+                    </div>
+                    <button onclick="removeExpense('${expense.id}')">Remove</button>
+                </div>
+            `).join('');
+        }
+
+        async function predictExpenses() {
+            const data = await fetchJSON('/api/predict-expenses');
+            alert(`Predicted Expenses for Next Month: $${data.predicted_expenses}`);
+        }
+
+
+        function toggleExpensesList() {
+            const expensesList = document.getElementById('expensesList');
+            if (expensesList.style.display === 'none') {
+                expensesList.style.display = 'block';
+                loadExpenses();
+            } else {
+                expensesList.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+
+</html>
