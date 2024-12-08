@@ -60,24 +60,6 @@ def load_user(user_id):
 @app.route("/home")
 @login_required
 def home():
-    """
-    Renders the home page for the logged-in user.
-
-    This function fetches the current user's genre statistics and song recommendations
-    based on their preferences.
-
-    Returns:
-        flask.Response: The rendered 'home.html' template with:
-            - genres: A list of dictionaries containing genre statistics, including:
-                - "Name": The genre name.
-                - "Amount": The count of songs in the genre.
-                - "Percentage": The percentage of songs in the genre.
-            - recommendations: A list of dictionaries containing song recommendations, including:
-                - "Title": The song title.
-                - "Artist": The artist's name.
-                - "Genre": The genre of the song.
-    """
-    
     raw_posts = posts_collection.find().sort("created_at", DESCENDING)
     all_posts = []
     for post in raw_posts:
@@ -92,8 +74,24 @@ def home():
         })
     return render_template("home.html", posts = all_posts)
 
-
-
+@app.route("/followed_circle")
+@login_required
+def followed_circle():
+    cur_user = users_collection.find_one({"username": current_user.username})
+    followed_users = cur_user.get("following", [])
+    raw_followed_posts = posts_collection.find({"user": {"$in": followed_users}}).sort("created_at", DESCENDING)
+    followed_posts = []
+    for post in raw_followed_posts:
+        image = fs.get(post["image_id"])
+        image_url = f"/image/{post['image_id']}"
+        
+        followed_posts.append({
+            "post_id": str(post["_id"]),
+            "title": post["title"],
+            "image_url": image_url,
+            "author": post.get("user")
+        })
+    return render_template("followed_circle.html", posts = followed_posts)
 
 @app.route("/addpost", methods=["GET", "POST"])
 @login_required
@@ -361,10 +359,13 @@ def follow_user(username):
 
     if cur_user in user.get("followers", []):
         users_collection.update_one({"username": username}, {"$pull": {"followers": cur_user}})
+        users_collection.update_one({"username": cur_user}, {"$pull": {"following": username}})
         action = "unfollowed"
     else:
         users_collection.update_one({"username": username}, {"$addToSet": {"followers": cur_user}})
+        users_collection.update_one({"username": cur_user}, {"$addToSet": {"following": username}})
         action = "followed"
+    
 
     updated_user = users_collection.find_one({"username": username})
     followers_count = len(updated_user.get("followers", []))
