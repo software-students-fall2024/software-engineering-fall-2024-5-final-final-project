@@ -22,10 +22,10 @@ It's built with Python and Flask. The application utilizes a MongoDB database to
 
 ## Subsystems
 
-This project consists of two main subsystems:
+Outside of MongoDB, this project consists of two main subsystems:
 
 1. **Backend**:
-   - A Flask-based RESTful API for user authentication, financial data management, and machine learning predictions
+   - Flask-based and for user authentication, financial data management, and machine learning predictions
    - Interacts with a MongoDB database to store user and transaction data
    - Fully containerized with its own `Dockerfile` and an integrated CI/CD pipeline
 
