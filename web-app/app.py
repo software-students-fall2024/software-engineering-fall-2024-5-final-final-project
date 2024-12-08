@@ -12,8 +12,7 @@ from bson.objectid import ObjectId
 from datetime import datetime
 import os
 import bcrypt
-import pandas as pd
-import json
+
 
 # --------SETUP FLASK & MONGODB--------
 from dotenv import load_dotenv
@@ -40,41 +39,24 @@ def account():
     return render_template("account.html") # link to account.html
 
 
-# # --------LOGIN PAGE--------
-# @app.route("/login", methods=["GET", "POST"])
-# def login():
-#     if request.method == "POST":
-#         # get data
-#         username = request.form.get("username")
-#         password = request.form.get("password").encode("utf-8")
-
-#         # authenticate user
-#         user = users_collection.find_one({"username": username})
-
-#         if user and user["password"] == password:
-#             session["user_id"] = str(user["_id"])   # set session user_id
-#             session["username"] = user["username"]  # set session username
-#             return redirect(url_for("index"))       # direct to index.html
-#         else: return redirect(url_for("login"))
-
-#     return render_template("login.html") # link to login.html
+# --------LOGIN PAGE--------
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"].encode("utf-8")
+        # get data
+        username = request.form.get("username")
+        password = request.form.get("password")
 
+        # authenticate user
         user = users_collection.find_one({"username": username})
-        if user and bcrypt.checkpw(password, user["password"]):
-            session["user_id"] = str(user["_id"])
-            session["username"] = username
-            session.permanent = False
-            return redirect(url_for("index"))
-        else:
-            flash("Invalid username or password.", "error")
-            return redirect(url_for("login"))
 
-    return render_template("login.html")
+        if user and user["password"] == password:
+            session["user_id"] = str(user["_id"])   # set session user_id
+            session["username"] = user["username"]  # set session username
+            return redirect(url_for("index"))       # direct to index.html
+        else: return redirect(url_for("login"))
+
+    return render_template("login.html") # link to login.html
 
 
 # --------SIGNUP PAGE--------
@@ -215,7 +197,7 @@ def search():
 
     # query based on chosen category (partial vs exact matching)
     if category:
-        if category == "Name":
+        if category == "name":
             if isinstance(search_value, str): query[category] = {"$regex": search_value, "$options": "i"} 
         else: 
             query[category] = search_value # exact matching (drown-drop cats)
@@ -256,85 +238,25 @@ def sort():
 
 # --------RECOMMENDATIONS PAGE--------
 import sys
-sys.path.append('./recommender')  # parent directory
+sys.path.append('../bar-recs')  # parent directory
 from recommender import load_bars, preprocess_bars, compute_sim_matrix, recommend_bars
 
-@app.route('/recs', methods=['GET', 'POST'])
+@app.route('/recs', methods=['GET'])
 def recommend():
-    user_id = session.get('user_id')
-    if not user_id:
-        return redirect(url_for('login'))
+    user_id = session.get('user_id')  # get current user_ID
 
-    # Get user's bars from MongoDB
-    user_bars = list(bars_collection.find({"user_id": user_id}))
+    # get user's visited bars from MongoDB
+    user_bars = list(bars_collection.find({"user_id": ObjectId(user_id), "visited": "Yes"}))
     user_bar_names = [bar['name'] for bar in user_bars]
 
-    # Load and preprocess bar data
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    project_root = os.path.dirname(current_dir)
-    bars_json_path = os.path.join(project_root, 'recommender', 'bars.json')
+    # load bar data and preprocess
+    bars_df = load_bars('../bar-recs/bars.json') # get bars
+    bars_df = preprocess_bars(bars_df)           # preprocess
+    cosine_sim = compute_sim_matrix(bars_df)     # sim matrix
 
-    if not os.path.exists(bars_json_path):
-        raise FileNotFoundError(f"bars.json file not found at {bars_json_path}")
-
-    # Load JSON file and create DataFrame
-    with open(bars_json_path, 'r') as file:
-        bars_data = json.load(file)
-
-    # Normalize JSON structure into a DataFrame
-    bars_df = pd.json_normalize(bars_data)
-
-    # Ensure proper columns exist
-    required_columns = ['Name', 'Type', 'Occasion', 'Area', 'Reservation', 'Cost', 'Rating']
-    if not all(col in bars_df.columns for col in required_columns):
-        raise ValueError(f"The JSON data is missing required columns: {required_columns}")
-
-    # Select only the required columns
-    bars_df = bars_df[required_columns]
-
-    # Remove user's existing bars from recommendations
-    bars_df = bars_df[~bars_df['Name'].isin(user_bar_names)]
-
-    # Preprocess and compute recommendations
-    bars_df = preprocess_bars(bars_df)
-    cosine_sim = compute_sim_matrix(bars_df)
-    recommendations = recommend_bars(user_bar_names, bars_df, cosine_sim)
-    while len(recommendations) < 5 and len(bars_df) > len(recommendations):
-        for _, bar in bars_df.iterrows():
-            if bar['Name'] not in [rec['name'] for rec in recommendations]:
-                recommendations.append({
-                    "name": bar['Name'],
-                    "type": bar['Type'],
-                    "occasion": bar['Occasion'],
-                    "area": bar['Area'],
-                    "reservation": bar['Reservation'],
-                    "cost": bar['Cost']
-                })
-                if len(recommendations) == 5:
-                    break
-
-    if request.method == 'POST':
-        bar_name = request.form.get('bar_name')
-        if bar_name:
-            bar_to_add = next((bar for bar in recommendations if bar['name'] == bar_name), None)
-            if bar_to_add:
-                # Add bar to the user's database
-                new_bar = {
-                    "user_id": user_id,
-                    "name": bar_to_add['name'],
-                    "type": bar_to_add['type'],
-                    "occasion": bar_to_add['occasion'],
-                    "area": bar_to_add['area'],
-                    "reservation": bar_to_add['reservation'],
-                    "cost": bar_to_add['cost'],
-                    "status": "Not Visited"
-                }
-                bars_collection.insert_one(new_bar)
-                flash(f"Added {bar_name} to your list!", 'success')
-                return redirect(url_for('recommend'))
+    recommendations = recommend_bars(user_bar_names, bars_df, cosine_sim) # top 5 recs
 
     return render_template('recommend.html', bars=recommendations)
-
 
 
 # --------LOGOUT PAGE--------

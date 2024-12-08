@@ -43,10 +43,6 @@
                     <p>Area: {{ bar.area }}</p>
                     <p>Reservation: {{ bar.reservation }}</p>
                     <p>Cost: {{ bar.cost }}</p>
-                    <form method="POST" action="{{ url_for('recommend') }}">
-                        <input type="hidden" name="bar_name" value="{{ bar.name }}">
-                        <button type="submit">Add to My List</button>
-                    </form>
                 </div>
                 {% endfor %}
             {% else %}
