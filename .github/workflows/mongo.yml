@@ -28,27 +28,17 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    # Build and push custom MongoDB image (if customizations are needed)
+    # Build, tag, and push MongoDB Docker image
     - name: Build and push MongoDB Docker image
       run: |
         docker buildx build --platform linux/amd64 \
           -t ${{ secrets.DOCKER_USERNAME }}/mongo:latest \
-          ./mongo --push || echo "Using default MongoDB image from Docker Hub"
+          ./mongo --push
+        echo "MongoDB image built and pushed to Docker Hub."
 
-  #edited again
-    - name: Deploy to DigitalOcean
-      uses: appleboy/ssh-action@v0.1.6
-      with:
-        host: ${{ secrets.DO_IP }}
-        username: root
-        key: ${{ secrets.DO_SSH_KEY }}
-        script: |
-          cd /root/project
-          docker pull ${{ secrets.DOCKER_USERNAME }}/mongo:latest
-          docker stop mongodb || true
-          docker rm mongodb || true
-          docker run -d --name mongodb -p 27017:27017 \
-            -e MONGO_INITDB_ROOT_USERNAME=${{ secrets.MONGO_USER }} \
-            -e MONGO_INITDB_ROOT_PASSWORD=${{ secrets.MONGO_PASSWORD }} \
-            ${{ secrets.DOCKER_USERNAME }}/mongo:latest
-
+    # Tag the Docker image with additional tags (if needed)
+    - name: Tag MongoDB Docker image
+      run: |
+        docker tag ${{ secrets.DOCKER_USERNAME }}/mongo:latest ${{ secrets.DOCKER_USERNAME }}/mongo:custom
+        docker push ${{ secrets.DOCKER_USERNAME }}/mongo:custom
+        echo "MongoDB image tagged and pushed with 'custom' tag."
