@@ -184,11 +184,13 @@ def predict_expenses():
     if "username" not in session:
         return jsonify({"error": "Not authenticated"}), 401
 
-    expenses = db.get_expenses(session["username"])
+    user_data = db.get_user_data(session["username"])
+    expenses = user_data.get("expenses", [])
 
     if not expenses:
         return jsonify({"error": "No valid expense data available for prediction"}), 400
 
+    # Initialize lists to store months and totals
     months = []
     totals = []
 
@@ -200,7 +202,6 @@ def predict_expenses():
             date_obj = None
 
             if isinstance(date, str):
-                # Handle 'Z' suffix by replacing it with '+00:00'
                 if date.endswith("Z"):
                     date = date[:-1] + "+00:00"
                 try:
