@@ -275,8 +275,7 @@ def fetch_weather():
         })
     else:
         return jsonify({"error": "Could not fetch weather data"}), 400
-
-
+    
 def seed_database():
     """
     Populate the database with outfits based on temperature range, gender, and weather condition.
