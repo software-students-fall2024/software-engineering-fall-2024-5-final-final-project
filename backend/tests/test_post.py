@@ -305,6 +305,8 @@ def test_update_post_tags(client, auth_token, test_post):
     response = client.put(
         f"/api/posts/{test_post}",
         json={
+            "title": "Updated Title",
+            "content": "Updated Content",
             "tags": ["updated", "tags"]
         },
         headers={"Authorization": f"Bearer {auth_token}"}
