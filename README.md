@@ -77,7 +77,7 @@ WEARther is a web-based application that combines weather data and curated outfi
   Confirm that the MongoDB container is running:
   ```bash
       docker ps
- ```
+  ```
 
 
 
