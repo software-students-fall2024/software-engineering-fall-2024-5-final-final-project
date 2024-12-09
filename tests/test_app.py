@@ -201,3 +201,24 @@ def test_register_password_mismatch(client):
 
 #########
 
+@patch('app.requests.get')
+def test_get_weather_missing_api_key(mock_get):
+    """Test weather data retrieval with missing API key."""
+    mock_response = MagicMock()
+    mock_response.status_code = 401  # Unauthorized
+    mock_response.json.return_value = {"message": "Invalid API key"}
+    mock_get.return_value = mock_response
+
+    temperature, description = get_weather('New York', '')
+    assert temperature is None
+    assert description is None
+
+
+
+
+def test_logout_without_login(client):
+    """Test logout route when not logged in."""
+    response = client.get('/logout', follow_redirects=True)
+    assert response.status_code == 200
+    assert b"Don't have an account? Sign up Here" in response.data
+
