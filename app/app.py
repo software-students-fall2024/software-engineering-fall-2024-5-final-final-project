@@ -24,6 +24,8 @@ def create_app():
     # print(f"MONGO_DBNAME: {os.getenv('MONGO_DBNAME')}")
 
     mongo_uri = os.getenv("MONGO_URI")
+
+    
     mongo_dbname = "wishlist"
 
     if not mongo_uri:
@@ -31,7 +33,7 @@ def create_app():
     if not mongo_dbname:
         raise ValueError("MONGO_DBNAME is not set in the environment variables.")
 
-    connection = pymongo.MongoClient(mongo_uri)
+    connection = pymongo.MongoClient(mongo_uri, tls=True)
     db = connection[mongo_dbname]
 
     register_routes(app, db)
