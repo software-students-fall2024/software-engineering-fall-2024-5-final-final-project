@@ -94,6 +94,7 @@ jobs:
             # Pull the latest images from Docker Hub
             docker pull jl8059/web-app:latest
 
-            # Restart the containers using docker-compose
-            docker-compose down
-            docker-compose up -d
+            docker stop web-app || true
+            docker rm web-app || true
+            docker-compose -f docker-compose.yml down || true
+            docker-compose -f docker-compose.yml up --build -d
