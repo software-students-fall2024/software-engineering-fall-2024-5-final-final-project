@@ -3,10 +3,10 @@ name: CI/CD Pipeline for BarRecs
 on:
   push:
     branches:
-      - '**'
+      - 'main'
   pull_request:
     branches:
-      - '**'
+      - 'main'
 
 jobs:
   build_and_deploy:
@@ -33,13 +33,15 @@ jobs:
       run: |
         docker buildx build --platform linux/amd64,linux/arm64 -t ${{ secrets.DOCKER_USERNAME }}/bar_recs:latest ./bar_recs --push
 
-    # Deploy to DigitalOcean
+      # Deploy to DigitalOcean
     - name: Deploy to DigitalOcean
+      uses: appleboy/ssh-action@v0.1.1
       with:
         host: ${{ secrets.DO_IP }}
-        user: root
-        docker pull ${{ secrets.DOCKER_USERNAME }}/bar_recs:latest
-        docker stop bar_recs || true
-        docker rm bar_recs || true
-        docker run -d --name bar_recs -p 5001:5001 --env-file /root/project/bar_recs/.env ${{ secrets.DOCKER_USERNAME }}/bar_recs:latest
-
+        username: root
+        password: ${{ secrets.DO_PASSWORD }}
+        run: |
+          docker pull ${{ secrets.DOCKER_USERNAME }}/bar_recs:latest
+          docker stop bar_recs || true
+          docker rm bar_recs || true
+          docker run -d --name bar_recs -p 5001:5001 --env-file /root/project/bar_recs/.env ${{ secrets.DOCKER_USERNAME }}/bar_recs:latest
