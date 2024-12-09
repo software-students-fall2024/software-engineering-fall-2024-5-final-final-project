@@ -1,5 +1,28 @@
 <!DOCTYPE html>
 
+<head>
+    <style>
+        .container {
+            text-align: center;
+            align-content: center;
+        }
+
+        .leftdice{
+            float: left;
+        }
+
+        .dicetext{
+            text-align: center;
+            align-content: center;
+        }
+
+        img {
+            width: 6vw;
+        }
+    </style>
+
+    
+</head>
 
 <body>
     <h1 style="text-align: center;align-content: center;">
@@ -10,8 +33,7 @@
         Here are the results:
     </h3>
 
-    <div style="text-align: center;align-content: center;">
-        <textarea id="resultstext" style="text-align: center;align-content: center;resize: none;columns: 10;width: 500px;" rows="20"></textarea>
+    <div class="container" id="dicecont">
     </div>
 
     <h3 style="align-content: center;text-align: center;">Your New Balance is: ${{balance}}</h3>
@@ -25,12 +47,40 @@
 
 <script>
     const area = document.getElementById("resultstext");
+    const cont = document.getElementById("dicecont");
     const finaltext = "{{ textResult }}";
     const texts = finaltext.split("@");
+    const imgs = [
+        "{{url_for('static', filename='dice1.png')}}",
+        "{{url_for('static', filename='dice2.png')}}",
+        "{{url_for('static', filename='dice3.png')}}",
+        "{{url_for('static', filename='dice4.png')}}",
+        "{{url_for('static', filename='dice5.png')}}",
+        "{{url_for('static', filename='dice6.png')}}"
+    ];
     var texttext = "";
     for(i = 0; i < texts.length;i++){
-       var a = texts[i];
-       texttext+= a + "\n";
+        if(i == texts.length -1){
+            const text = document.createElement("h3")
+            text.className = "dicetext";
+            text.textContent = texts[i]
+            cont.appendChild(text);
+            break;
+        }
+        var a = texts[i];
+        const ttext = document.createElement("h3");
+        ttext.className = "dicetext";
+        ttext.textContent = a;
+        var d1 = a[1];
+        var d2 = a[4];
+        const dicel = document.createElement("img");
+        dicel.className = "leftdice";
+        dicel.src = imgs[d1-1];
+        const dicer = document.createElement("img");
+        dicer.src = imgs[d2-1];
+        cont.appendChild(dicel);
+        cont.appendChild(dicer);
+        cont.appendChild(ttext);
     }
-    area.textContent = texttext;
+    //area.textContent = texttext;
 </script>
