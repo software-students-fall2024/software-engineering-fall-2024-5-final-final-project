@@ -76,12 +76,14 @@ def create_app():
 
     @app.route('/')
     def index():
-
+        if not current_user.is_authenticated:
+            return redirect(url_for('login'))
         # user = create_user('WilliamTest2','unhashedpass')
         # users_collection.insert_one(user);
         # mongo.db.users.insert_one(user)
 
         # TODO: This will have to change to find the user that is logged in, hardcoded for now to test
+        
         selected_user = users_collection.find_one({"_id":ObjectId(current_user.id)})
 
         # print("User's date: " + selected_user["daily_movie"]["recommended_date"].strftime("%Y %m %d"))
@@ -214,10 +216,22 @@ def create_app():
         # Return to the homepage or wherever you need to redirect after processing
         return redirect(url_for("index"))
 
-    if __name__ == '__main__':
-        FLASK_PORT = os.getenv("FLASK_PORT", "3000")
-        app = create_app()
-        app.run(host="0.0.0.0", port=3000)
+    @app.route('/watchlist')
+    def watchlist():
+        selected_user = users_collection.find_one({"_id":ObjectId(current_user.id)})
+        watched_movies = []
 
+        # Fetch watched movies based on the user's watched_movies list
+        for movie_id in selected_user.get("watched_movies", []):
+            watched_movie = g.all_movies[movie_id]
+            watched_movies.append(watched_movie)
+
+        return render_template("watchlist.html", watchedMovies=watched_movies)
     return app
+if __name__ == '__main__':
+    FLASK_PORT = os.getenv("FLASK_PORT", "3000")
+    app = create_app()
+    app.run(host="0.0.0.0", port=3000)
+
+    
 

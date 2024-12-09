@@ -98,6 +98,20 @@ form input[type="checkbox"] {
     transform: scale(1.5);
 }
 
+.register-link{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+/* color of link */
+a:link {
+    color: rgb(245, 251, 199);
+}
+
+a:visited {
+    color: rgb(231, 199, 251);
+}
+
 /* Footer */
 footer {
     margin-top: 20px;
