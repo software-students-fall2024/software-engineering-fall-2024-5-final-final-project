@@ -1,8 +1,8 @@
 """
 backend.database
 
-This module defines the Database class for interacting with the MongoDB backend.
-It includes methods for user authentication, budget management, and expense tracking.
+This module defines the Database class for managing interactions with a MongoDB backend.
+It includes functionality for user authentication, budget management, expense tracking, and spending analysis.
 """
 
 from typing import List, Optional
@@ -20,7 +20,7 @@ import numpy as np
 @dataclass
 class Expense:
     """
-    Represents a financial expense.
+    Represents an individual financial expense with relevant attributes.
     """
 
     amount: float
@@ -35,8 +35,9 @@ class Expense:
 
 
 class Database:
-    """
-    Handles all interactions with the MongoDB database for the finance application.
+    """   
+    Provides methods to interact with the MongoDB database for the finance application.
+    Handles user-related operations, budget management, and expense tracking.
     """
 
     def __init__(self, uri: str = None):
@@ -187,7 +188,7 @@ class User(UserMixin):
 
 class MLModel:
     """
-    ML Model to analyze predict spending habits
+    Provides a simple machine learning model to analyze and predict spending habits.   
     """
 
     def __init__(self):
