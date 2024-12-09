@@ -42,7 +42,7 @@ WEARther is a web-based application that combines weather data and curated outfi
         docker-compose up --build --force-recreate
     ```
 4. Access the web app:
-    - Open your browser and navigate to ` http://localhost:5002`.
+  - Open your browser and navigate to ` http://localhost:5002`.
 
 ---
 
