@@ -1,0 +1,83 @@
+name: Web App CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-test-push-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      # Install dependencies
+      - name: Install Dependencies
+        run: |
+          pip install -r web-app/requirements.txt
+
+      # Start MongoDB container
+      - name: Start MongoDB Container
+        run: |
+          docker run -d --name mongodb -e MONGO_INITDB_DATABASE=Outfits -p 27017:27017 mongo:latest
+
+      # Wait for MongoDB to be ready
+      - name: Wait for MongoDB
+        run: |
+          for i in {1..10}; do
+            if nc -z localhost 27017; then
+              echo "MongoDB is ready!"
+              exit 0
+            fi
+            echo "Waiting for MongoDB..."
+            sleep 2
+          done
+          echo "MongoDB failed to start."
+          exit 1
+
+      # Run tests
+      - name: Run Tests
+        env:
+          MONGO_DBNAME: Outfits
+          MONGO_URI: mongodb://localhost:27017
+        run: |
+          pytest web-app/tests/
+
+      # Log in to Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: jl8059
+          password: qq883697776
+
+      # Build and push Docker image
+      - name: Build and push Web App Docker image
+        run: |
+          docker build -t jl8059/web-app:latest -f ./web-app/Dockerfile ./web-app
+          docker push jl8059/web-app:latest
+
+      # Deploy to DigitalOcean Droplet
+      - name: Deploy to DigitalOcean Droplet
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: 159.203.137.174
+          username: root
+          key: ${{ secrets.DO_PRIVATE_KEY }}
+          script: |
+            docker pull jl8059/web-app:latest
+            docker-compose -f project/docker-compose.yml down || true
+            docker-compose -f project/docker-compose.yml up --build -d
+
+

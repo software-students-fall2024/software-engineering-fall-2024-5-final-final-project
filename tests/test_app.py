@@ -200,7 +200,6 @@ def test_register_password_mismatch(client):
     assert b"Passwords do not match." in response.data
 
 
-#########
 
 @patch('app.requests.get')
 def test_get_weather_missing_api_key(mock_get):
@@ -220,7 +219,7 @@ def test_logout_without_login(client):
     assert response.status_code == 200
     assert b"Don't have an account? Sign up Here" in response.data
 
-#######
+
 
 
 def test_index_without_authentication(client):
@@ -250,3 +249,4 @@ def test_seed_database_no_data(mock_insert, mock_exists, mock_listdir):
     """Test seeding the database with no folders or images."""
     seed_database()
     mock_insert.assert_not_called()
+

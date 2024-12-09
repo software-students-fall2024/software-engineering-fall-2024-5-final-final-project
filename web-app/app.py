@@ -42,7 +42,11 @@ app = Flask(__name__)
 cxn = MongoClient(os.getenv("MONGO_URI"))
 db = cxn[os.getenv("MONGO_DBNAME")]
 app.secret_key = os.getenv("SECRET_KEY", "supersecretkey123")
-
+try:
+    cxn.admin.command("ping")
+    print(" *", "Connected to MongoDB!")
+except Exception as e:
+    print(" * MongoDB connection error:", e) 
 class User(UserMixin):
     """
     User class that extends UserMixin for Flask-Login.
@@ -262,7 +266,6 @@ def get_weather(city_name, api_key):
 
 API_KEY = os.getenv("OPENWEATHER_API_KEY")
 
-
 @app.route('/get_weather', methods=['GET'])
 def fetch_weather():
     city = request.args.get('city', 'New York')  
@@ -275,8 +278,7 @@ def fetch_weather():
         })
     else:
         return jsonify({"error": "Could not fetch weather data"}), 400
-
-
+    
 def seed_database():
     """
     Populate the database with outfits based on temperature range, gender, and weather condition.
