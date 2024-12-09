@@ -91,6 +91,18 @@ def create_app():
         # print("Equal?: "+ str(selected_user["daily_movie"]["recommended_date"] == datetime.datetime.now()))
 
         # Checks if movie has been assigned for the day if last recommended movie date is same as today
+         # Ensure the daily_movie key exists
+        if "daily_movie" not in selected_user:
+            # Initialize daily_movie if missing
+            selected_user["daily_movie"] = {
+                "movie_id": random.randint(1, 1000),
+                "recommended_date": datetime.datetime.now()
+            }
+            users_collection.update_one(
+                {"_id": ObjectId(current_user.id)},
+                {"$set": {"daily_movie": selected_user["daily_movie"]}}
+            )
+        
         user_movie_id = selected_user["daily_movie"]["movie_id"]
         user_recommended_date = selected_user["daily_movie"]["recommended_date"]
         
