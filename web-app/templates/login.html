@@ -1,92 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WEARther</title>
-    <style>
-       @import url('https://fonts.googleapis.com/css2?family=Abel&family=Satisfy&display=swap');
-
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(to bottom, #FF7E5F, #FDBB2D, #87CEFA); 
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            background-attachment: fixed;
-        }
-        h1 {
-            font-family: 'Satisfy', 'cursive';
-            font-size: 3.5rem;
-            margin-bottom: 10px;
-            color: #2C3E50;
-            text-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
-        }
-        form {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-            text-align: center;
-            width: 300px;
-        }
-        input[type="text"], input[type="password"] {
-            width: 90%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 2px solid #FDBB2D; 
-            border-radius: 25px;
-            background: rgba(255, 255, 255, 0.6);
-            font-size: 1rem;
-            color: #333;
-            box-shadow: inset 0px 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        input[type="text"]:focus, input[type="password"]:focus {
-            outline: none;
-            border-color: #FF7E5F; 
-            background: rgba(255, 255, 255, 0.8);
-        }
-        button {
-            padding: 15px 0;
-            margin: 10px 0;
-            width: 100%;
-            border: none;
-            border-radius: 25px;
-            font-size: 1rem;
-            background: #FF7E5F; 
-            color: #fff;
-            cursor: pointer;
-            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
-            text-align: center;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
-        }
-        button:hover {
-            background: #FDBB2D; 
-            transform: scale(1.05);
-        }
-        a {
-            font-family: 'Indie Flower', cursive;
-            font-size: 1rem;
-            color: #2C3E50;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-        .error {
-            color: red;
-            font-size: 0.9rem;
-            margin-bottom: 10px;
-        }
-    </style>
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>WEARther</title>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Raleway:wght@300&display=swap');
+    
+            body {
+                font-family: 'Raleway', sans-serif;
+                margin: 0;
+                padding: 0;
+                background: linear-gradient(to bottom, #fefefe, #FFFFFF);
+                color: #333;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                min-height: 100vh;
+                background-attachment: fixed;
+            }
+    
+            h1 {
+                font-family: 'Playfair Display', serif;
+                font-size: 4rem;
+                margin-bottom: 20px;
+                color: #2C3E50;
+                text-shadow: 2px 4px 6px rgba(0, 0, 0, 0.3);
+            }
+    
+            form {
+                background: rgba(255, 255, 255, 0.9);
+                padding: 30px 20px;
+                border-radius: 20px;
+                box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
+                text-align: center;
+                width: 320px;
+            }
+    
+            form h2 {
+                font-family: 'Playfair Display', serif;
+                font-size: 2rem;
+                color: #2C3E50;
+                margin-bottom: 15px;
+            }
+    
+            input[type="text"], input[type="password"] {
+                width: 90%;
+                padding: 12px;
+                margin: 12px 0;
+                border: 2px solid #FDBB2D; 
+                border-radius: 25px;
+                background: rgba(255, 255, 255, 0.7);
+                font-size: 1rem;
+                color: #333;
+                box-shadow: inset 0px 4px 6px rgba(0, 0, 0, 0.1);
+                text-align: center;
+                font-family: 'Raleway', sans-serif;
+            }
+    
+            input[type="text"]:focus, input[type="password"]:focus {
+                outline: none;
+                border-color: #FF7E5F; 
+                background: rgba(255, 255, 255, 0.85);
+            }
+    
+            button {
+                width: 90%;
+                padding: 12px;
+                border: none;
+                border-radius: 25px;
+                font-size: 1rem;
+                background: #FF7E5F; 
+                color: white;
+                cursor: pointer;
+                transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+                text-align: center;
+                font-family: 'Raleway', sans-serif;
+                font-weight: 600;
+                box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+            }
+    
+            button:hover {
+                background: #FDBB2D; 
+                transform: scale(1.05);
+            }
+    
+            a {
+                font-family: 'Raleway', sans-serif;
+                font-size: 1rem;
+                color: #2C3E50;
+                text-decoration: none;
+                margin-top: 10px;
+                display: inline-block;
+            }
+    
+            a:hover {
+                text-decoration: underline;
+            }
+    
+            .error {
+                color: red;
+                font-size: 0.9rem;
+                margin-bottom: 15px;
+                font-family: 'Raleway', sans-serif;
+            }
+        </style>
+    </head>
+    
 <body>
-    <h1>WEARther</h1>
+    <h1>
+        <span style="
+        font-family: 'Playfair Display', serif; 
+        color: #FF7E5F; 
+        font-size: 4.5rem; 
+        text-shadow: 2px 4px 6px rgba(0,0,0,0.3); 
+        letter-spacing: -2px;">
+        WEAR
+    </span>
+    <span style="
+        font-family: 'Raleway', sans-serif; 
+        color: #2C3E50; 
+        font-size: 4.5rem; 
+        text-shadow: 1px 3px 4px rgba(0,0,0,0.2); 
+        letter-spacing: -1px;
+        margin-left: -10px;">
+        ther
+    </span>
+    </h1>
+    
     <form method="POST" action="{{ url_for('login') }}">
         <h2 style="font-family: 'Satisfy', 'cursive'; color: #2C3E50;">User Login</h2>
         
