@@ -4,26 +4,42 @@ import os;
 import random;
 import os
 from dotenv import load_dotenv
-from flask_pymongo import PyMongo
+from pymongo import MongoClient, server_api
+import certifi, datetime
 
 
 load_dotenv()
 
 MONGO_URI = os.getenv('MONGO_URI')
+db_name = os.getenv('MONGO_DBNAME')
 
 app = Flask(__name__)
 
 app.config["MONGO_URI"] = MONGO_URI
-
-mongo = PyMongo(app)
+client = MongoClient(MONGO_URI, tlsCAFile=certifi.where(), server_api=server_api.ServerApi('1'))
+db = client[db_name]
+users_collection = db.users
+# mongo = PyMongo(app)
 
 def create_user(username, password):
     user = {
         "username": username,
         "password": password,  # Maybe hash this?
+        "daily_movie":{
+            "movie_id": random.randint(1,1000),
+            "recommended_date": datetime.datetime.now()
+        },
+        "watched_movies": []
     }
     return user
 
+def random_movie_id(watched_ids):
+    id = 0;
+    while True:
+        id = random.randint(1,1000)
+        if id not in watched_ids:
+            break
+    return id
 
 # Runs before requests - reads csv file and puts each row into all_movies variable
 @app.before_request
@@ -36,13 +52,45 @@ def read_movies():
 
 @app.route('/')
 def index():
-    # user = create_user('test','unhashedpass')
+
+    # user = create_user('WilliamTest2','unhashedpass')
+    # users_collection.insert_one(user);
     # mongo.db.users.insert_one(user)
-    movie_picked = False
-    if not movie_picked:
-        selected_movie = g.all_movies[random.randint(1,1000)]
-    # for row in g.all_movies:
-    #     print(row[1])
+
+    # TODO: This will have to change to find the user that is logged in, hardcoded for now to test
+    selected_user = users_collection.find_one({"username":"WilliamTest2"})
+
+    # print("User's date: " + selected_user["daily_movie"]["recommended_date"].strftime("%Y %m %d"))
+    # print("Computer's date: " + datetime.datetime.now().strftime("%Y %m %d"))
+    # print("Equal?: "+ str(selected_user["daily_movie"]["recommended_date"] == datetime.datetime.now()))
+
+    # Checks if movie has been assigned for the day if last recommended movie date is same as today
+    user_movie_id = selected_user["daily_movie"]["movie_id"]
+    user_recommended_date = selected_user["daily_movie"]["recommended_date"]
+    
+    is_already_assigned = user_recommended_date.strftime("%Y %m %d") == datetime.datetime.now().strftime("%Y %m %d")
+
+    # # For testing: to forcefully update movie even if date hasn't changed
+    # is_already_assigned = False
+
+    # if movie hasn't been assigned for the day, set a new movie that user hasn't seen before
+    if not is_already_assigned:
+        new_movie_id = random_movie_id(selected_user["watched_movies"])
+        users_collection.update_one(
+            {"username":"WilliamTest2"},    # TODO: replace username with actual user logged in
+            { 
+                "$set": {
+                    "daily_movie.movie_id": new_movie_id,
+                    "daily_movie.recommended_date": datetime.datetime.now()
+                }
+            }
+        )
+        selected_movie = g.all_movies[new_movie_id] # uses newly generated movie id
+
+    # if move has been assigned
+    else:
+        selected_movie = g.all_movies[user_movie_id] # uses existing movie id found in user doc in db
+
     return render_template("index.html", selectedMovie=selected_movie)
 
 if __name__ == '__main__':
