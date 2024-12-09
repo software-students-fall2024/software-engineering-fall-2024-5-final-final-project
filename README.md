@@ -85,7 +85,7 @@ Make sure all steps in Running Project section is completed then the user can lo
 
 1. Go to: http://localhost:5000/ in browser
 
-2. The default username and password is 'user' and 'pw' respectively.
+2. The default username and password is 'user' and 'pw' respectively or create an account with Create Account button.
 
 3. You can add expenses and update budgets with the add expense button and update budget button in the app.
 
