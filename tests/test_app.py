@@ -3,7 +3,7 @@ from app import app, get_weather
 from unittest.mock import patch, MagicMock
 from flask import url_for
 
-# Fixtures
+
 @pytest.fixture
 def client():
     """Set up a test client for the Flask app."""
@@ -12,7 +12,7 @@ def client():
         yield client
 
 
-# Test: `get_weather`
+
 @patch('app.requests.get')
 def test_get_weather_success(mock_get):
     """Test successful weather data retrieval."""
@@ -41,7 +41,7 @@ def test_get_weather_failure(mock_get):
     assert description is None
 
 
-# Test: Index route
+
 def test_index(client):
     """Test index route."""
     response = client.get('/')
@@ -49,7 +49,7 @@ def test_index(client):
     assert b"index.html" in response.data
 
 
-# Test: Fetch Weather Route
+
 @patch('app.get_weather')
 def test_fetch_weather_success(mock_get_weather, client):
     """Test /get_weather route with valid city."""
