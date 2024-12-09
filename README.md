@@ -16,7 +16,27 @@ An exercise to put to practice software development teamwork, subsystem communic
 4. [Team Members](#team-members)
 
 ## DESCRIPTION
+Home-Brewed Web Application
 
+Home-Brewed is a web application designed to help users manage and explore their favorite bars based on personalized preferences. It provides a seamless user experience for adding, searching, sorting, editing, and receiving bar recommendations.
+
+Key Features
+
+	1.	User Authentication:
+	•	Includes a logout feature to ensure secure user sessions.
+	2.	Intuitive Navigation:
+	•	A clean and organized navigation bar allows users to easily switch between key functionalities like Home, Add, Edit/Delete, Search, Sort, and Recommendations.
+	3.	Add New Bars:
+	•	Users can contribute by adding their favorite bars to the database, complete with details like bar name, type, occasion, area, reservation availability, and cost.
+	4.	Edit/Delete Existing Bars:
+	•	Modify or remove existing entries to keep the data up-to-date and relevant.
+	5.	Search for Bars:
+	•	Quickly find bars that match specific criteria or keywords.
+	6.	Sort Bars:
+	•	Organize bars based on preferences such as cost, type, or occasion.
+	7.	Personalized Recommendations:
+	•	Displays a curated list of bars tailored to user preferences, including details like type, occasion, area, reservation status, and cost.
+	•	If no recommendations are found, users are prompted to add new bars.
 ## CONTAINER IMAGES
 
 ## SETUP STEPS
