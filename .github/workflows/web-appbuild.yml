@@ -75,8 +75,8 @@ jobs:
         with:
           host: 159.203.137.174
           username: root
-          password: ${{ secrets.DO_PRIVATE_KEY }}
-          run: |
+          key: ${{ secrets.DO_PRIVATE_KEY }}
+          script: |
             docker pull jl8059/web-app:latest
             docker stop web-app || true 
             docker rm web-app || true
