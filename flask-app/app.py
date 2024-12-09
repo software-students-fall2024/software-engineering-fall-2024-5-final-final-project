@@ -92,7 +92,8 @@ def playline(username):
     bet = float(request.form["betamount"])
     balance = float(request.form["balance"])
     rolls, result = linebet(win)
-    return_text= "Here are the rolls:\n"
+    #return_text= "Here are the rolls:\n"
+    return_text = ""
     for r in rolls:
         return_text+=r + "\n"
     
@@ -108,14 +109,27 @@ def playline(username):
     # update database maybe use requests?
     # or maybe make a different .py that will make a request
 
-    return render_template("craps_results.html", username=username, balance=balance)
+    return render_template("craps_results.html", username=username, balance=balance, textResult=return_text)
 
 
 @app.route("/<username>/craps/playbuy", methods=["POST"])
 @flask_login.login_required
 def playbuy(username):
-    balance = 10000
-    return render_template("craps_results.html", username=username, balance=balance)
+    win = True if request.form["bettype"] == 'b' else False
+    bet = float(request.form["betamount"])
+    place = int(request.form["buynum"])
+    balance = float(request.form["balance"])
+    rolls, result, odds = buybet(win, place)
+    return_text= "Here are the rolls:\n"
+    for r in rolls:
+        return_text+=r + "\n"
+    if result == 'w':
+        return_text += "You win!"
+        balance += bet * odds
+    elif result == 'l':
+        return_text+= "You lost!"
+        balance-=bet 
+    return render_template("craps_results.html", username=username, balance=balance, textResult=return_text)
 
 
 if __name__ == "__main__":
