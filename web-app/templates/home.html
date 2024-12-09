@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock Paper Scissors - Home</title>
+    <style>
+        /* General Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: #fff;
+            text-align: center;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+            animation: slideInFromTop 1s ease-out;
+        }
+
+        p {
+            font-size: 1.3rem;
+            margin-bottom: 40px;
+            color: #e0e0e0;
+            animation: fadeIn 1.5s ease-out;
+        }
+
+        /* Button Container */
+        .button-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            animation: fadeIn 1.5s ease-out;
+        }
+
+        .btn {
+            text-decoration: none;
+            padding: 15px 30px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Waiting Message */
+        #waitingMessage {
+            color: red;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        /* Matched Message */
+        #matchedMessage {
+            color: green;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        /* Countdown Message */
+        #countdownMessage {
+            color: green;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background: linear-gradient(to right, #ff416c, #ff4b2b);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(to right, #e23e57, #d63333);
+            transform: translateY(-3px);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(to right, #42e695, #3bb2b8);
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(to right, #36d687, #34a4a7);
+            transform: translateY(-3px);
+        }
+
+        .btn-info {
+            background: linear-gradient(to right, #f7971e, #ffd200);
+        }
+
+        .btn-info:hover {
+            background: linear-gradient(to right, #f68a1e, #f3c400);
+            transform: translateY(-3px);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            font-size: 1rem;
+            color: #e0e0e0;
+            animation: slideInFromBottom 1.5s ease-out;
+        }
+
+        /* Modal Styles (Initially Hidden) */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            color: #333;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            width: 300px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Animations */
+        @keyframes slideInFromTop {
+            0% {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInFromBottom {
+            0% {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+    #bgVideo {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    }
+    </style>
+</head>
+
+<body>
+
+    <video autoplay muted loop id="bgVideo">
+        <source src="{{ url_for('static', filename='assets/icons.mp4') }}" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    
+    <h1>Welcome to Rock Paper Scissors!</h1>
+    <p>Choose your game mode and challenge yourself or a friend.</p>
+
+    <div class="button-container">
+        <a href="/ai" class="btn btn-primary">Play Against AI without Camera</a>
+        <a href="/ai_machine_learning" class="btn btn-secondary">Play Against AI with Camera</a>
+        <button id="matchRandomBtn" class="btn btn-info">Match with Random Player</button>
+        <a href="/statistics" class="btn btn-secondary">View Your Statistics</a>
+    </div>
+
+    <p class="footer">Developed with ❤️ for endless fun. Enjoy playing!</p>
+
+    <!-- Waiting Modal (Hidden Initially) -->
+    <div class="modal" id="waitingModal">
+        <div class="modal-content">
+            <p id="waitingMessage">Waiting for an opponent...</p>
+            <button class="btn btn-secondary" id="cancelWaitingBtn">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Matched Modal (Hidden Initially) -->
+    <div class="modal" id="matchedModal">
+        <div class="modal-content">
+            <p id="matchedMessage"></p>
+            <p id="countdownMessage"></p>
+            <button id="startGameBtn" class="btn btn-primary">Start Game</button>
+            <button class="btn btn-secondary" id="cancelMatchedBtn">Cancel</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.0/socket.io.min.js"></script>
+    <script>
+        const waitingModal = document.getElementById("waitingModal");
+        const matchedModal = document.getElementById("matchedModal");
+        const startGameBtn = document.getElementById("startGameBtn");
+        const cancelMatchedBtn = document.getElementById("cancelMatchedBtn");
+        const cancelWaitingBtn = document.getElementById("cancelWaitingBtn");
+        const countdownMessage = document.getElementById("countdownMessage");
+        const socket = io();
+
+        const playerId = localStorage.getItem("player_id") || crypto.randomUUID();
+        localStorage.setItem("player_id", playerId);
+
+        let playerName = null;
+        let gameId = null;
+        let countdownInterval;
+
+        // Reset matchmaking state
+        function resetMatchmaking() {
+            clearInterval(countdownInterval);
+            waitingModal.style.display = "none";
+            matchedModal.style.display = "none";
+            countdownMessage.textContent = "";
+            cancelMatchedBtn.disabled = false;
+            cancelMatchedBtn.style.opacity = "1";
+            cancelMatchedBtn.style.cursor = "pointer";
+            gameId = null;
+        }
+
+        // Start countdown dynamically
+        function startCountdown(initialValue) {
+            let timeLeft = initialValue || 10;
+            countdownMessage.textContent = `Time left: ${timeLeft} seconds`;
+
+            clearInterval(countdownInterval);
+            countdownInterval = setInterval(() => {
+                timeLeft--;
+                countdownMessage.textContent = `Time left: ${timeLeft} seconds`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    alert("Match canceled due to timeout.");
+                    resetMatchmaking();
+                }
+            }, 1000);
+        }
+
+        // Match Randomly
+        document.getElementById("matchRandomBtn").addEventListener("click", () => {
+            playerName = prompt("Enter your name:");
+            if (!playerName) {
+                alert("Name required for matchmaking.");
+                return;
+            }
+            resetMatchmaking();
+            waitingModal.style.display = "flex";
+            document.getElementById("waitingMessage").textContent = "Waiting for an opponent...";
+            socket.emit("random_match", { player_name: playerName, player_id: playerId });
+
+            socket.off("match_found");
+            socket.off("countdown");
+            socket.off("match_cancelled");
+
+            // Match Found Listener
+            socket.on("match_found", (data) => {
+                gameId = data.game_id;
+                const opponentName = data.opponent;
+
+                waitingModal.style.display = "none";
+                matchedModal.style.display = "flex";
+                document.getElementById("matchedMessage").textContent = `Matched with ${opponentName}! Ready to start?`;
+
+                startCountdown(10);
+            });
+
+            // Countdown Listener
+            socket.on("countdown", (data) => {
+                if (data.game_id === gameId) {
+                    countdownMessage.textContent = `Time left: ${data.countdown} seconds`;
+                    if (data.countdown <= 0) resetMatchmaking();
+                }
+            });
+
+            // Match Cancelled Listener
+            socket.on("match_cancelled", (data) => {
+                alert(data.message);
+                resetMatchmaking();
+            });
+        });
+
+        // Cancel Waiting Button
+        cancelWaitingBtn.addEventListener("click", () => {
+            socket.emit("cancel_waiting", { player_id: playerId });
+            resetMatchmaking();
+        });
+
+        // Cancel Matched Button
+        cancelMatchedBtn.addEventListener("click", () => {
+            if (!gameId) {
+                alert("No game ID found. Please retry matchmaking.");
+                return;
+            }
+            socket.emit("cancel_match", { game_id: gameId, player_id: playerId });
+            resetMatchmaking();
+        });
+
+        // Start Game Button
+        startGameBtn.addEventListener("click", () => {
+            if (!gameId) {
+                alert("No game ID found. Please retry matchmaking.");
+                return;
+            }
+            socket.emit("start_game", { game_id: gameId, player_id: playerId });
+            cancelMatchedBtn.disabled = true;
+            cancelMatchedBtn.style.opacity = "0.5";
+            cancelMatchedBtn.style.cursor = "not-allowed";
+            alert("Waiting for the other player to make a choice...");
+        });
+
+        // Proceed to Game Listener
+        socket.on("proceed_to_game", () => {
+            cancelMatchedBtn.disabled = true;
+            cancelMatchedBtn.style.opacity = "0.5";
+            cancelMatchedBtn.style.cursor = "not-allowed";
+            window.location.href = `/real_person?gameId=${gameId}&playerId=${playerId}`;
+        });
+
+        // Handle Disconnect
+        socket.on("disconnect", () => {
+            alert("Disconnected. Please refresh the page.");
+            resetMatchmaking();
+        });
+    </script>
+</body>
+
+</html>
