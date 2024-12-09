@@ -47,9 +47,15 @@
             padding: 10px 0;
         }
 
-        .bottom-nav a:hover, .bottom-nav a.active {
+        .bottom-nav a:hover {
             background-color: #555;
+            border-radius: 5px;
         }
+
+        li.location-item {
+            cursor: pointer; /* Indicates a clickable item */
+        }
+
     </style>
 </head>
 <body>
@@ -69,49 +75,93 @@
     </div>
     
     <script>
-        // Handle form submission
-        document.getElementById("location-form").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const location = document.getElementById("location-input").value.trim();
-    
-            // Save location in the database
-            const response = await fetch("/add_location", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ location }),
-            });
-    
-            const data = await response.json();
-            if (data.success) {
-                addLocationToList(location);
-                document.getElementById("location-input").value = "";
-            } else {
-                alert("Could not add location.");
-            }
+ // Add location to the list
+function addLocationToList(location) {
+    const list = document.getElementById("locations-list");
+    const li = document.createElement("li");
+
+    li.textContent = location;
+    li.className = "location-item";
+    li.setAttribute("data-location", location);
+
+    // Ensure clicking the location triggers fetchWeather
+    // li.onclick = () => fetchWeather(location);
+    li.onclick = () => {
+    window.location.href = `/index?city=${encodeURIComponent(location)}`;
+};
+
+    list.appendChild(li);
+}
+
+// Fetch and update weather data dynamically
+async function fetchWeather(location) {
+    try {
+        const response = await fetch("/get_weather_data", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ city: location }),
         });
-    
-        // Add location to the list
-        function addLocationToList(location) {
-        const list = document.getElementById("locations-list");
-        const li = document.createElement("li");
 
-        // Correct Flask route and query parameter format
-        li.innerHTML = `<a href="/index?city=${encodeURIComponent(location)}">${location}</a>`;
-        list.appendChild(li);
+        const data = await response.json();
+
+        if (data.error) {
+            alert("Could not fetch weather data.");
+            return;
+        }
+
+        // Store the selected location in localStorage
+        localStorage.setItem("selectedLocation", location);
+
+        // Update weather section dynamically
+        document.querySelector(".content h1").textContent = "Today's Weather & Outfits";
+        document.querySelector("#outfit-suggestions").innerHTML = `
+            <p><strong>Location:</strong> ${data.city}</p>
+            <p><strong>Outfit Suggestion:</strong></p>
+            <img src="${data.outfit_image}" alt="Outfit" style="width: 200px;">
+            <p><strong>Temperature:</strong> ${data.temperature}</p>
+            <p><strong>Weather:</strong> ${data.description}</p>
+        `;
+
+        document.body.style.backgroundImage = `url('${data.background_image}')`;
+    } catch (error) {
+        console.error("Error fetching weather:", error);
     }
-    
-        // Fetch saved locations on page load
-        window.onload = async () => {
-            const response = await fetch("/get_locations");
-            const locations = await response.json();
-            locations.forEach((loc) => addLocationToList(loc));
-        };
-    </script>
-    
+}
 
+
+// Handle form submission
+document.getElementById("location-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const location = document.getElementById("location-input").value.trim();
+
+    if (!location) return;
+
+    const response = await fetch("/add_location", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ location }),
+    });
+
+    const data = await response.json();
+    if (data.success) {
+        addLocationToList(location);
+        document.getElementById("location-input").value = "";
+    } else {
+        alert("Could not add location.");
+    }
+});
+
+// Fetch saved locations on page load
+window.onload = async () => {
+    const response = await fetch("/get_locations");
+    const locations = await response.json();
+    locations.forEach((loc) => addLocationToList(loc));
+};
+
+    </script>
     <div class="bottom-nav">
         <a href="/locations" class="active">Locations</a>
-        <a href="/index">Weather</a>
+        <a href="#" onclick="fetchWeather('New York')">Weather</a>
     </div>
 </body>
 </html>
