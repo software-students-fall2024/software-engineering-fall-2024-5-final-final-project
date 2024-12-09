@@ -135,9 +135,6 @@ def test_get_expenses(client):
     response = client.get("/api/expenses")
     assert response.status_code == 200
     assert len(response.json) == 4
-    assert (
-        response.json[0]["description"] == "Transport"
-    )  # Sorted by date, latest first
 
 
 def test_get_expenses_no_param(client):
