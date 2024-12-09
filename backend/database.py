@@ -2,7 +2,11 @@
 backend.database
 
 This module defines the Database class for managing interactions with a MongoDB backend.
-It includes functionality for user authentication, budget management, expense tracking, and spending analysis.
+It includes functionality for:
+- User authentication
+- Budget management
+- Expense tracking
+- Spending analysis
 """
 
 from typing import List, Optional
