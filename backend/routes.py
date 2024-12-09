@@ -8,8 +8,9 @@ It handles login, logout, budget updates, expense tracking, and data retrieval.
 from flask import Blueprint, jsonify, request, session
 from flask_cors import CORS
 from backend.database import Database  # pylint: disable=import-error
-from backend.blueprints import routes
 
+
+routes = Blueprint("routes", __name__)
 CORS(routes, supports_credentials=True)
 db = Database()
 
@@ -20,7 +21,7 @@ def index():
     return jsonify({"status": "ok"}), 200
 
 
-@routes.route("/login", methods=["POST"])
+@routes.route("/api/login", methods=["POST"])
 def login():
     """
     Handle user login by validating credentials.
@@ -32,7 +33,7 @@ def login():
     return jsonify({"success": False, "message": "Invalid credentials"}), 401
 
 
-@routes.route("/logout", methods=["POST"])
+@routes.route("/api/logout", methods=["POST"])
 def logout():
     """
     Handle user logout by clearing the session.
@@ -41,7 +42,7 @@ def logout():
     return jsonify({"success": True})
 
 
-@routes.route("/user-data")
+@routes.route("/api/user-data")
 def get_user_data():
     """
     Retrieve user-specific financial data.
@@ -58,7 +59,7 @@ def get_user_data():
     )
 
 
-@routes.route("/update-budget", methods=["POST"])
+@routes.route("/api/update-budget", methods=["POST"])
 def update_budget():
     """
     Update the user's budget.
@@ -70,7 +71,7 @@ def update_budget():
     return jsonify({"success": True})
 
 
-@routes.route("/add-expense", methods=["POST"])
+@routes.route("/api/add-expense", methods=["POST"])
 def add_expense():
     """
     Add a new expense for the user.
@@ -82,7 +83,7 @@ def add_expense():
     return jsonify({"success": True})
 
 
-@routes.route("/remove-expense", methods=["POST"])
+@routes.route("/api/remove-expense", methods=["POST"])
 def remove_expense():
     """
     Remove an existing expense for the user.
@@ -94,7 +95,7 @@ def remove_expense():
     return jsonify({"success": success})
 
 
-@routes.route("/expenses")
+@routes.route("/api/expenses")
 def get_expenses():
     """
     Retrieve all expenses for the authenticated user.
