@@ -47,7 +47,10 @@ def register_routes(app, db):
         """
         Home route that renders the homepage.
         """
-        return render_template("home.html")
+        try:
+            return render_template("home.html")
+        except Exception as e:
+            return f"Error loading homepage: {e}", 500
 
     @app.route("/<username>")
     def profile(username):
@@ -180,4 +183,5 @@ def register_routes(app, db):
 
 if __name__ == "__main__":
     APP = create_app()
-    APP.run(host="0.0.0.0", port=3000)
+    #APP.run(host="0.0.0.0", port=3000)
+    APP.run(debug=False, host="0.0.0.0", port=int(os.getenv("PORT", 3000)))
