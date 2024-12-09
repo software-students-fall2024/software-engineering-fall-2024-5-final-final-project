@@ -196,16 +196,29 @@ def predict_expenses():
     # Iterate through each expense to extract month and amount
     for expense in expenses:
         # Extract and parse the 'date' field
-        if "date" in expense and isinstance(expense["date"], str):
-            try:
-                # Parse the ISO-formatted date string into a datetime object
-                date_obj = datetime.fromisoformat(expense["date"])
+        if "date" in expense:
+            date = expense["date"]
+            date_obj = None
+
+            if isinstance(date, str):
+                if date.endswith("Z"):
+                    date = date[:-1] + "+00:00"
+                try:
+                    date_obj = datetime.fromisoformat(date)
+                except ValueError:
+                    logger.error("Invalid date format for expense: %s", expense["date"])
+            elif isinstance(date, datetime):
+                date_obj = date
+            else:
+                logger.error("Unsupported date type in expense: %s", expense["date"])
+
+            if date_obj:
                 months.append(date_obj.month)
-            except ValueError:
-                logger.error("Invalid date format for expense: %s", expense["date"])
-                continue  # Skip this expense due to invalid date format
+            else:
+                logger.error("Skipping expense due to invalid date: %s", expense)
+                continue
         else:
-            logger.error("Missing or invalid 'date' field in expense: %s", expense)
+            logger.error("Missing 'date' field in expense: %s", expense)
             continue  # Skip this expense due to missing 'date'
 
         # Extract the 'amount' field
@@ -213,7 +226,7 @@ def predict_expenses():
             totals.append(expense["amount"])
         else:
             logger.error("Missing or invalid 'amount' field in expense: %s", expense)
-            continue  # Skip this expense due to missing 'amount'
+            continue  # Skip this expense due to missing or invalid 'amount'
 
     # Check if we have valid data for prediction
     if not months or not totals:
