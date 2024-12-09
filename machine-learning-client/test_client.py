@@ -172,181 +172,168 @@
 #     # Verify that file.save was called once
 #     mock_save.assert_called_once()
 
+"""Test module for Machine learning client"""
 
-import unittest
-from unittest.mock import patch, MagicMock, mock_open
 import os
-import json
+from unittest.mock import patch, MagicMock
 from io import BytesIO
-from app import app  # Import the Flask app
+from requests.exceptions import RequestException
+from pymongo.errors import PyMongoError
+import pytest
+from client import app
 
-class TestRPSPredictionService(unittest.TestCase):
-    def setUp(self):
-        """Set up test client and other test fixtures"""
-        self.app = app
-        self.client = self.app.test_client()
-        
-        # Create a mock image file
-        self.mock_image = (BytesIO(b'mock image content'), 'test_image.jpg')
+@pytest.fixture(name="flask_client")
+def flask_client_fixture():
+    """
+    Provide a Flask test client for testing application routes.
+    Yields:
+        FlaskClient: A test client for the Flask application.
+    """
+    app.config["TESTING"] = True
+    with app.test_client() as temp_client:
+        yield temp_client
 
-    @patch('app.collection')  # Mock MongoDB collection
-    @patch('app.rf_client')   # Mock Roboflow client
-    def test_successful_prediction(self, mock_rf_client, mock_collection):
-        """Test successful prediction path"""
-        # Mock Roboflow response
-        mock_prediction = {
-            "predictions": [{
-                "class": "rock",
-                "confidence": 0.95
-            }]
-        }
-        mock_rf_client.infer.return_value = mock_prediction
-        
-        # Mock MongoDB insert
-        mock_collection.insert_one.return_value = MagicMock()
-        
-        # Create test data
-        data = {'image': self.mock_image}
-        
-        # Test the endpoint
-        with patch('os.makedirs') as mock_makedirs:
-            with patch('builtins.open', mock_open()):
-                response = self.client.post('/predict', 
-                                         data=data,
-                                         content_type='multipart/form-data')
-        
-        # Assert response
-        self.assertEqual(response.status_code, 200)
-        response_data = json.loads(response.data)
-        self.assertEqual(response_data['gesture'], 'rock')
-        self.assertEqual(response_data['confidence'], 0.95)
-        
-        # Verify mocks were called
-        mock_rf_client.infer.assert_called_once()
-        mock_collection.insert_one.assert_called_once()
-        mock_makedirs.assert_called_once_with('./temp', exist_ok=True)
+@pytest.fixture(name="mock_env_variables")
+def mock_env_variables_fixture():
+    """
+    Mock environment variables for testing.
+    """
+    with patch.dict(os.environ, {
+        "MONGO_URI": "mongodb://test:27017",
+        "INFERENCE_SERVER_URL": "http://test:9001",
+        "ROBOFLOW_API_KEY": "test_key",
+        "ROBOFLOW_MODEL_ID": "test_model"
+    }):
+        yield
 
-    def test_missing_image(self):
-        """Test prediction without providing an image"""
-        response = self.client.post('/predict')
-        
-        self.assertEqual(response.status_code, 400)
-        response_data = json.loads(response.data)
-        self.assertIn('error', response_data)
-        self.assertEqual(response_data['error'], 'No image file provided')
+# Test successful prediction
+@patch("client.rf_client")
+@patch("client.collection")
+def test_predict_success(mock_collection, mock_rf_client, flask_client):
+    """
+    Test successful predictions.
+    """
+    # Mock the inference result
+    mock_rf_client.infer.return_value = {
+        "predictions": [{"class": "Rock", "confidence": 0.95}]
+    }
+    mock_collection.insert_one.return_value = MagicMock()
 
-    @patch('app.collection')
-    @patch('app.rf_client')
-    def test_unknown_gesture_prediction(self, mock_rf_client, mock_collection):
-        """Test handling of unknown gesture predictions"""
-        # Mock Roboflow response with unknown class
-        mock_prediction = {
-            "predictions": [{
-                "class": "Unknown",
-                "confidence": 0.3
-            }]
-        }
-        mock_rf_client.infer.return_value = mock_prediction
-        
-        # Mock MongoDB insert
-        mock_collection.insert_one.return_value = MagicMock()
-        
-        # Create test data
-        data = {'image': self.mock_image}
-        
-        # Test the endpoint
-        with patch('os.makedirs'):
-            with patch('builtins.open', mock_open()):
-                response = self.client.post('/predict', 
-                                         data=data,
-                                         content_type='multipart/form-data')
-        
-        # Assert response
-        self.assertEqual(response.status_code, 200)
-        response_data = json.loads(response.data)
-        self.assertEqual(response_data['gesture'], 'Unknown')
-        self.assertEqual(response_data['confidence'], 0)
+    data = {"image": (BytesIO(b"fake image data"), "test_image.jpg")}
+    response = flask_client.post("/predict", content_type="multipart/form-data", data=data)
 
-    @patch('app.collection')
-    @patch('app.rf_client')
-    def test_roboflow_api_error(self, mock_rf_client, mock_collection):
-        """Test handling of Roboflow API errors"""
-        # Mock Roboflow error
-        mock_rf_client.infer.side_effect = RequestException("API Error")
-        
-        # Create test data
-        data = {'image': self.mock_image}
-        
-        # Test the endpoint
-        with patch('os.makedirs'):
-            with patch('builtins.open', mock_open()):
-                response = self.client.post('/predict', 
-                                         data=data,
-                                         content_type='multipart/form-data')
-        
-        # Assert response
-        self.assertEqual(response.status_code, 500)
-        response_data = json.loads(response.data)
-        self.assertIn('error', response_data)
-        self.assertIn('API Error', response_data['error'])
+    assert response.status_code == 200
+    json_data = response.get_json()
+    assert json_data["gesture"] == "Rock"
+    assert json_data["confidence"] == 0.95
+    mock_rf_client.infer.assert_called_once()
+    mock_collection.insert_one.assert_called_once()
 
-    @patch('app.collection')
-    @patch('app.rf_client')
-    def test_mongodb_error(self, mock_rf_client, mock_collection):
-        """Test handling of MongoDB errors"""
-        # Mock successful Roboflow prediction
-        mock_prediction = {
-            "predictions": [{
-                "class": "rock",
-                "confidence": 0.95
-            }]
-        }
-        mock_rf_client.infer.return_value = mock_prediction
-        
-        # Mock MongoDB error
-        mock_collection.insert_one.side_effect = PyMongoError("Database Error")
-        
-        # Create test data
-        data = {'image': self.mock_image}
-        
-        # Test the endpoint
-        with patch('os.makedirs'):
-            with patch('builtins.open', mock_open()):
-                response = self.client.post('/predict', 
-                                         data=data,
-                                         content_type='multipart/form-data')
-        
-        # Assert response
-        self.assertEqual(response.status_code, 500)
-        response_data = json.loads(response.data)
-        self.assertIn('error', response_data)
-        self.assertIn('Database Error', response_data['error'])
+# Test prediction with no image
+def test_predict_no_image(flask_client):
+    """Test predictions with no image provided"""
+    response = flask_client.post("/predict", content_type="multipart/form-data", data={})
+    assert response.status_code == 400
+    json_data = response.get_json()
+    assert json_data["error"] == "No image file provided"
 
-    @patch('app.collection')
-    @patch('app.rf_client')
-    def test_file_system_error(self, mock_rf_client, mock_collection):
-        """Test handling of file system errors"""
-        # Mock file system error
-        mock_open_impl = mock_open()
-        mock_open_impl.side_effect = FileNotFoundError("File system error")
-        
-        # Create test data
-        data = {'image': self.mock_image}
-        
-        # Test the endpoint
-        with patch('os.makedirs'):
-            with patch('builtins.open', mock_open_impl):
-                response = self.client.post('/predict', 
-                                         data=data,
-                                         content_type='multipart/form-data')
-        
-        # Assert response
-        self.assertEqual(response.status_code, 500)
-        response_data = json.loads(response.data)
-        self.assertIn('error', response_data)
-        self.assertIn('File system error', response_data['error'])
+# Test inference API failure
+@patch("client.rf_client")
+def test_predict_inference_failure(mock_rf_client, flask_client):
+    """Test prediction with an inference failure"""
+    mock_rf_client.infer.side_effect = RequestException("Inference API error")
+    data = {"image": (BytesIO(b"fake image data"), "test_image.jpg")}
+    
+    response = flask_client.post("/predict", content_type="multipart/form-data", data=data)
+    
+    assert response.status_code == 500
+    json_data = response.get_json()
+    assert "Prediction error" in json_data["error"]
 
-if __name__ == '__main__':
-    unittest.main()
+# Test MongoDB insertion failure
+@patch("client.rf_client")
+@patch("client.collection")
+def test_predict_mongodb_failure(mock_collection, mock_rf_client, flask_client):
+    """Test prediction with a database failure"""
+    mock_rf_client.infer.return_value = {
+        "predictions": [{"class": "Paper", "confidence": 0.85}]
+    }
+    mock_collection.insert_one.side_effect = PyMongoError("MongoDB insertion error")
+
+    data = {"image": (BytesIO(b"fake image data"), "test_image.jpg")}
+    response = flask_client.post("/predict", content_type="multipart/form-data", data=data)
+
+    assert response.status_code == 500
+    json_data = response.get_json()
+    assert "Prediction error" in json_data["error"]
+
+# Test FileNotFoundError during file saving
+@patch("client.rf_client")
+def test_predict_file_not_found(mock_rf_client, flask_client):
+    """Test prediction with a file not found error"""
+    mock_rf_client.infer.return_value = {
+        "predictions": [{"class": "Scissors", "confidence": 0.90}]
+    }
+
+    with patch("werkzeug.datastructures.FileStorage.save", 
+              side_effect=FileNotFoundError("File not found")):
+        data = {"image": (BytesIO(b"fake image data"), "test_image.jpg")}
+        response = flask_client.post("/predict", content_type="multipart/form-data", data=data)
+
+        assert response.status_code == 500
+        json_data = response.get_json()
+        assert "Prediction error" in json_data["error"]
+
+# Test unknown gesture prediction
+@patch("client.rf_client")
+@patch("client.collection")
+def test_predict_unknown_gesture(mock_collection, mock_rf_client, flask_client):
+    """Test prediction with unknown gesture"""
+    mock_rf_client.infer.return_value = {
+        "predictions": [{"class": "Unknown", "confidence": 0.5}]
+    }
+    mock_collection.insert_one.return_value = MagicMock()
+
+    data = {"image": (BytesIO(b"fake image data"), "test_image.jpg")}
+    response = flask_client.post("/predict", content_type="multipart/form-data", data=data)
+
+    assert response.status_code == 200
+    json_data = response.get_json()
+    assert json_data["gesture"] == "Unknown"
+    assert json_data["confidence"] == 0
+
+# Test missing prediction in response
+@patch("client.rf_client")
+@patch("client.collection")
+def test_predict_missing_prediction(mock_collection, mock_rf_client, flask_client):
+    """Test prediction with missing prediction in response"""
+    mock_rf_client.infer.return_value = {"predictions": []}
+    mock_collection.insert_one.return_value = MagicMock()
+
+    data = {"image": (BytesIO(b"fake image data"), "test_image.jpg")}
+    response = flask_client.post("/predict", content_type="multipart/form-data", data=data)
+
+    assert response.status_code == 200
+    json_data = response.get_json()
+    assert json_data["gesture"] == "Unknown"
+    assert json_data["confidence"] == 0
+
+# Test missing confidence in prediction
+@patch("client.rf_client")
+@patch("client.collection")
+def test_predict_missing_confidence(mock_collection, mock_rf_client, flask_client):
+    """Test prediction with missing confidence in response"""
+    mock_rf_client.infer.return_value = {
+        "predictions": [{"class": "Rock"}]
+    }
+    mock_collection.insert_one.return_value = MagicMock()
+
+    data = {"image": (BytesIO(b"fake image data"), "test_image.jpg")}
+    response = flask_client.post("/predict", content_type="multipart/form-data", data=data)
+
+    assert response.status_code == 200
+    json_data = response.get_json()
+    assert json_data["gesture"] == "Rock"
+    assert json_data["confidence"] == 0
 
 
