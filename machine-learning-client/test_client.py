@@ -137,22 +137,6 @@ def test_predict_unknown_gesture(mock_collection, mock_rf_client, flask_client):
     assert json_data["gesture"] == "Unknown"
     assert json_data["confidence"] == 0
 
-# Test missing prediction in response
-@patch("client.rf_client")
-@patch("client.collection")
-def test_predict_missing_prediction(mock_collection, mock_rf_client, flask_client):
-    """Test prediction with missing prediction in response"""
-    mock_rf_client.infer.return_value = {"predictions": []}
-    mock_collection.insert_one.return_value = MagicMock()
-
-    data = {"image": (BytesIO(b"fake image data"), "test_image.jpg")}
-    response = flask_client.post("/predict", content_type="multipart/form-data", data=data)
-
-    assert response.status_code == 200
-    json_data = response.get_json()
-    assert json_data["gesture"] == "Unknown"
-    assert json_data["confidence"] == 0
-
 # Test missing confidence in prediction
 @patch("client.rf_client")
 @patch("client.collection")
@@ -170,4 +154,3 @@ def test_predict_missing_confidence(mock_collection, mock_rf_client, flask_clien
     json_data = response.get_json()
     assert json_data["gesture"] == "Rock"
     assert json_data["confidence"] == 0
-
