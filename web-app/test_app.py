@@ -15,15 +15,13 @@ Unit tests for the Flask application defined in `app.py`.
 # pylint web-app/
 # black .
 
-"""
-Unit tests for the Flask application defined in `app.py`.
-"""
-
 import os
 import json
 import pytest
 from unittest.mock import patch, MagicMock
 from io import BytesIO
+from flask_socketio import SocketIOTestClient
+from requests.exceptions import RequestException
 
 # Mock the eventlet module
 import sys
@@ -32,7 +30,7 @@ eventlet_mock.monkey_patch = MagicMock()
 sys.modules['eventlet'] = eventlet_mock
 
 # Now import the app
-from app import app, determine_winners, determine_ai_winner, retry_request
+from app import app, socketio, determine_winners, determine_ai_winner, retry_request, active_games, waiting_players, player_stats
 
 @pytest.fixture
 def client():
@@ -42,12 +40,25 @@ def client():
         yield test_client
 
 @pytest.fixture
+def socket_client():
+    """Socket.IO test client"""
+    return SocketIOTestClient(app, socketio)
+
+@pytest.fixture
 def mock_mongodb(monkeypatch):
     """Mock MongoDB client using mongomock"""
     import mongomock
     mock_client = mongomock.MongoClient()
     monkeypatch.setattr("app.MongoClient", lambda uri: mock_client)
     return mock_client
+
+@pytest.fixture(autouse=True)
+def setup_and_teardown():
+    """Reset game state before each test"""
+    active_games.clear()
+    waiting_players.clear()
+    player_stats.update({"wins": 0, "losses": 0, "ties": 0})
+    yield
 
 # Test HTTP Routes
 def test_home_page(client):
@@ -82,6 +93,20 @@ def test_determine_ai_winner():
     assert determine_ai_winner('rock', 'scissors') == 'win'
     assert determine_ai_winner('rock', 'paper') == 'lose'
     assert determine_ai_winner('rock', 'rock') == 'tie'
+
+def test_update_player_stats():
+    """Test the update_player_stats function"""
+    from app import update_player_stats
+    initial_stats = player_stats.copy()
+    
+    update_player_stats('win')
+    assert player_stats['wins'] == initial_stats['wins'] + 1
+    
+    update_player_stats('lose')
+    assert player_stats['losses'] == initial_stats['losses'] + 1
+    
+    update_player_stats('tie')
+    assert player_stats['ties'] == initial_stats['ties'] + 1
 
 # Test AI Play Route
 def test_play_against_ai_valid(client, mock_mongodb):
@@ -180,8 +205,123 @@ def test_retry_request_function(mock_post):
     mock_post.reset_mock()
     
     # Test failed request with retries
-    from requests.exceptions import RequestException
     mock_post.side_effect = [RequestException("Test error")] * 3
     result = retry_request('http://test.com/predict', mock_files, retries=3, delay=0)
     assert result is None
-    assert mock_post.call_count == 3  # there are 3 retries in total
+    assert mock_post.call_count == 3  # Initial try + 2 retries
+
+# Socket.IO Tests
+def test_random_match_first_player(socket_client):
+    """Test first player joining random match"""
+    socket_client.emit('random_match', {
+        'player_name': 'Player1',
+        'player_id': '123'
+    })
+    received = socket_client.get_received()
+    assert len(received) == 1
+    assert received[0]['name'] == 'waiting'
+    assert len(waiting_players) == 1
+    assert waiting_players[0]['player_name'] == 'Player1'
+
+def test_random_match_second_player(socket_client):
+    """Test second player joining and getting matched"""
+    # Add first player to waiting list
+    waiting_players.append({
+        'player_id': '123',
+        'player_name': 'Player1',
+        'sid': 'test_sid_1'
+    })
+    
+    # Connect second player
+    socket_client.emit('random_match', {
+        'player_name': 'Player2',
+        'player_id': '456'
+    })
+    
+    received = socket_client.get_received()
+    assert len(received) == 1
+    assert received[0]['name'] == 'match_found'
+    assert len(waiting_players) == 0
+    assert len(active_games) == 1
+
+def test_cancel_waiting(socket_client):
+    """Test canceling wait for match"""
+    # Add player to waiting list
+    player_id = '123'
+    socket_client.emit('random_match', {
+        'player_name': 'Player1',
+        'player_id': player_id
+    })
+    socket_client.get_received()  # Clear received messages
+    
+    # Cancel waiting
+    socket_client.emit('cancel_waiting', {'player_id': player_id})
+    received = socket_client.get_received()
+    
+    assert len(received) == 1
+    assert received[0]['name'] == 'waiting_cancelled'
+    assert len(waiting_players) == 0
+
+def test_start_game(socket_client):
+    """Test starting a game"""
+    game_id = 'test_game'
+    active_games[game_id] = {
+        'player1_id': '123',
+        'player2_id': '456',
+        'player1_name': 'Player1',
+        'player2_name': 'Player2',
+        'ready': {'player1': False, 'player2': False}
+    }
+    
+    socket_client.emit('start_game', {
+        'game_id': game_id,
+        'player_id': '123'
+    })
+    
+    assert active_games[game_id]['ready']['player1'] == True
+
+def test_submit_choice(socket_client):
+    """Test submitting a game choice"""
+    game_id = 'test_game'
+    active_games[game_id] = {
+        'player1_id': '123',
+        'player2_id': '456',
+        'player1_name': 'Player1',
+        'player2_name': 'Player2',
+        'player1_choice': None,
+        'player2_choice': None
+    }
+    
+    socket_client.emit('submit_choice', {
+        'game_id': game_id,
+        'player_id': '123',
+        'choice': 'rock'
+    })
+    
+    assert active_games[game_id]['player1_choice'] == 'rock'
+
+def test_handle_disconnect(socket_client):
+    """Test handling disconnection"""
+    game_id = 'test_game'
+    active_games[game_id] = {
+        'player1_sid': socket_client.sid,
+        'player2_sid': 'other_sid'
+    }
+    
+    socket_client.disconnect()
+    assert game_id not in active_games
+
+def test_countdown_timer():
+    """Test countdown timer function"""
+    from app import countdown_timer
+    game_id = 'test_game'
+    active_games[game_id] = {
+        'player1_id': '123',
+        'player2_id': '456',
+        'ready': {'player1': False, 'player2': False}
+    }
+    
+    with patch('app.socketio.emit') as mock_emit:
+        countdown_timer(game_id)
+        assert game_id not in active_games
+        assert mock_emit.called
