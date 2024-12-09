@@ -126,16 +126,18 @@ li:hover {
     background: #555;
     color: white;
 }
-
-.active {
-    background: #4682B4;
-    color: white;
-}
     </style>
 </head>
 <body>
     <div class="content">
-        <h1 style="font-family: 'Satisfy', 'cursive'; color: #2C3E50;">Your Locations</h1>
+        <h1 style="
+        font-size: 35px;
+        margin-bottom: 15px;
+        font-family: 'Abel', sans-serif; /* Match the nav bar font */
+        color: #2C3E50; 
+        letter-spacing: 0.1px;">
+        Your Locations
+        </h1>
         
         <!-- Search form -->
         <form id="location-form">
@@ -246,7 +248,7 @@ function goToWeather() {
 }
     </script>
     <div class="bottom-nav">
-        <a href="/locations" class="active">Locations</a>
+        <a href="/locations">Locations</a>
         <a href="#" onclick="goToWeather()">Weather</a>
     </div>
 </body>
