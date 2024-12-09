@@ -31,6 +31,10 @@ jobs:
           venv/bin/pip install -r frontend/requirements.txt
           venv/bin/pip install pylint black pytest pytest-cov
 
+      - name: Run Black Formatter
+        run: |
+          venv/bin/black --check --diff backend
+
       - name: Run Pylint
         run: |
           venv/bin/python -m pylint --ignored-modules=pytest --disable=redefined-outer-name backend
