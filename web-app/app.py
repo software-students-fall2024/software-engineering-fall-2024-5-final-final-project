@@ -200,6 +200,7 @@ def logout():
 @app.route('/', methods=['GET'])
 @login_required
 def index():
+    session.pop("_flashes", None)
     seed_database()
     city = request.args.get("city")
 

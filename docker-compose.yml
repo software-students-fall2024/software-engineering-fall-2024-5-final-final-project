@@ -10,7 +10,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: secret
     volumes:
-      - mongodb_data:/data/db
+      - mongodb-data:/data/db
 
   web-app:
     build:
@@ -26,3 +26,6 @@ services:
       - mongodb
     volumes:
       - ./web-app/images:/app/images 
+
+volumes:
+  mongodb-data:
