@@ -40,6 +40,8 @@ jobs:
           venv/bin/python -m pylint --ignored-modules=pytest --disable=redefined-outer-name frontend
       - name: Add Hosts
         run: |
+            mkdir -p ~/.ssh
+            chmod 700 ~/.ssh
             ssh-keyscan -H 68.183.21.82 >> ~/.ssh/known_hosts
       - name: Deploy to DigitalOcean
         run: |
