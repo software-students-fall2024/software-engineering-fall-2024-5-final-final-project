@@ -75,56 +75,53 @@ post_bp = Blueprint("post", __name__)
 @post_bp.route("/posts", methods=["POST"])
 @jwt_required()
 def create_post():
-    data = request.get_json()
+    try:
+        data = request.get_json()
 
-    if not data or "title" not in data or "content" not in data:
-        return jsonify({"message": "Missing required fields"}), 400
+        if not data or "title" not in data or "content" not in data:
+            return jsonify({"message": "Missing required fields"}), 400
 
-    current_user_id = ObjectId(get_jwt_identity())
+        current_user_id = ObjectId(get_jwt_identity())
 
-    post = Post(
-        title=data["title"],
-        content=data["content"],
-        author_id=current_user_id,
-        tags=data.get("tags", []),
-    )
+        post = Post(
+            title=data["title"],
+            content=data["content"],
+            author_id=current_user_id,
+            tags=data.get("tags", []),
+        )
 
-    result = mongo.db.posts.insert_one(post.to_dict())
+        result = mongo.db.posts.insert_one(post.to_dict())
 
-    return (
-        jsonify(
-            {
-                "message": "Post created successfully",
-                "data": {"post_id": str(result.inserted_id)},
-            }
-        ),
-        201,
-    )
+        return jsonify({
+            "message": "Post created successfully",
+            "data": {"post_id": str(result.inserted_id)},
+        }), 201
+    except ValueError as e:
+        return jsonify({'message': str(e)}), 400
 
 
 @post_bp.route("/posts", methods=["GET"])
 def get_posts():
-    page = int(request.args.get("page", 1))
-    limit = int(request.args.get("limit", 10))
-    skip = (page - 1) * limit
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 10, type=int)
+    
+    if page < 1 or per_page < 1:
+        return jsonify({'message': 'Invalid pagination parameters'}), 400
 
-    posts = list(mongo.db.posts.find().skip(skip).limit(limit))
+    skip = (page - 1) * per_page
+
+    posts = list(mongo.db.posts.find().skip(skip).limit(per_page))
 
     for post in posts:
         post["_id"] = str(post["_id"])
         post["author_id"] = str(post["author_id"])
 
-    return (
-        jsonify(
-            {
-                "data": posts,
-                "page": page,
-                "limit": limit,
-                "total": mongo.db.posts.count_documents({}),
-            }
-        ),
-        200,
-    )
+    return jsonify({
+        "data": posts,
+        "page": page,
+        "per_page": per_page,
+        "total": mongo.db.posts.count_documents({}),
+    }), 200
 
 
 @post_bp.route("/posts/<post_id>", methods=["GET"])
@@ -162,6 +159,9 @@ def update_post(post_id):
             return jsonify({"message": "Unauthorized"}), 403
 
         data = request.get_json()
+        if not data.get("title") and not data.get("content"):
+            return jsonify({"message": "Title or content cannot be empty"}), 400
+
         update_data = {
             "title": data.get("title", post["title"]),
             "content": data.get("content", post["content"]),
@@ -196,30 +196,33 @@ def delete_post(post_id):
         return jsonify({"message": str(e)}), 400
 
 
-@post_bp.route("/posts/<post_id>", methods=["POST"])
+@post_bp.route("/posts/<post_id>/comments", methods=["POST"])
 @jwt_required()
 def create_comment(post_id):
     try:
         data = request.get_json()
 
-        if not data or "content" not in data:
-            return jsonify({"message": "Missing required fields"}), 400
+        if not data or not data.get("content"):
+            return jsonify({"message": "Comment content cannot be empty"}), 400
 
         current_user_id = ObjectId(get_jwt_identity())
         author = mongo.db.users.find_one({"_id": current_user_id})
-        if author:
-            username = author["username"]
-        else:
-            username = "Anonymous"
+        
+        if not author:
+            return jsonify({"message": "User not found"}), 404
 
         comment = Comment(
             content=data["content"],
-            author_username=username,
+            author_username=author["username"],
         )
 
-        mongo.db.posts.update_one(
-            {"_id": ObjectId(post_id)}, {"$push": {"comments": comment.to_dict()}}
+        result = mongo.db.posts.update_one(
+            {"_id": ObjectId(post_id)},
+            {"$push": {"comments": comment.to_dict()}}
         )
+
+        if result.modified_count == 0:
+            return jsonify({"message": "Post not found"}), 404
 
         return jsonify({"message": "Comment created successfully"}), 201
     except Exception as e:

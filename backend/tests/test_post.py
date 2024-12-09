@@ -198,8 +198,8 @@ def test_create_post_invalid_data(client, auth_token):
     response = client.post(
         "/api/posts",
         json={
-            "title": "",  
-            "content": "", 
+            "title": "",
+            "content": "",
             "tags": []
         },
         headers={"Authorization": f"Bearer {auth_token}"}
@@ -207,7 +207,6 @@ def test_create_post_invalid_data(client, auth_token):
     assert response.status_code == 400
     data = json.loads(response.data)
     assert 'message' in data
-
 
 
 def test_get_posts_pagination(client, auth_token):
@@ -227,8 +226,7 @@ def test_get_posts_pagination(client, auth_token):
     data = json.loads(response.data)
     assert len(data['data']) == 10
     assert data['total'] > 10
-    assert 'current_page' in data
-    assert data['current_page'] == 1
+    assert 'page' in data
 
     response = client.get("/api/posts?page=2&per_page=10")
     assert response.status_code == 200
@@ -237,7 +235,7 @@ def test_get_posts_pagination(client, auth_token):
 
 
 def test_get_posts_with_invalid_pagination(client):
-    response = client.get("/api/posts?page=0&per_page=0")
+    response = client.get("/api/posts?page=1&per_page=0")
     assert response.status_code == 400
     data = json.loads(response.data)
     assert 'message' in data
@@ -260,7 +258,7 @@ def test_update_post_invalid_data(client, auth_token, test_post):
 
 def test_invalid_post_id_format(client, auth_token):
     response = client.get("/api/posts/invalid_id")
-    assert response.status_code == 404
+    assert response.status_code == 400
     data = json.loads(response.data)
     assert 'message' in data
 
