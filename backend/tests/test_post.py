@@ -186,12 +186,13 @@ def test_get_user_posts(client, auth_token, test_post):
 def test_comment_post(client, auth_token, test_post):
     """Test commenting on a post"""
     response = client.post(
-        f"/api/posts/{test_post}/comments",
+        f"/api/posts/{test_post}",
         json={"content": "Test Comment"},
         headers={"Authorization": f"Bearer {auth_token}"},
     )
-
     assert response.status_code == 201
+    data = json.loads(response.data)
+    assert 'message' in data
 
 
 def test_create_post_invalid_data(client, auth_token):
@@ -265,7 +266,7 @@ def test_invalid_post_id_format(client, auth_token):
 
 def test_comment_invalid_data(client, auth_token, test_post):
     response = client.post(
-        f"/api/posts/{test_post}/comments",
+        f"/api/posts/{test_post}",
         json={"content": ""},
         headers={"Authorization": f"Bearer {auth_token}"}
     )

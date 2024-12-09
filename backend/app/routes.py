@@ -196,7 +196,7 @@ def delete_post(post_id):
         return jsonify({"message": str(e)}), 400
 
 
-@post_bp.route("/posts/<post_id>/comments", methods=["POST"])
+@post_bp.route("/posts/<post_id>", methods=["POST"])  
 @jwt_required()
 def create_comment(post_id):
     try:
