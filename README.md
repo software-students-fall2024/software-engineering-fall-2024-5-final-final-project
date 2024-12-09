@@ -61,6 +61,7 @@ Outside of MongoDB, this project consists of two main subsystems:
    ```
 
 3. Access the application:
+   You can access the application through Digital Ocean using the following link: [http://68.183.21.82:5000/](http://68.183.21.82:5000/).
 
 
 ## Starter Data (Optional)
@@ -88,7 +89,7 @@ To initialize the database with starter data:
 
 Make sure all steps in Running Project section is completed then the user can log in with the following steps.
 
-1. Go to: http://localhost:5000/ in browser
+1. Go to: http://localhost:5000/ (or http://68.183.21.82:5000/ for Digital Ocean version) in browser
 
 2. The default username and password is 'user' and 'pw' respectively or create an account with Create Account button.
 
