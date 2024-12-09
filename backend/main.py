@@ -66,7 +66,7 @@ def create_app():
             return (
                 jsonify(
                     {"success": False, "message": "Username and password required"}
-                ), 
+                ),
                 400,
             )
 

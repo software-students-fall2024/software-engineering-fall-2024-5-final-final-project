@@ -79,7 +79,7 @@ class Database:
                 "username": username,
                 "password": hashed_password,
                 "budget": 0.0,
-                "total_expenses": 0.0
+                "total_expenses": 0.0,
             }
         )
         return True
@@ -175,7 +175,7 @@ class User(UserMixin):
     def get_id(self):
         """Return the ID."""
         return self.id
-    
+
     @property
     def is_authenticated(self):
         return True
