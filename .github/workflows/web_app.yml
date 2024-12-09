@@ -3,10 +3,10 @@ name: CI/CD Pipeline for Web App
 on:
   push:
     branches:
-      - '**' 
+      - 'main' 
   pull_request:
     branches:
-      - '**'
+      - 'main'
 
 jobs:
   build_and_deploy:

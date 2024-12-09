@@ -3,10 +3,10 @@ name: CI/CD Pipeline for BarRecs
 on:
   push:
     branches:
-      - '**'
+      - 'main'
   pull_request:
     branches:
-      - '**'
+      - 'main'
 
 jobs:
   build_and_deploy:
