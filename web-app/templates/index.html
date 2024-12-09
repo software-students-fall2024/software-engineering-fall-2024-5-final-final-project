@@ -68,8 +68,9 @@
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        .bottom-nav a:hover, .bottom-nav a.active {
-            background-color: rgba(100, 149, 237, 0.7); /* Soothing hover effect */
+        /* Hover effect only */
+        .bottom-nav a:hover {
+            background-color: #555;
             border-radius: 5px;
             color: white;
         }
@@ -155,8 +156,8 @@
     </div>
 
     <div class="bottom-nav">
-        <a href="locations.html">Locations</a>
-        <a href="index.html" class="active">Weather</a>
+        <a href="/locations">Locations</a>
+        <a href="#" onclick="goToWeather()">Weather</a>
     </div>
 
     <script>
@@ -173,12 +174,12 @@
                 const temperatureF = (temperatureC * 9/5) + 32;
                 temperatureElement.textContent = temperatureF.toFixed(1);
                 unitElement.textContent = "F";
-                toggleButton.textContent = "Toggle to °C";
+                toggleButton.textContent = "Change to °C";
             } else {
                 // Convert to Celsius
                 temperatureElement.textContent = temperatureC.toFixed(1);
                 unitElement.textContent = "C";
-                toggleButton.textContent = "Toggle to °F";
+                toggleButton.textContent = "Change to °F";
             }
 
             isCelsius = !isCelsius;
