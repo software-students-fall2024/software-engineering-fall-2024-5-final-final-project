@@ -4,11 +4,10 @@ Unit tests for the Flask application defined in `app.py`.
 
 # test_app.py
 # cd web-app
-# pytest test_app.py -v
+# pytest test_app.py -v  
 # pytest -v
 
 # python -m pytest test_app.py -v
-
 # python -m pytest --cov=app test_app.py
 
 
@@ -211,6 +210,160 @@ def test_retry_request_function(mock_post):
     assert mock_post.call_count == 3  # Initial try + 2 retries
 
 # Socket.IO Tests
+def test_random_match_invalid_data(socket_client):
+    """Test random match with invalid data"""
+    socket_client.emit('random_match', {})
+    received = socket_client.get_received()
+    assert len(received) == 1
+    assert received[0]['name'] == 'error'
+    assert 'required' in received[0]['args'][0]['message'].lower()
+
+def test_random_match_missing_name(socket_client):
+    """Test random match with missing name"""
+    socket_client.emit('random_match', {'player_id': '123'})
+    received = socket_client.get_received()
+    assert len(received) == 1
+    assert received[0]['name'] == 'error'
+
+def test_random_match_missing_id(socket_client):
+    """Test random match with missing ID"""
+    socket_client.emit('random_match', {'player_name': 'Player1'})
+    received = socket_client.get_received()
+    assert len(received) == 1
+    assert received[0]['name'] == 'error'
+
+def test_cancel_match(socket_client):
+    """Test canceling a match"""
+    game_id = 'test_game'
+    player_id = '123'
+    active_games[game_id] = {
+        'player1_id': player_id,
+        'player2_id': '456',
+        'player1_name': 'Player1',
+        'player2_name': 'Player2'
+    }
+
+    socket_client.emit('cancel_match', {
+        'game_id': game_id,
+        'player_id': player_id
+    })
+
+    assert game_id not in active_games
+
+def test_cancel_match_invalid_data(socket_client):
+    """Test canceling a match with invalid data"""
+    socket_client.emit('cancel_match', {})
+    received = socket_client.get_received()
+    assert len(received) == 1
+    assert received[0]['name'] == 'error'
+
+def test_join_game_success(socket_client):
+    """Test joining a game successfully"""
+    game_id = 'test_game'
+    player_id = '123'
+    active_games[game_id] = {
+        'player1_id': player_id,
+        'player2_id': '456',
+        'player1_name': 'Player1',
+        'player2_name': 'Player2'
+    }
+
+    socket_client.emit('join_game', {
+        'game_id': game_id,
+        'player_id': player_id
+    })
+
+    received = socket_client.get_received()
+    assert len(received) == 1
+    assert received[0]['name'] == 'start_game'
+
+def test_join_game_invalid_game(socket_client):
+    """Test joining an invalid game"""
+    socket_client.emit('join_game', {
+        'game_id': 'invalid_game',
+        'player_id': '123'
+    })
+
+    received = socket_client.get_received()
+    assert len(received) == 1
+    assert received[0]['name'] == 'error'
+    assert 'Invalid game ID' in received[0]['args'][0]['message']
+
+def test_join_game_invalid_player(socket_client):
+    """Test joining with invalid player"""
+    game_id = 'test_game'
+    active_games[game_id] = {
+        'player1_id': '123',
+        'player2_id': '456'
+    }
+
+    socket_client.emit('join_game', {
+        'game_id': game_id,
+        'player_id': 'invalid_player'
+    })
+
+    received = socket_client.get_received()
+    assert len(received) == 1
+    assert received[0]['name'] == 'error'
+    assert 'not part of this game' in received[0]['args'][0]['message']
+
+def test_submit_choice_both_players(socket_client):
+    """Test both players submitting choices"""
+    game_id = 'test_game'
+    active_games[game_id] = {
+        'player1_id': '123',
+        'player2_id': '456',
+        'player1_name': 'Player1',
+        'player2_name': 'Player2',
+        'player1_choice': None,
+        'player2_choice': None
+    }
+    
+    # First player submits choice
+    socket_client.emit('submit_choice', {
+        'game_id': game_id,
+        'player_id': '123',
+        'choice': 'rock'
+    })
+    
+    # Second player submits choice
+    socket_client.emit('submit_choice', {
+        'game_id': game_id,
+        'player_id': '456',
+        'choice': 'scissors'
+    })
+
+    received = socket_client.get_received()
+    assert len(received) >= 1
+    last_message = received[-1]
+    assert last_message['name'] == 'game_result'
+    assert 'Player1 wins!' in last_message['args'][0]['result']
+
+def test_submit_choice_invalid_game(socket_client):
+    """Test submitting choice for invalid game"""
+    socket_client.emit('submit_choice', {
+        'game_id': 'invalid_game',
+        'player_id': '123',
+        'choice': 'rock'
+    })
+    
+    received = socket_client.get_received()
+    assert len(received) == 1
+    assert received[0]['name'] == 'error'
+    assert 'Invalid game ID' in received[0]['args'][0]['message']
+
+def test_reset_game():
+    """Test game reset functionality"""
+    from app import reset_game
+    game_id = 'test_game'
+    active_games[game_id] = {
+        'player1_choice': 'rock',
+        'player2_choice': 'paper'
+    }
+    
+    reset_game(game_id)
+    assert active_games[game_id]['player1_choice'] is None
+    assert active_games[game_id]['player2_choice'] is None
 def test_random_match_first_player(socket_client):
     """Test first player joining random match"""
     socket_client.emit('random_match', {
@@ -303,8 +456,12 @@ def test_submit_choice(socket_client):
 def test_handle_disconnect(socket_client):
     """Test handling disconnection"""
     game_id = 'test_game'
+    # First connect the client to get a session ID
+    socket_client.connect()
+    test_sid = socket_client.eio_sid  # Use eio_sid instead of sid
+    
     active_games[game_id] = {
-        'player1_sid': socket_client.sid,
+        'player1_sid': test_sid,
         'player2_sid': 'other_sid'
     }
     
