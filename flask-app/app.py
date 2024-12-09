@@ -123,9 +123,9 @@ def playbuy(username):
     place = int(request.form["buynum"])
     balance = float(request.form["balance"])
     rolls, result, odds = buybet(win, place)
-    return_text= "Here are the rolls:\n"
+    return_text= ""
     for r in rolls:
-        return_text+=r + "\n"
+        return_text+=r + "@"
     if result == 'w':
         return_text += "You win!"
         balance += bet * odds
