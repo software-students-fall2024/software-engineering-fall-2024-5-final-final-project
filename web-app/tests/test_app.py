@@ -195,8 +195,6 @@ def test_get_weather_failure(mock_get):
 #         "gender": "male"
 #     }, follow_redirects=True)
 
-    # # Validate that the error message is displayed
-    # assert response.status_code == 200  # Renders the registration page again
-    # assert b"Passwords do not match." in response.data
-
-#########
+# Validate that the error message is displayed
+# assert response.status_code == 200  # Renders the registration page again
+# assert b"Passwords do not match." in response.data
