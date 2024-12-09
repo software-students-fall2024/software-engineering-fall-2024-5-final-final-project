@@ -50,13 +50,10 @@ jobs:
 
     # Deploy to DigitalOcean
     - name: Deploy to DigitalOcean
-      uses: appleboy/ssh-action@v0.1.6
       with:
         host: ${{ secrets.DO_IP }}
-        username: root
-        key: ${{ secrets.DO_SSH_KEY }}
-        script: |
-          docker pull ${{ secrets.DOCKER_USERNAME }}/web_app:latest
-          docker stop web_app || true
-          docker rm web_app || true
-          docker run -d --name web_app -p 5001:5001 ${{ secrets.DOCKER_USERNAME }}/web_app:latest
+        user: root
+        docker pull ${{ secrets.DOCKER_USERNAME }}/bar_recs:latest
+        docker stop bar_recs || true 
+        docker rm bar_recs || true
+        docker run -d --name bar_recs -p 5001:5001 --env-file /root/project/bar_recs/.env ${{ secrets.DOCKER_USERNAME }}/bar_recs:latest
