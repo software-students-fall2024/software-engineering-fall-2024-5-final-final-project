@@ -8,7 +8,6 @@ import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_login import LoginManager
-from backend import create_app
 from backend.routes import routes  # pylint: disable=import-error
 from backend.database import Database, User
 
