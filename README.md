@@ -3,12 +3,10 @@
 An exercise to put to practice software development teamwork, subsystem communication, containers, deployment, and CI/CD pipelines. See [instructions](./instructions.md) for details.
 
 # Product Vision Statement
-For weather-conscious individuals seeking style and comfort, who want quick, personalized, and practical outfit suggestions based on real-time weather. 
-
-WEARther is a web-based application that combines weather data and curated outfit recommendations to provide a seamless user experience. Unlike generic weather apps or static fashion guides, our product delivers a dynamic, location-specific, and gender-tailored outfit suggestion system, integrated with an intuitive, user-friendly interface and robust backend powered by Dockerized services.
+WEARther is a web-based application that combines weather data and curated outfit recommendations to provide a seamless user experience. 
 
 ## **Description**
-**WEARther** is an intuitive weather and outfit recommendation system. It uses real-time weather data to suggest gender-specific clothing options suitable for the current temperature and conditions. The platform supports account creation, location management, and dynamic weather insights.
+**WEARther** uses real-time weather data to suggest gender-specific clothing options suitable for the current temperature and conditions. Unlike generic weather apps or static fashion guides, our product delivers a dynamic, location-specific, and gender-tailored outfit suggestion system, integrated with an intuitive, user-friendly interface and robust backend powered by Dockerized services.
 
 ---
 
