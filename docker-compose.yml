@@ -1,0 +1,27 @@
+services:
+  flask-app:
+    build: ./flask-app
+    ports:
+      - "5000:5000"
+    env_file:
+      - flask.env  #if we are using env file later
+    depends_on:
+      - mongo
+    networks:
+      - casino-network
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    networks:
+      - casino-network
+    volumes:
+      - mongo-data:/data/db
+
+networks:
+  casino-network:
+
+volumes:
+  mongo-data:
