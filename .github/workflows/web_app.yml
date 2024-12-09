@@ -55,8 +55,8 @@ jobs:
         host: ${{ secrets.DO_IP }}
         username: root
         password: ${{ secrets.DO_PASSWORD }}
-      script: |
-        docker pull ${{ secrets.DOCKER_USERNAME }}/web_app:latest
-        docker stop web_app || true 
-        docker rm web_app || true
-        docker run -d --name web_app -p 5001:5001 ${{ secrets.DOCKER_USERNAME }}/web_app:latest
+        run: |
+          docker pull ${{ secrets.DOCKER_USERNAME }}/web_app:latest
+          docker stop web_app || true 
+          docker rm web_app || true
+          docker run -d --name web_app -p 5001:5001 ${{ secrets.DOCKER_USERNAME }}/web_app:latest
