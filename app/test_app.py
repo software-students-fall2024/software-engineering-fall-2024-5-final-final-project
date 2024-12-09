@@ -192,6 +192,47 @@ def test_add_post_get(flask_client, mock_db):
     response = flask_client.get("/addpost")
     assert b"addpost" in response.data
 
+def test_add_post_post(flask_client, mock_db, mock_gridfs):
+    """
+    Test POST /addpost to create a new post.
+    """
+    # Register and log in the user
+    register_and_login(flask_client, username="testuser", password="password")
+
+    data = {
+        "title": "My Pet Post",
+        "content": "Cute pet content",
+        # Use BytesIO to simulate a file upload
+        "image": (BytesIO(b"dummy_image_data"), "pet.png")
+    }
+
+    response = flask_client.post(
+        "/addpost",
+        data=data,
+        content_type='multipart/form-data',
+        follow_redirects=True
+    )
+
+    # Assert that the response status code is 200 OK
+    assert response.status_code == 200, f"Expected 200 OK, got {response.status_code}"
+
+    # Optionally, check for a success message in the response data
+    assert b"Post created successfully!" in response.data or b"My Pet Post" in response.data, "Success message or post title not found in response."
+
+    # Retrieve the post from the mocked database
+    post = mock_db.posts.find_one({"title": "My Pet Post"})
+    assert post is not None, "Post was not created in the database."
+
+    # Assert that the post fields are correctly set
+    assert post["title"] == "My Pet Post", "Post title does not match."
+    assert post["content"] == "Cute pet content", "Post content does not match."
+    assert "image_id" in post and isinstance(post["image_id"], ObjectId), "Post does not have a valid 'image_id'."
+    assert post["likes"] == 0, "Initial likes should be 0."
+    assert "liked_by" in post and isinstance(post["liked_by"], list), "'liked_by' should be a list."
+
+    # Verify that 'fs.put' was called with the correct parameters
+    mock_gridfs.put.assert_called_once_with(b"dummy_image_data", filename="pet.png", content_type="image/png")
+
 
 
 def test_like_post(flask_client, mock_db, mock_gridfs):
@@ -252,6 +293,42 @@ def test_follow_user(flask_client, mock_db):
     assert "testuser" in target_user["followers"]
 
 
+def test_user_profile(flask_client, mock_db, mock_gridfs):
+    """
+    Test viewing a user's profile.
+    """
+    # Register and log in the user
+    register_and_login(flask_client, username="testuser", password="password")
+
+    # Insert profile user into the mocked database
+    mock_db.users.insert_one({
+        "username": "profileuser",
+        "followers": [],
+        "following": [],
+        "password": "hashed"
+    })
+
+    # Insert a post by the profile user with the required 'content' field
+    post_id = mock_db.posts.insert_one({
+        "user": "profileuser",
+        "title": "Profile Post",
+        "content": "This is the content of the profile post.",  # Added 'content' field
+        "image_id": ObjectId(),
+        "created_at": datetime.utcnow(),
+        "likes": 0,
+        "liked_by": []
+    }).inserted_id
+
+    # Send GET request to view the profile
+    response = flask_client.get("/profile/profileuser", follow_redirects=True)
+
+    # Assert that the response status code is 200 OK
+    assert response.status_code == 200, f"Expected 200 OK, got {response.status_code}"
+
+    # Assert that the profile post title is present in the response data
+    assert b"Profile Post" in response.data, "Profile Post title not found in the response."
+
+
 def test_add_comment(flask_client, mock_db, mock_gridfs):
     """
     Test adding a comment to a post.
@@ -283,3 +360,45 @@ def test_add_comment(flask_client, mock_db, mock_gridfs):
     assert updated_post is not None, "Post should exist in the database."
     assert len(updated_post["comments"]) == 1, "Expected one comment after adding."
     assert updated_post["comments"][0]["content"] == "Nice post!", "Comment content does not match."
+
+
+
+def test_edit_profile(flask_client, mock_db, mock_gridfs):
+    """
+    Test editing the username.
+    """
+    # Register and log in the user
+    register_and_login(flask_client, username="oldname", password="password")
+    
+    # Insert a post by oldname with the required 'content' field
+    post_id = mock_db.posts.insert_one({
+        "user": "oldname",
+        "title": "Old Name Post",
+        "content": "This is a post by oldname.",  # Added 'content' field
+        "image_id": ObjectId(),
+        "created_at": datetime.utcnow(),
+        "likes": 0,
+        "liked_by": []
+    }).inserted_id
+
+    # Send POST request to edit the username
+    response = flask_client.post(
+        "/edit-username",
+        data={"new_username": "newname"},
+        follow_redirects=True
+    )
+
+    # Retrieve the updated user from the mocked database
+    updated_user = mock_db.users.find_one({"_id": post_id})  # Correction needed here
+    # Correction: Use user_id to find the user, not post_id
+    updated_user = mock_db.users.find_one({"username": "newname"})
+    assert updated_user is not None, "Updated user not found in the database."
+    assert updated_user["username"] == "newname", "Username was not updated correctly."
+
+    # Check that the post was updated
+    updated_post = mock_db.posts.find_one({"_id": post_id})
+    assert updated_post is not None, "Post not found in the database."
+    assert updated_post["user"] == "newname", "Post's 'user' field was not updated to the new username."
+
+    # Optionally, verify that GridFS was accessed if images are involved in posts
+    # mock_gridfs.get.assert_called_with(updated_post["image_id"])
