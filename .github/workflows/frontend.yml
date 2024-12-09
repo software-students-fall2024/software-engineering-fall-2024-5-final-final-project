@@ -43,7 +43,7 @@ jobs:
         run: |
               mkdir -p ~/.ssh
               echo "-----BEGIN OPENSSH PRIVATE KEY-----
-              [ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMu5uDr8e2rY0jV06uJyZ8dToG4gtNFn3OqqwyMWFRRc josephchege@10-17-42-116.dynapool.wireless.nyu.edu]
+              ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMu5uDr8e2rY0jV06uJyZ8dToG4gtNFn3OqqwyMWFRRc josephchege@10-17-42-116.dynapool.wireless.nyu.edu
               -----END OPENSSH PRIVATE KEY-----" > ~/.ssh/id_rsa
               chmod 600 ~/.ssh/id_rsa
           
