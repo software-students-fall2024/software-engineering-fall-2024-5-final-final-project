@@ -1,5 +1,4 @@
 flask-socketio
-eventlet
 inference_sdk
 pymongo
 flask

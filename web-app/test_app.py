@@ -14,7 +14,11 @@ Unit tests for the Flask application defined in `app.py`.
 
 import pytest
 from unittest.mock import patch, MagicMock
-from app import app, socketio, active_games, waiting_players, player_stats
+
+# Mock eventlet before importing app
+with patch('eventlet.monkey_patch'):
+    from app import app, active_games, waiting_players, player_stats
+
 from io import BytesIO
 import json
 import os
@@ -31,6 +35,14 @@ def mock_mongodb():
     """Mock MongoDB client"""
     with patch('app.client') as mock_client:
         yield mock_client
+
+@pytest.fixture(autouse=True)
+def setup_and_teardown():
+    """Reset game state before each test"""
+    active_games.clear()
+    waiting_players.clear()
+    player_stats.update({"wins": 0, "losses": 0, "ties": 0})
+    yield
 
 # Test HTTP Routes
 def test_home_page(client):
@@ -162,11 +174,21 @@ def test_retry_request():
         assert result is None
         assert mock_post.call_count == 3  # Initial try + 2 retries
 
-def test_determine_multiplayer_winner():
+def test_determine_winner():
     """Test the multiplayer winner determination"""
     from app import determine_winner
     assert determine_winner('rock', 'scissors', 'Player1', 'Player2') == 'Player1 wins!'
     assert determine_winner('rock', 'paper', 'Player1', 'Player2') == 'Player2 wins!'
     assert determine_winner('rock', 'rock', 'Player1', 'Player2') == 'tie'
 
-    
+def test_reset_game():
+    """Test game reset functionality"""
+    from app import reset_game
+    game_id = 'test_game'
+    active_games[game_id] = {
+        'player1_choice': 'rock',
+        'player2_choice': 'paper'
+    }
+    reset_game(game_id)
+    assert active_games[game_id]['player1_choice'] is None
+    assert active_games[game_id]['player2_choice'] is None
