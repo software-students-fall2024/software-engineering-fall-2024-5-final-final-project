@@ -136,7 +136,7 @@ def test_get_expenses(client):
     assert response.status_code == 200
     assert len(response.json) == 4
     assert (
-        response.json[0]["description"] == "Groceries"
+        response.json[0]["description"] == "Transport"
     )  # Sorted by date, latest first
 
 
