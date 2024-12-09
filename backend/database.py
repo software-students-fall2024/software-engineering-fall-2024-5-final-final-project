@@ -146,15 +146,22 @@ class User(UserMixin):
     """
     Represents a user for Flask-Login
     """
-
     def __init__(self, user_data):
         self.id = str(user_data["_id"])
         self.username = user_data["username"]
         self.password = user_data["password"]
 
     def get_id(self):
-        """Return the ID."""
+        """Return the user id as a string."""
         return self.id
+
+    @property
+    def is_authenticated(self):
+        return True
+
+    @property
+    def is_active(self):
+        return True
 
 
 class MLModel:
