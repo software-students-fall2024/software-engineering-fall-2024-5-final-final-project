@@ -67,3 +67,12 @@ WEARther is a web-based application that combines weather data and curated outfi
   - `register.html`: User registration page.
 - **`static/`**: Contains static assets like CSS, JavaScript, and images used in the application.
 - **`images/`**: A folder where categorized images for outfits should be stored for database population.
+
+### **Troubleshooting**
+- **Environment Variables Not Found**:
+  Ensure the `.env` file is present in the root directory and contains valid values.
+- **Database Connection Issues**:
+  Confirm that the MongoDB container is running:
+  ```bash
+      docker ps
+  ```
