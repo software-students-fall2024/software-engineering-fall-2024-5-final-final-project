@@ -193,7 +193,7 @@ class User(UserMixin):
 class MLModel:
     """
     Provides a simple machine learning model to analyze and predict spending habits.
-    Uses a linear regression model to find patterns in monthly spending data and make predictions for future months.
+    Uses a linear regression model to find patterns in monthly spending and make predictions for future.
     """
 
     def __init__(self):
