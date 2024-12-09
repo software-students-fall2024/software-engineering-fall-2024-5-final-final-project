@@ -5,6 +5,8 @@
 # pytest test_client.py -v
 # pytest -v
 
+# # python -m pytest --cov=client test_client.py
+
 # pylint web-app/ machine-learning-client/
 # black .
 
