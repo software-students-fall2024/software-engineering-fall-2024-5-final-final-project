@@ -29,6 +29,7 @@ def create_app():
     client = MongoClient(MONGO_URI, tlsCAFile=certifi.where(), server_api=server_api.ServerApi('1'))
     db = client["movie_db"]
     users_collection = db.users
+    ratings_collection = db.ratings
     login_manager = LoginManager()
     login_manager.init_app(app)
 
@@ -160,11 +161,9 @@ def create_app():
     def profile(user):
         return render_template("profile.html", user=user)
 
-    return app
-
     @app.route('/setwatched', methods=["POST"])
     def setWatched():
-        user = users_collection.find_one({"username":"WilliamTest2"})
+        user = users_collection.find_one({"_id":ObjectId(current_user.id)})
 
         # Check if the checkbox is checked (it will be 'true' if checked, and 'false' if unchecked)
         has_watched = request.form.get('hasWatched') == 'true'
@@ -201,7 +200,7 @@ def create_app():
 
     @app.route('/watchlist')
     def watchlist():
-        selected_user = users_collection.find_one({"username":"WilliamTest2"})
+        selected_user = users_collection.find_one({"_id":ObjectId(current_user.id)})
         watched_movies = []
 
         # Fetch watched movies based on the user's watched_movies list
@@ -215,3 +214,6 @@ def create_app():
         FLASK_PORT = os.getenv("FLASK_PORT", "3000")
         app = create_app()
         app.run(host="0.0.0.0", port=3000)
+
+    return app
+
