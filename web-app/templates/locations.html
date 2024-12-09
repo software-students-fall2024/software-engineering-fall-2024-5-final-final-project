@@ -55,17 +55,63 @@
 <body>
     <div class="content">
         <h1>Your Locations</h1>
+        
+        <!-- Search form -->
+        <form id="location-form">
+            <input type="text" id="location-input" placeholder="Enter a location" required>
+            <button type="submit">Add Location</button>
+        </form>
+    
+        <!-- Locations List -->
         <ul id="locations-list">
-            <!-- Example locations; replace with dynamic data -->
-            <li>New York</li>
-            <li>Los Angeles</li>
-            <li>London</li>
+            <!-- Will be populated dynamically -->
         </ul>
     </div>
+    
+    <script>
+        // Handle form submission
+        document.getElementById("location-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const location = document.getElementById("location-input").value.trim();
+    
+            // Save location in the database
+            const response = await fetch("/add_location", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ location }),
+            });
+    
+            const data = await response.json();
+            if (data.success) {
+                addLocationToList(location);
+                document.getElementById("location-input").value = "";
+            } else {
+                alert("Could not add location.");
+            }
+        });
+    
+        // Add location to the list
+        function addLocationToList(location) {
+        const list = document.getElementById("locations-list");
+        const li = document.createElement("li");
+
+        // Correct Flask route and query parameter format
+        li.innerHTML = `<a href="/index?city=${encodeURIComponent(location)}">${location}</a>`;
+        list.appendChild(li);
+    }
+    
+        // Fetch saved locations on page load
+        window.onload = async () => {
+            const response = await fetch("/get_locations");
+            const locations = await response.json();
+            locations.forEach((loc) => addLocationToList(loc));
+        };
+    </script>
+    
 
     <div class="bottom-nav">
-        <a href="locations.html" class="active">Locations</a>
-        <a href="index.html">Weather</a>
+        <a href="/locations" class="active">Locations</a>
+        <a href="/index">Weather</a>
     </div>
 </body>
 </html>

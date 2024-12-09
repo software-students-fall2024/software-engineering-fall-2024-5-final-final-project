@@ -189,11 +189,11 @@ def logout():
     flash("You have been logged out.")
     return redirect(url_for("login"))
 
-@app.route('/')
+@app.route('/index', methods=['GET'])
 @login_required
 def index():
     seed_database()
-    city = "New York"  
+    city = request.args.get("city", "New York")
     temperature, description = get_weather(city, API_KEY)
 
     if temperature is not None:
@@ -270,7 +270,7 @@ def seed_database():
     Populate the database with outfits based on temperature range, gender, and weather condition.
     """
     categories = {
-        "cold": {"min": -10, "max": 0},
+        "cold": {"min": -100, "max": 0},
         "cool": {"min": 1, "max": 15},
         "warm": {"min": 16, "max": 25},
         "hot": {"min": 26, "max": 40}
@@ -323,6 +323,40 @@ def get_outfit_from_db(temp, gender):
             "image": "/images/default.png",
             "description": "Default Outfit"
         }
+    
+# Add location to MongoDB
+@app.route('/add_location', methods=['POST'])
+@login_required
+def add_location():
+    data = request.json
+    location = data.get("location", "").strip()
+
+    if location:
+        db.locations.update_one(
+            {"username": current_user.username},
+            {"$addToSet": {"locations": location}},
+            upsert=True
+        )
+        return jsonify({"success": True})
+    return jsonify({"success": False}), 400
+
+
+# Fetch locations from MongoDB
+@app.route('/get_locations', methods=['GET'])
+@login_required
+def get_locations():
+    user_locations = db.locations.find_one({"username": current_user.username})
+    if user_locations:
+        return jsonify(user_locations.get("locations", []))
+    return jsonify([])
+
+@app.route('/locations')
+@login_required
+def locations():
+    return render_template("locations.html")
+
+
+
 # Run the app
 if __name__ == "__main__":
     seed_database()
