@@ -1,0 +1,128 @@
+<!-- ADD DATA PAGE -->
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Home-Brewed</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+        <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    </head>
+
+    <body>
+        <!-- BLUE HEADING SECTION -->
+        <header class="header">
+            <a href="#home" class="webName"><i class='bx bx-drink' id="logo"></i><i>Home-Brewed</i></a>
+            <i class="bx bx-menu" id="menu-icon"></i> <!-- Menu icon -->
+
+            <!-- Logout button -->
+            <div class="logout-button"><a href="{{ url_for('logout') }}">Logout</a></div>
+            
+            <!-- Navbar content -->
+            <nav class="navbar">
+                <a href="{{ url_for('index') }}">Home</a> 
+                <a href="{{ url_for('add') }}" class="active">Add</a> <!-- current page -->
+                <a href="{{ url_for('index') }}">Edit/Delete</a> <!-- link to Edit/Delete -->
+                <a href="{{ url_for('search') }}">Search</a>
+                <a href="{{ url_for('sort') }}">Sort</a>
+                <a href="{{ url_for('recommend') }}">Recs</a>
+            </nav>
+        </header>
+
+        <!-- CONTENT -->
+        <div class="add-container" id="add-container">
+            <h2 class="heading">Add a Bar!</h2>
+            <form action="{{ url_for('add') }}" method="POST">
+                <!-- Name -->
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" required><br><br>
+                </div>
+
+                <!-- Type -->
+                <div class="form-group">
+                    <label for="type">Type</label>
+                    <select id="type" name="type" required>
+                        <option value="">--Choose--</option>
+                        <option value="Cocktail">Cocktail</option>
+                        <option value="Wine">Wine</option>
+                        <option value="Speakeasy">Speakeasy</option>
+                        <option value="Live Music">Live Music</option>
+                        <option value="Sports">Sports</option>
+                        <option value="Dive">Dive</option>
+                        <option value="Pub">Pub</option>
+                        <option value="Other">Other</option>
+                    </select><br><br>
+                </div>
+
+                <!-- Occasion -->
+                <div class="form-group">
+                    <label for="occasion">Occasion</label>
+                    <select id="occasion" name="occasion" required>
+                        <option value="">--Choose--</option>
+                        <option value="Casual">Casual</option>
+                        <option value="Formal">Formal</option>
+                        <option value="Happy Hour">Happy Hour</option>
+                        <option value="Date">Date</option>
+                        <option value="Dancing">Dancing</option>
+                        <option value="Other">Other</option>
+                    </select><br><br>
+                </div>
+
+                <!-- Area -->
+                <div class="form-group">
+                    <label for="area">Area</label>
+                    <select id="area" name="area" required>
+                        <option value="">--Choose--</option>
+                        <option value="FiDi">FiDi</option>
+                        <option value="East Village">East Village</option>
+                        <option value="Greenwich Village">Greenwich Village</option>
+                        <option value="West Village">West Village</option>
+                        <option value="SoHo">SoHo</option>
+                        <option value="NoMad">NoMad</option>
+                        <option value="Chelsea">Chelsea</option>
+                        <option value="Midtown">Midtown</option>
+                        <option value="Upper East Side">Upper East Side</option>
+                        <option value="Upper West Side">Upper West Side</option>
+                        <option value="Other">Other</option>
+                    </select><br><br>
+                </div>
+
+                <!-- Need Reservation? -->
+                <div class="form-group">
+                    <label for="reservation">Reservation</label>
+                    <select id="reservation" name="reservation" required>
+                        <option value="">--Choose--</option>
+                        <option value="Yes">Yes</option>
+                        <option value="No">No</option>
+                    </select><br><br>
+                </div>
+
+                <!-- Cost -->
+                <div class="form-group">
+                    <label for="cost">Cost</label>
+                    <select id="cost" name="cost" required>
+                        <option value="">--Choose--</option>
+                        <option value="$">$</option>
+                        <option value="$$">$$</option>
+                        <option value="$$$">$$$</option>
+                        <option value="$$$$">$$$$</option>
+                    </select><br><br>
+                </div>
+
+                <!-- Status -->
+                <div class="form-group">
+                    <label for="status">Visited?</label>
+                    <select id="status" name="status" required>
+                        <option value="">--Choose--</option>
+                        <option value="Yes">Yes</option>
+                        <option value="No">No</option>
+                    </select><br><br>
+                </div>
+
+                <button type="submit">Add Bar</button> <!-- Add bar -->
+            </form>
+        </div>
+        <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+    </body>
+</html>

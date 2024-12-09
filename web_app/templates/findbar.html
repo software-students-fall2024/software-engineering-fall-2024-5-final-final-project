@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find a Bar</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script>
+        function updateSearchInput() {
+            const filterType = document.getElementById("filter_type").value;
+            const searchInputDiv = document.getElementById("search_input");
+
+            // Clear the current search input
+            searchInputDiv.innerHTML = "";
+
+            if (filterType === "name") {
+                searchInputDiv.innerHTML = `
+                    <label for="search_query">Enter Bar Name</label>
+                    <input type="text" id="search_query" name="search_query" placeholder="Enter bar name" required>
+                `;
+            } else if (filterType === "location") {
+                searchInputDiv.innerHTML = `
+                    <label for="location_query">Select Neighborhoods</label>
+                    <select id="location_query" name="location_query" multiple>
+                        <option value="Upper East Side">Upper East Side</option>
+                        <option value="Upper West Side">Upper West Side</option>
+                        <option value="Midtown">Midtown</option>
+                        <option value="Chelsea">Chelsea</option>
+                        <option value="SoHo">SoHo</option>
+                        <option value="East Village">East Village</option>
+                        <option value="Harlem">Harlem</option>
+                    </select>
+                    <p class="small-text">Hold Ctrl (Cmd on Mac) to select multiple neighborhoods.</p>
+                `;
+            } else if (filterType === "price") {
+                searchInputDiv.innerHTML = `
+                    <label for="price_query">Select Price Range</label>
+                    <select id="price_query" name="price_query" required>
+                        <option value="$">$</option>
+                        <option value="$$">$$</option>
+                        <option value="$$$">$$$</option>
+                        <option value="$$$$">$$$$</option>
+                    </select>
+                `;
+            }
+        }
+    </script>
+</head>
+
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar" id="navbar">
+        <ul class="nav-links" id="nav-links">
+            <!-- Home Link -->
+            <li>
+                <a href="{{ url_for('dashboard', username=session.get('username', '')) }}">Home</a>
+            </li>
+            <!-- Find a Bar Link -->
+            <li><a href="{{ url_for('findbar') }}" class="active">Find Bar</a></li>
+            <!-- Saved Bars Link -->
+            <li>
+                <a href="{{ url_for('savedbar', username=session.get('username', '')) }}">Saved Bars</a>
+            </li>
+            <li><a href="{{ url_for('search_saved', username=session['username']) }}">Search Saved</a></li>
+            <!-- Logout Link -->
+            <li>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            </li>
+        </ul>
+    </nav>
+</body>
+
+
+<body>
+    <div class="container">
+        <h2 class="text-center">Find a Bar</h2>
+
+        <!-- Search Form -->
+        <form action="{{ url_for('findbar') }}" method="POST" class="form">
+            <div class="form-group">
+                <label for="filter_type">Filter By</label>
+                <select id="filter_type" name="filter_type" onchange="updateSearchInput()" required>
+                    <option value="name">Name</option>
+                    <option value="location">Location</option>
+                    <option value="price">Price</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="search_input">
+                <!-- Default to Name Filter -->
+                <label for="search_query">Enter Bar Name</label>
+                <input type="text" id="search_query" name="search_query" placeholder="Enter bar name" required>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn">Search</button>
+            </div>
+        </form>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="alerts">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% endwith %}
+
+        <!-- Search Results -->
+        {% if search_results is not none %}
+            <div class="results">
+                <h3>Results for "{{ search_query }}":</h3>
+                {% if search_results %}
+                    <ul class="result-list">
+                        {% for bar in search_results %}
+                            <li class="result-item">
+                                <strong>{{ bar.name }}</strong> - {{ bar.location }}
+                                <p>Price: {{ bar.price }}</p>
+                                <p>Occasion: {{ bar.occasion }}</p>
+                                <p>{{ bar.description }}</p>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="no-results">No bars found matching your query.</p>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
