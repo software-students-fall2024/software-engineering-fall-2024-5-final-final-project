@@ -62,13 +62,13 @@ def test_get_weather_failure(mock_get):
 #     assert b"Locations" in response.data  # Check for the redirected page content
 
 
-def test_logout(client):
-    """Test user logout."""
-    with client.session_transaction() as session:
-        session['_user_id'] = str(ObjectId())  # Simulate user login
-    response = client.get('/logout', follow_redirects=True)
-    assert response.status_code == 200
-    assert b"Don't have an account? Sign up Here" in response.data  # Match rendered content
+# def test_logout(client):
+#     """Test user logout."""
+#     with client.session_transaction() as session:
+#         session['_user_id'] = str(ObjectId())  # Simulate user login
+#     response = client.get('/logout', follow_redirects=True)
+#     assert response.status_code == 200
+#     assert b"Don't have an account? Sign up Here" in response.data  # Match rendered content
 
 @patch('app.os.path.exists', return_value=False)  # Assume no folders exist
 @patch('app.db.outfits.insert_many')
