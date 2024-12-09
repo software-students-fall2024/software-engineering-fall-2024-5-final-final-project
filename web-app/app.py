@@ -69,8 +69,7 @@ class User(UserMixin):
         self.password = password
         self.gender  = gender
 
-##########################################
-# LOGIN MANAGER
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
@@ -125,7 +124,7 @@ def register():
             flash("Username already exists.")
             return redirect(url_for("register"))
 
-        # Insert new user into the database with gender
+       
         db.users.insert_one({
             "username": username,
             "password": hashed_password,
@@ -172,17 +171,17 @@ def login():
                 flash("Please add a location to continue.")
                 return redirect(url_for("locations"))
 
-            # If locations exist, load the first location
+            
             first_city = user_locations["locations"][0]
             return redirect(url_for("index", city=first_city))
         
         flash("Invalid username or password.")
         return redirect(url_for("login"))
-    # Explicitly return a rendered template for GET requests
+    
     return render_template("login.html")
 
 
-# LOGOUT
+
 @app.route("/logout")
 @login_required
 def logout():
@@ -222,7 +221,7 @@ def index():
         else:
             category = "hot"
 
-        # Pass the background image URL for the category
+        
         
         background_image = f"/static/background_images/{category}.jpg"
 
@@ -248,7 +247,7 @@ def index():
             username=current_user.username
         )
       
-# Function to get weather data
+
 def get_weather(city_name, api_key):
     url = f"http://api.openweathermap.org/data/2.5/weather?q={city_name}&appid={api_key}&units=metric"
     response = requests.get(url)
@@ -260,13 +259,13 @@ def get_weather(city_name, api_key):
     else:
         return None, None
 
-# API key for OpenWeatherMap
+
 API_KEY = os.getenv("OPENWEATHER_API_KEY")
 
-# Flask route to fetch weather data
+
 @app.route('/get_weather', methods=['GET'])
 def fetch_weather():
-    city = request.args.get('city', 'New York')  # Default city is New York
+    city = request.args.get('city', 'New York')  
     temperature, description = get_weather(city, API_KEY)
     if temperature is not None:
         return jsonify({
@@ -291,7 +290,7 @@ def seed_database():
 
     genders = ["male", "female"]
     images_folder = "./static/images"
-    genders = ["female", "male"]  # Include genders here
+    genders = ["female", "male"]  
     outfit_data = []
 
     for category, temp_range in categories.items():
@@ -307,8 +306,8 @@ def seed_database():
                         "temperature_range_min": temp_range["min"],
                         "temperature_range_max": temp_range["max"],
                         "weather_condition": category,
-                        "gender": gender,  # Store gender information
-                        "image_url": f"/static/images/{category}/{gender}/{image}"  # Construct gender-specific URL
+                        "gender": gender,  
+                        "image_url": f"/static/images/{category}/{gender}/{image}"  
                     })
             else:
                 print(f"Folder for category '{category}' and gender '{gender}' does not exist. Skipping...")
@@ -320,7 +319,7 @@ def seed_database():
         print("No outfit data was inserted. Check your folder structure.")
 
 def get_outfit_from_db(temp, gender):
-    # Query for matching temperature range and gender
+    
     outfits = list(db.outfits.find({
         "temperature_range_min": {"$lte": int(temp)},
         "temperature_range_max": {"$gte": int(temp)},
@@ -328,7 +327,7 @@ def get_outfit_from_db(temp, gender):
     }))
     
     if outfits:
-        # Randomly select one outfit from the list
+        
         outfit = random.choice(outfits)
         return {
             "image": outfit["image_url"],
@@ -340,7 +339,7 @@ def get_outfit_from_db(temp, gender):
             "description": "Default Outfit"
         }
     
-# Add location to MongoDB
+
 @app.route('/add_location', methods=['POST'])
 @login_required
 def add_location():
@@ -357,7 +356,7 @@ def add_location():
     return jsonify({"success": False}), 400
 
 
-# Fetch locations from MongoDB
+
 @app.route('/get_locations', methods=['GET'])
 @login_required
 def get_locations():
@@ -419,7 +418,6 @@ def get_weather_data():
     return jsonify({"error": "Could not fetch weather data"}), 400
 
 
-# Run the app
 if __name__ == "__main__":
     seed_database()
     FLASK_PORT = os.getenv("FLASK_PORT", "5000")
