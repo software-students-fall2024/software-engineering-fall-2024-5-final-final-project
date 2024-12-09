@@ -5,6 +5,9 @@ Unit tests for the Flask application defined in `app.py`.
 # test_app.py
 # cd web-app
 # pytest test_app.py -v  # DONT USE THIS/ USE BELOW WITH VENV
+# python -m venv venv
+# source venv/bin/activate
+# pip install -r requirements.txt
 
 # python -m pytest test_app.py -v
 # python -m pytest --cov=app test_app.py
