@@ -1,8 +1,7 @@
 """
 backend.main
 
-This module initializes and runs the Flask application, providing a central point to configure
-and launch the backend services for the project.
+This module initializes and runs the Flask application, providing a central point to configure and launch the backend services for the project.
 """
 
 import os
