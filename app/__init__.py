@@ -10,4 +10,5 @@ mongo_uri = os.getenv("MONGO_URI", "mongodb://localhost:27017")
 db_name = os.getenv("DB_NAME")
 client = pymongo.MongoClient(mongo_uri)
 db = client[db_name]
+users= db["users"]
 fs = gridfs.GridFS(db)
