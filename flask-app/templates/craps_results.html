@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+
+
+<body>
+    <h1 style="text-align: center;align-content: center;">
+        Results!
+    </h1>
+
+    <h3 style="text-align: center;align-content: center;">
+        Here are the results:
+    </h3>
+
+    <div style="text-align: center;align-content: center;">
+        <textarea id="resultstext" style="text-align: center;align-content: center;resize: none;columns: 10;width: 500px;" rows="20"></textarea>
+    </div>
+
+    <h3 style="align-content: center;text-align: center;">Your New Balance is: ${{balance}}</h3>
+
+    <form style="align-content: center;text-align: center;" method="POST" action="{{url_for('craps_home', username=username)}}">
+        <input type="hidden" value={{balance}} name="balance"/>
+        <input type="submit" value="Go Back"/>
+    </form>
+</body>
+
+
+<script>
+    const area = document.getElementById("resultstext");
+    const finaltext = "{{ textResult }}";
+    const texts = finaltext.split("@");
+    var texttext = "";
+    for(i = 0; i < texts.length;i++){
+       var a = texts[i];
+       texttext+= a + "\n";
+    }
+    area.textContent = texttext;
+</script>

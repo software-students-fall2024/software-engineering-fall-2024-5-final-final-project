@@ -13,7 +13,10 @@
 
     <div class="button-container">
         <button>Blackjack</button>
-        <button disabled>Craps</button>
+        <form method ="POST"  action = "{{url_for('craps_home', username=username)}}">
+            <input type="hidden" value={{balance}} name="balance"/>
+            <input type="submit" value="Craps"/>
+        </form>
         <button disabled>Add Balance</button>
         <button disabled>Help</button>
     </div>

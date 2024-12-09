@@ -22,8 +22,8 @@ login_manager.init_app(app)
 users = {'abc': {'password': 'xyz'},
          'zyx': {'password': 'cba'}}
 
-users_balance = {'abc': {'balance': 500},
-                 'zyx': {'balance': 900}}
+users_balance = {'abc': 500,
+                 'zyx': 900}
 
 # create User object
 class User(flask_login.UserMixin):
@@ -75,14 +75,17 @@ def show_login():
 @app.route('/<username>')
 @flask_login.login_required
 def user_home(username):
-    if username in users_balance:
-        user_balance = users_balance[username]['balance']
-        return render_template('user_home.html', username=username, user_balance = user_balance)
+    # if username in users_balance:
+    #     user_balance = users_balance[username]['balance']
+    #     return render_template('user_home.html', username=username, balance = user_balance)
+    user_balance = users_balance[str(username)]
+    return render_template('user_home.html', username=username, balance = user_balance)
     
 @app.route("/<username>/craps", methods = ["POST", "GET"])
 @flask_login.login_required
 def craps_home(username):
-    return render_template("craps_home.html", username=username, balance="10000")
+    balance = request.form['balance']
+    return render_template("craps_home.html", username=username, balance=balance)
 
 
 @app.route("/<username>/craps/playline", methods=["POST"])
@@ -95,7 +98,7 @@ def playline(username):
     #return_text= "Here are the rolls:\n"
     return_text = ""
     for r in rolls:
-        return_text+=r + "\n"
+        return_text+=r + "@"
     
     if result == 'w':
         return_text += "You win!"
@@ -132,10 +135,6 @@ def playbuy(username):
     return render_template("craps_results.html", username=username, balance=balance, textResult=return_text)
 
 
-if __name__ == "__main__":
-    app.run(debug=True)
-
-
 @app.route('/logout', methods = ["GET", "POST"])
 @flask_login.login_required
 def logout():
@@ -145,3 +144,7 @@ def logout():
 @login_manager.unauthorized_handler
 def unauthorized_handler():
     return 'Unauthorized', 401
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
