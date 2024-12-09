@@ -56,7 +56,33 @@ def real_person_page():
     return render_template('real_person.html')
 
 
+@app.route('/statistics')
+def statistics():
+    """Render the statistics page."""
+    _id = request.cookies.get("db_object_id", default=None)
+    if not _id:
+        _id = generate_stats_doc()
+    stats = collection.find_one({"_id": ObjectId(_id)}, {"_id": 0})
+    resp = make_response(render_template('statistics.html', stats_data=stats))
+    resp.set_cookie("db_object_id", _id)
+    return resp
 
+def generate_stats_doc():
+    """
+    Creates blank stats-tracking document.
+
+    Returns:
+        _id (str): ObjectId for newly created document
+    """
+
+    stats = {
+        "Rock": {"wins": 0, "losses": 0, "ties": 0, "total": 0},
+        "Paper": {"wins": 0, "losses": 0, "ties": 0, "total": 0},
+        "Scissors": {"wins": 0, "losses": 0, "ties": 0, "total": 0},
+        "Totals": {"wins": 0, "losses": 0, "ties": 0},
+    }
+    _id = str(collection.insert_one(stats).inserted_id)
+    return _id
 
 def retry_request(url, files, retries=5, delay=2, timeout=10):
     for attempt in range(retries):
