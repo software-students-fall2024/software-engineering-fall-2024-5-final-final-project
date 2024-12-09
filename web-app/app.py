@@ -365,6 +365,23 @@ def get_locations():
         return jsonify(user_locations.get("locations", []))
     return jsonify([])
 
+@app.route('/delete_location', methods=['POST'])
+@login_required
+def delete_location():
+    data = request.json
+    location = data.get("location", "").strip()
+
+    if location:
+        # Remove the location from the user's document in the database
+        result = db.locations.update_one(
+            {"username": current_user.username},
+            {"$pull": {"locations": location}}
+        )
+        if result.modified_count > 0:
+            return jsonify({"success": True})
+        return jsonify({"success": False, "error": "Location not found"}), 404
+    return jsonify({"success": False, "error": "Invalid request"}), 400
+
 @app.route('/locations')
 @login_required
 def locations():
