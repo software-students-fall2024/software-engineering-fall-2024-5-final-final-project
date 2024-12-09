@@ -62,13 +62,11 @@ def create_app():
     def signup():
         """
         Handle user signup requests.
-        
         Expects JSON payload:
         {
             "username": "<username>",
             "password": "<password>"
         }
-        
         Returns:
             JSON response indicating success or failure.
         """
