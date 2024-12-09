@@ -35,11 +35,13 @@ WEARther is a web-based application that combines weather data and curated outfi
     git clone https://github.com/software-students-fall2024/5-final-java_and_the_scripts_1.git
     cd 5-final-java_and_the_scripts_1
     ```
-2. Build and start the Docker containers:
+2.Configure .env file
+    Copy the provided contents of .env posted in the discord and create your own .env file located in the project folder.
+3. Build and start the Docker containers:
     ```bash
         docker-compose up --build --force-recreate
     ```
-3. Access the web app:
+4. Access the web app:
     - Open your browser and navigate to ` http://localhost:5002`.
 
 ---
