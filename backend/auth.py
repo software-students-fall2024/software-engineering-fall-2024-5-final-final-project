@@ -25,6 +25,4 @@ def load_user(user_id):
         logger.error("Invalid user ID format: %s", user_id)
     except PyMongoError as e:
         logger.error("Database error while loading user %s: %s", user_id, e)
-    except Exception as e:
-        logger.error("Unexpected error loading user %s: %s", user_id, e)
     return None
