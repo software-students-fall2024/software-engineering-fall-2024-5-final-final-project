@@ -96,5 +96,5 @@ jobs:
 
             docker stop web-app || true
             docker rm web-app || true
-            docker-compose -f project/docker-compose.yml down || true
-            docker-compose -f project//docker-compose.yml up --build -d
+            docker-compose -f docker-compose.yml down || true
+            docker-compose -f docker-compose.yml up --build -d
