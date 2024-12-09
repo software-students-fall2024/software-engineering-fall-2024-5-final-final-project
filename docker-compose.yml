@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  # MongoDB Service
+  mongodb:
+    build:
+      context: ./mongodb
+    container_name: mongodb-container
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      DB_NAME: ${DB_NAME}
+      MONGO_URI: ${MONGO_URI}
+  
+  # Web App Service
+  web-app:
+    build: ./app
+    container_name: web-app
+    restart: always
+    depends_on:
+      - mongodb
+    volumes:
+      - ./app:/app
+    ports:
+      - "3000:3000"  
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/${DB_NAME}
+      - FLASK_PORT=3000
+    command: ["python", "main.py", "login.py"]
+    env_file:
+      - .env
+
+volumes:
+  mongodb_data:
+  

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="../static/css/styles.css">
+    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}"> -->
+</head>
+<body>
+    <!-- header -->
+    <div class="header-container">
+        <header class="header">
+            <a href="/" class="header-title-link">
+                <h1 class="header-title">BookSwap</h1>
+            </a>
+            <div class="header-buttons">
+                <a href="/matches" class="button-primary">find new books!</a>
+                <!-- make it so that if user not logged in, this says 'log in' -->
+                <a href="/user" class="button-secondary">user</a>
+            </div>
+        </header>
+    </div>
+     <!-- add  generic user info / logout functionality -->
+    <!-- my collection -->
+    <div class="content-container">
+        <section class="book-list-container">
+            <!-- logged in user name -->
+            <div class="user-greeting">
+                <h1>Hi {{ name }}!</h1>
+            </div>
+            <h2>your inventory</h2>
+            <div class="book-list">
+                {% for book in inventory %}
+                <div class="book">
+                    <div class="book-details">
+                        <h3 class="book-title">{{ book.title }}</h3>
+                        <p class="book-author">by {{ book.author }}</p>
+                        <p class="book-description">{{ book.description }}</p>
+                    </div>
+                    <button class="delete-button">Delete</button>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- wishlist -->
+        <section class="book-list-container">
+            <h2>your wishlist</h2>
+            <div class="book-list">
+                {% for book in wishlist %}
+                <div class="book">
+                    <div class="book-details">
+                        <h3 class="book-title">{{ book.title }}</h3>
+                        <p class="book-author">by {{ book.author }}</p>
+                        <p class="book-description">{{ book.description }}</p>
+                    </div>
+                    <button class="delete-button">Delete</button>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </div> 
+</body>
+</html>

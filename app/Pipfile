@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+python-dotenv = "*"
+pymongo = "*"
+Flask = "*"
+flask_login = "*"
+jinja2 = "<3.1.0"
+itsdangerous = "==2.0.1"
+
+[dev-packages]
+
+[requires]
+python_version = "3.13"

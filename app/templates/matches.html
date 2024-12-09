@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="../static/css/styles.css">
+    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}"> -->
+</head>
+<body>
+    <!-- header -->
+    <div class="header-container">
+        <header class="header">
+            <a href="/" class="header-title-link">
+                <h1 class="header-title">BookSwap</h1>
+            </a>
+            <div class="header-buttons">
+                <a href="/matches" class="button-primary">find new books!</a>
+                <!-- make it so that if user not logged in, this says 'log in' -->
+                <a href="/user" class="button-secondary">user</a>
+            </div>
+        </header>
+    </div>
+</body>
+</html>
