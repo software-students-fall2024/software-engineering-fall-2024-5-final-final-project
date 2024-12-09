@@ -69,15 +69,21 @@ jobs:
         run: |
           docker build -t nataliovcharov/web-app ./web-app
           docker push nataliovcharov/web-app
+	
+	# Deploy to Digital Ocean
+	- name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DO_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan 159.203.137.174 >> ~/.ssh/known_hosts
 
-      # Deploy to Digital Ocean
-      - name: Deploy to Digital Ocean
+      - name: Deploy using SSH
         uses: appleboy/ssh-action@v0.1.10
         with:
-          host: ${{ secrets.DO_HOST }}
-          username: ${{ secrets.DO_USERNAME }}
+          host: 159.203.137.174
+          username: root
           key: ${{ secrets.DO_SSH_KEY }}
           script: |
             docker pull nataliovcharov/web-app:latest
             docker-compose -f /root/docker-compose.yml up -d
-
