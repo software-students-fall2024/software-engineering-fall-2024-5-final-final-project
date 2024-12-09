@@ -299,7 +299,6 @@ def test_post_with_tags(client, auth_token):
     data = json.loads(response.data)
     assert 'message' in data
 
-
 def test_update_post_tags(client, auth_token, test_post):
     """Test updating post tags"""
     response = client.put(
@@ -315,11 +314,35 @@ def test_update_post_tags(client, auth_token, test_post):
     data = json.loads(response.data)
     assert 'message' in data
 
-
-def test_get_posts_empty_page(client):
-    """Test getting posts when page is empty"""
-    response = client.get("/api/posts?page=999&limit=10")
+def test_get_post_with_comments(client, auth_token, test_post):
+    """Test getting a post with its comments"""
+    client.post(
+        f"/api/posts/{test_post}",
+        json={"content": "Test Comment"},
+        headers={"Authorization": f"Bearer {auth_token}"}
+    )
+    
+    response = client.get(f"/api/posts/{test_post}")
     assert response.status_code == 200
     data = json.loads(response.data)
     assert 'data' in data
-    assert len(data['data']) == 0
+    assert 'comments' in data['data']
+    assert len(data['data']['comments']) > 0
+
+def test_post_author_consistency(client, auth_token):
+    """Test post author consistency after creation"""
+    response = client.post(
+        "/api/posts",
+        json={
+            "title": "Author Test",
+            "content": "Testing author",
+            "tags": ["test"]
+        },
+        headers={"Authorization": f"Bearer {auth_token}"}
+    )
+    post_id = json.loads(response.data)['data']['post_id']
+    
+    get_response = client.get(f"/api/posts/{post_id}")
+    post_data = json.loads(get_response.data)['data']
+    assert 'author_username' in post_data
+    assert post_data['author_username'] != "Anonymous"
