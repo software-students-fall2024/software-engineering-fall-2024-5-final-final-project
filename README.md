@@ -37,11 +37,7 @@ WEARther is a web-based application that combines weather data and curated outfi
     ```
 2. Build and start the Docker containers:
     ```bash
-    docker compose build
-    ```
-
-    ```bash
-    docker compose up --build
+        docker-compose up --build --force-recreate
     ```
 3. Access the web app:
     - Open your browser and navigate to ` http://localhost:5002/login`.
