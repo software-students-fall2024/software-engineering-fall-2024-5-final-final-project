@@ -42,7 +42,11 @@ app = Flask(__name__)
 cxn = MongoClient(os.getenv("MONGO_URI"))
 db = cxn[os.getenv("MONGO_DBNAME")]
 app.secret_key = os.getenv("SECRET_KEY", "supersecretkey123")
-
+try:
+        cxn.admin.command("ping")
+        print(" *", "Connected to MongoDB!")
+    except Exception as e:
+        print(" * MongoDB connection error:", e) 
 class User(UserMixin):
     """
     User class that extends UserMixin for Flask-Login.
