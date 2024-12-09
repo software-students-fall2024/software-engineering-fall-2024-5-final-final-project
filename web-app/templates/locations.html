@@ -131,6 +131,57 @@ li:hover {
     background: #4682B4;
     color: white;
 }
+li.location-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 15px;
+    color: #003366;
+    font-size: 1.2em;
+    transition: background 0.3s ease;
+    text-align: center;
+}
+li.location-item:hover {
+    background: rgba(135, 206, 235, 0.8);
+    border-radius:10px;
+}
+
+/* Styling for the location text and delete button container */
+div.location-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+/* Location text styling */
+span.location-text {
+    flex-grow: 1;
+    text-align: center;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+/* Delete button styling */
+button.delete-btn {
+    background-color: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 5px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    width: auto;
+    flex-shrink: 0;
+    transition: background 0.3s ease;
+}
+
+button.delete-btn:hover {
+    background-color: #e63939;
+}
     </style>
 </head>
 <body>
@@ -150,22 +201,50 @@ li:hover {
     </div>
     
     <script>
- // Add location to the list
+
 function addLocationToList(location) {
     const list = document.getElementById("locations-list");
     const li = document.createElement("li");
-
-    li.textContent = location;
     li.className = "location-item";
     li.setAttribute("data-location", location);
 
-    
-    // Save the selected location and navigate to the weather page
-    li.onclick = () => {
+    // Container for location text and delete button
+    const locationContainer = document.createElement("div");
+    locationContainer.className = "location-container";
+
+    // Location text
+    const locationText = document.createElement("span");
+    locationText.textContent = location;
+    locationText.className = "location-text";
+    locationText.onclick = () => {
         localStorage.setItem("selectedLocation", location);
         window.location.href = `/?city=${encodeURIComponent(location)}`;
     };
 
+    // Delete button
+    const deleteButton = document.createElement("button");
+    deleteButton.textContent = "Delete";
+    deleteButton.className = "delete-btn";
+    deleteButton.onclick = async () => {
+        if (confirm(`Are you sure you want to delete "${location}"?`)) {
+            const response = await fetch("/delete_location", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ location }),
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                li.remove(); // Remove the location from the UI
+            } else {
+                alert(`Failed to delete location: ${data.error || "Unknown error"}`);
+            }
+        }
+    };
+
+    locationContainer.appendChild(locationText);
+    locationContainer.appendChild(deleteButton);
+    li.appendChild(locationContainer);
     list.appendChild(li);
 }
 
