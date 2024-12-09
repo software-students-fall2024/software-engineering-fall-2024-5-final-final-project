@@ -5,8 +5,6 @@ services:
       - 5000:5000
     depends_on:
       - db
-    volumes:
-      - ./flask-app/img:/app/img
 
   db:
     image: mongo:4.0-xenial

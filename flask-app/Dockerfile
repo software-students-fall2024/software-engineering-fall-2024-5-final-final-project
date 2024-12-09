@@ -9,7 +9,6 @@ RUN pipenv install --system --deploy
 
 COPY . .
 
-COPY ./img /img
 
 
 EXPOSE 5000
