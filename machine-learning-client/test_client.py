@@ -11,12 +11,15 @@
 # black .
 
 import os
-from unittest.mock import patch, MagicMock
+import sys
 from io import BytesIO
-from requests.exceptions import RequestException
-from pymongo.errors import PyMongoError
+from unittest.mock import patch, MagicMock
 import pytest
-from client import app
+from pymongo.errors import PyMongoError
+from requests.exceptions import RequestException
+
+sys.modules["inference_sdk"] = MagicMock() # NEED!!! to mock the inference_sdk module before any local imports 
+from client import app  # pylint: disable=wrong-import-position
 
 
 @pytest.fixture(name="flask_client")
@@ -33,9 +36,7 @@ def flask_client_fixture():
 
 @pytest.fixture(name="mock_env_variables")
 def mock_env_variables_fixture():
-    """
-    Mock environment variables for testing.
-    """
+    """Mock environment variables for testing."""
     with patch.dict(
         os.environ,
         {
@@ -48,14 +49,17 @@ def mock_env_variables_fixture():
         yield
 
 
-# Test successful prediction
+@pytest.fixture(autouse=True)
+def setup_directories():
+    """Ensure temp directory exists"""
+    os.makedirs("./temp", exist_ok=True)
+    yield
+
+
 @patch("client.rf_client")
-@patch("client.collection")
+@patch("client.collection")  # successful prediction test
 def test_predict_success(mock_collection, mock_rf_client, flask_client):
-    """
-    Test successful predictions.
-    """
-    # Mock the inference result
+    """Test successful predictions."""
     mock_rf_client.infer.return_value = {
         "predictions": [{"class": "Rock", "confidence": 0.95}]
     }
@@ -65,7 +69,6 @@ def test_predict_success(mock_collection, mock_rf_client, flask_client):
     response = flask_client.post(
         "/predict", content_type="multipart/form-data", data=data
     )
-
     assert response.status_code == 200
     json_data = response.get_json()
     assert json_data["gesture"] == "Rock"
@@ -74,7 +77,6 @@ def test_predict_success(mock_collection, mock_rf_client, flask_client):
     mock_collection.insert_one.assert_called_once()
 
 
-# Test prediction with no image
 def test_predict_no_image(flask_client):
     """Test predictions with no image provided"""
     response = flask_client.post(
@@ -85,7 +87,6 @@ def test_predict_no_image(flask_client):
     assert json_data["error"] == "No image file provided"
 
 
-# Test inference API failure
 @patch("client.rf_client")
 def test_predict_inference_failure(mock_rf_client, flask_client):
     """Test prediction with an inference failure"""
@@ -101,7 +102,6 @@ def test_predict_inference_failure(mock_rf_client, flask_client):
     assert "Prediction error" in json_data["error"]
 
 
-# Test MongoDB insertion failure
 @patch("client.rf_client")
 @patch("client.collection")
 def test_predict_mongodb_failure(mock_collection, mock_rf_client, flask_client):
@@ -121,7 +121,6 @@ def test_predict_mongodb_failure(mock_collection, mock_rf_client, flask_client):
     assert "Prediction error" in json_data["error"]
 
 
-# Test FileNotFoundError during file saving
 @patch("client.rf_client")
 def test_predict_file_not_found(mock_rf_client, flask_client):
     """Test prediction with a file not found error"""
@@ -143,7 +142,6 @@ def test_predict_file_not_found(mock_rf_client, flask_client):
         assert "Prediction error" in json_data["error"]
 
 
-# Test unknown gesture prediction
 @patch("client.rf_client")
 @patch("client.collection")
 def test_predict_unknown_gesture(mock_collection, mock_rf_client, flask_client):
@@ -164,7 +162,6 @@ def test_predict_unknown_gesture(mock_collection, mock_rf_client, flask_client):
     assert json_data["confidence"] == 0
 
 
-# Test missing confidence in prediction
 @patch("client.rf_client")
 @patch("client.collection")
 def test_predict_missing_confidence(mock_collection, mock_rf_client, flask_client):
@@ -180,4 +177,22 @@ def test_predict_missing_confidence(mock_collection, mock_rf_client, flask_clien
     assert response.status_code == 200
     json_data = response.get_json()
     assert json_data["gesture"] == "Rock"
+    assert json_data["confidence"] == 0
+
+
+@patch("client.rf_client")
+@patch("client.collection")
+def test_predict_empty_predictions(mock_collection, mock_rf_client, flask_client):
+    """Test prediction with empty predictions list"""
+    mock_rf_client.infer.return_value = {"predictions": [{}]}
+    mock_collection.insert_one.return_value = MagicMock()
+
+    data = {"image": (BytesIO(b"fake image data"), "test_image.jpg")}
+    response = flask_client.post(
+        "/predict", content_type="multipart/form-data", data=data
+    )
+
+    assert response.status_code == 200
+    json_data = response.get_json()
+    assert json_data["gesture"] == "Unknown"
     assert json_data["confidence"] == 0

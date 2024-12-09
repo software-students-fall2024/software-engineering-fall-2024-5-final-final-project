@@ -1,26 +1,23 @@
-"""
-Flask application for Rock-Paper-Scissors game with AI and multiplayer support.
-"""
-
-import logging
-import os
-import random
-import time
-from threading import Lock
-from uuid import uuid4
-
 import eventlet
-from bson.objectid import ObjectId
-from flask import Flask, render_template, request, jsonify, make_response
-from flask_socketio import SocketIO, emit, disconnect, join_room
-from pymongo import MongoClient
-import requests
-from requests.exceptions import RequestException
 
 eventlet.monkey_patch()
+import logging
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+from flask import Flask, render_template, request, jsonify
+from flask_socketio import SocketIO, emit, disconnect, join_room
+from uuid import uuid4
+import random
+from threading import Lock
+import os
+import time
+import random
+from flask import Flask, render_template, request, jsonify, make_response
+import requests
+from requests.exceptions import RequestException
+from pymongo import MongoClient
+from bson.objectid import ObjectId
 
 # Initialize Flask and Socket.IO
 app = Flask(__name__, template_folder="templates", static_folder="static")
