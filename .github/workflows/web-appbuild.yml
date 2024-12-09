@@ -65,7 +65,7 @@ jobs:
       # Build and push Docker image
       - name: Build and push Web App Docker image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/web-app:latest ./web-app
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/web-app:latest -f ./web-app/Dockerfile ./web-app
           docker push ${{ secrets.DOCKER_USERNAME }}/web-app:latest
 
       # Deploy to DigitalOcean Droplet
@@ -79,6 +79,6 @@ jobs:
             docker pull ${{ secrets.DOCKER_USERNAME }}/web-app:latest
             docker stop web-app || true
             docker rm web-app || true
-            docker-compose -f ~/first-project/web-app/docker-compose.yml down || true
-            docker-compose -f ~/first-project/web-app/docker-compose.yml up --build -d
+            docker-compose -f ~/web-app/docker-compose.yml down || true
+            docker-compose -f ~/web-app/docker-compose.yml up --build -d
 
