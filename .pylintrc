@@ -1,0 +1,2 @@
+[MASTER]
+init-hook='import sys; sys.path.append("/Users/zhuxuanzhou/.local/share/virtualenvs/5-final-yippee-IBdwTv7R/lib/python3.11/site-packages")'
