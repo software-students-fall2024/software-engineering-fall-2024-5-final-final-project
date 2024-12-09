@@ -33,7 +33,7 @@ jobs:
 
       - name: Run Black Formatter
         run: |
-          venv/bin/black --check frontend
+          venv/bin/black --check --diff frontend
 
       - name: Run Pylint
         run: |
