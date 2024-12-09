@@ -14,7 +14,7 @@ from unittest.mock import patch, MagicMock
 from io import BytesIO
 import mongomock
 
-# Fixture to mock MongoClient before importing client.py
+# Fixture to mock MongoClient using mongomock and patch it in the client module
 @pytest.fixture
 def mock_mongo(monkeypatch):
     """
@@ -35,20 +35,30 @@ def mock_rf_infer(monkeypatch):
     monkeypatch.setattr("client.rf_client.infer", mock_infer)
     return mock_infer
 
-# Fixture to import app and provide test client after mocks
+# Fixture to mock FileStorage.save
 @pytest.fixture
-def app_client(mock_mongo, mock_rf_infer):
+def mock_file_save(monkeypatch):
+    """
+    Mock the 'save' method of FileStorage to prevent actual file saving.
+    """
+    mock_save = MagicMock()
+    monkeypatch.setattr("werkzeug.datastructures.FileStorage.save", mock_save)
+    return mock_save
+
+# Fixture to import the app after mocking and provide the test client
+@pytest.fixture
+def app_client(mock_mongo, mock_rf_infer, mock_file_save):
     """
     Import the Flask app after mocking dependencies and provide a test client.
     """
     from client import app  # Import after mocks are applied
     app.config['TESTING'] = True
     with app.test_client() as client:
-        yield client, mock_mongo, mock_infer
+        yield client, mock_mongo, mock_rf_infer, mock_file_save
 
 # Test the /predict route successfully
 def test_predict_success(app_client):
-    client, mock_mongo_client, mock_infer = app_client
+    client, mock_mongo_client, mock_infer, mock_save = app_client
     # Set the return value for rf_client.infer
     mock_infer.return_value = {
         "predictions": [{"class": "rock", "confidence": 0.95}]
@@ -71,9 +81,12 @@ def test_predict_success(app_client):
     assert prediction["prediction_score"] == 0.95
     assert prediction["image_metadata"]["filename"] == "test_image.jpg"
 
+    # Verify that file.save was called once
+    mock_save.assert_called_once()
+
 # Test the /predict route with no image provided
 def test_predict_no_image(app_client):
-    client, _, _ = app_client
+    client, _, _, _ = app_client
     response = client.post("/predict", data={}, content_type="multipart/form-data")
     assert response.status_code == 400
     json_data = response.get_json()
@@ -81,7 +94,7 @@ def test_predict_no_image(app_client):
 
 # Test the /predict route with inference failure
 def test_predict_inference_failure(app_client):
-    client, _, mock_infer = app_client
+    client, _, mock_infer, mock_save = app_client
     # Set 'rf_client.infer' to raise an exception
     mock_infer.side_effect = Exception("Inference API error")
 
@@ -95,9 +108,12 @@ def test_predict_inference_failure(app_client):
     assert "Prediction error" in json_data["error"]
     assert "Inference API error" in json_data["error"]
 
+    # Verify that file.save was called once
+    mock_save.assert_called_once()
+
 # Test the /predict route with MongoDB insertion failure
 def test_predict_mongodb_failure(app_client):
-    client, mock_mongo_client, mock_infer = app_client
+    client, mock_mongo_client, mock_infer, mock_save = app_client
     # Set 'rf_client.infer' to return valid data
     mock_infer.return_value = {
         "predictions": [{"class": "paper", "confidence": 0.85}]
@@ -115,9 +131,12 @@ def test_predict_mongodb_failure(app_client):
         assert "Prediction error" in json_data["error"]
         assert "MongoDB insertion error" in json_data["error"]
 
+        # Verify that file.save was called once
+        mock_save.assert_called_once()
+
 # Test the /predict route with invalid inference response (missing 'class' key)
 def test_predict_invalid_inference_response(app_client):
-    client, mock_mongo_client, mock_infer = app_client
+    client, mock_mongo_client, mock_infer, mock_save = app_client
     # Set 'rf_client.infer' to return predictions without 'class'
     mock_infer.return_value = {"predictions": [{"confidence": 0.80}]}  # Missing 'class'
 
@@ -131,18 +150,25 @@ def test_predict_invalid_inference_response(app_client):
     assert json_data["gesture"] == "Unknown"
     assert json_data["confidence"] == 0
 
+    # Verify that file.save was called once
+    mock_save.assert_called_once()
+
 # Test the /predict route with FileNotFoundError during file saving
 def test_predict_file_not_found(app_client):
-    client, mock_mongo_client, mock_infer = app_client
-    # Patch 'FileStorage.save' to raise FileNotFoundError
-    with patch("werkzeug.datastructures.FileStorage.save", side_effect=FileNotFoundError("File not found")):
-        data = {
-            "image": (BytesIO(b"fake image data"), "test_image.jpg")
-        }
+    client, mock_mongo_client, mock_infer, mock_save = app_client
+    # Configure the mock save to raise FileNotFoundError
+    mock_save.side_effect = FileNotFoundError("File not found")
 
-        response = client.post("/predict", data=data, content_type="multipart/form-data")
-        assert response.status_code == 500
-        json_data = response.get_json()
-        assert "Prediction error" in json_data["error"]
-        assert "File not found" in json_data["error"]
+    data = {
+        "image": (BytesIO(b"fake image data"), "test_image.jpg")
+    }
+
+    response = client.post("/predict", data=data, content_type="multipart/form-data")
+    assert response.status_code == 500
+    json_data = response.get_json()
+    assert "Prediction error" in json_data["error"]
+    assert "File not found" in json_data["error"]
+
+    # Verify that file.save was called once
+    mock_save.assert_called_once()
 
