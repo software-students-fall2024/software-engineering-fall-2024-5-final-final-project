@@ -124,15 +124,8 @@ docker-compose down --volumes --remove-orphans
 docker-compose up --build
 ```
 
-**8. Get Drinking!:** Access our NYC Bars Recommender System [here](http://127.0.0.1:5888)!
+**8. Get Drinking!:** Access our NYC Bars Recommender System [here](http://104.236.30.209:5000/)!
 
-We cannot get Digital Ocean to work so to use or Recommender System locally run the following commands:
-
-```
-export FLASK_APP=web-app/app.py 
-
-flask run
-```
 
 ## TEAM MEMBERS
 
