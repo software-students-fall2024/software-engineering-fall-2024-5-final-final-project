@@ -212,18 +212,57 @@
         // Utility functions
         const formatMoney = (amount) => parseFloat(amount).toFixed(2);
 
+        /**
+         * Fetch JSON with optional options.
+         * Automatically includes credentials and sets headers appropriately.
+         */
         async function fetchJSON(url, options = {}) {
-            const response = await fetch(url, {
+            const fetchOptions = {
                 ...options,
+                credentials: 'include',
                 headers: {
-                    'Content-Type': 'application/json',
+                    ...(options.body ? { 'Content-Type': 'application/json' } : {}),
                     ...options.headers
                 }
-            });
-            return response.json();
+            };
+
+            const response = await fetch(url, fetchOptions);
+
+            let data;
+            try {
+                data = await response.json();
+            } catch (error) {
+                data = {};
+            }
+
+            if (response.status === 401) {
+                document.getElementById('loginContainer').style.display = 'block';
+                document.getElementById('appContainer').style.display = 'none';
+                throw new Error('Not authenticated');
+            }
+
+            return data;
         }
 
-        // Authentication
+        /**
+         * Update the display with user data.
+         */
+        async function updateDisplay() {
+            try {
+                const data = await fetchJSON('/api/user-data');
+                if (data) {  // Only update if we got data back
+                    document.getElementById('budget').textContent = formatMoney(data.budget);
+                    document.getElementById('expenses').textContent = formatMoney(data.total_expenses);
+                    document.getElementById('remaining').textContent = formatMoney(data.remaining);
+                }
+            } catch (error) {
+                console.error('Failed to update display:', error);
+            }
+        }
+
+        /**
+         * Handle user login.
+         */
         async function login() {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
@@ -237,38 +276,55 @@
                 if (data.success) {
                     document.getElementById('loginContainer').style.display = 'none';
                     document.getElementById('appContainer').style.display = 'block';
-                    updateDisplay();
+                    await updateDisplay();  // Wait for the display to update
                 } else {
-                    document.getElementById('loginError').textContent = 'Invalid credentials';
+                    document.getElementById('loginError').textContent = data.message || 'Invalid credentials';
                 }
             } catch (error) {
                 document.getElementById('loginError').textContent = 'Login failed';
+                console.error('Login error:', error);
             }
         }
 
+        /**
+         * Handle user logout.
+         * Sends a POST request to the backend to terminate the session and reloads the page.
+         */
         async function logout() {
-            await fetchJSON('/api/logout', { method: 'POST' });
-            document.getElementById('loginContainer').style.display = 'block';
-            document.getElementById('appContainer').style.display = 'none';
+            try {
+                const data = await fetchJSON('/api/logout', { method: 'POST', body: JSON.stringify({}) });
+                if (data.success) {
+                    // Reload the page to show the login screen
+                    window.location.reload();
+                } else {
+                    console.error('Logout failed:', data.message || 'Unknown error');
+                    // Reload anyway to reset the UI
+                    window.location.reload();
+                }
+            } catch (error) {
+                console.error('Logout failed:', error);
+                // Reload as a fallback
+                window.location.reload();
+            }
         }
 
-        // Display updates
-        async function updateDisplay() {
-            const data = await fetchJSON('/api/user-data');
-            document.getElementById('budget').textContent = formatMoney(data.budget);
-            document.getElementById('expenses').textContent = formatMoney(data.total_expenses);
-            document.getElementById('remaining').textContent = formatMoney(data.remaining);
-        }
-
-        // Budget operations
+        /**
+         * Show the budget update modal.
+         */
         function showBudgetModal() {
             document.getElementById('budgetModal').style.display = 'block';
         }
 
+        /**
+         * Close the budget update modal.
+         */
         function closeBudgetModal() {
             document.getElementById('budgetModal').style.display = 'none';
         }
 
+        /**
+         * Update the user's budget.
+         */
         async function updateBudget() {
             const amount = document.getElementById('budgetAmount').value;
             await fetchJSON('/api/update-budget', {
@@ -279,15 +335,23 @@
             updateDisplay();
         }
 
-        // Expense operations
+        /**
+         * Show the add expense modal.
+         */
         function showExpenseModal() {
             document.getElementById('expenseModal').style.display = 'block';
         }
 
+        /**
+         * Close the add expense modal.
+         */
         function closeExpenseModal() {
             document.getElementById('expenseModal').style.display = 'none';
         }
 
+        /**
+         * Add a new expense.
+         */
         async function addExpense() {
             const amount = document.getElementById('expenseAmount').value;
             const description = document.getElementById('expenseDescription').value;
@@ -304,6 +368,9 @@
             }
         }
 
+        /**
+         * Remove an existing expense.
+         */
         async function removeExpense(expenseId) {
             await fetchJSON('/api/remove-expense', {
                 method: 'POST',
@@ -313,6 +380,9 @@
             updateDisplay();
         }
 
+        /**
+         * Load and display all expenses.
+         */
         async function loadExpenses() {
             const expenses = await fetchJSON('/api/expenses');
             const expensesList = document.getElementById('expensesList');
@@ -328,12 +398,17 @@
             `).join('');
         }
 
+        /**
+         * Predict next month's expenses.
+         */
         async function predictExpenses() {
             const data = await fetchJSON('/api/predict-expenses');
             alert(`Predicted Expenses for Next Month: $${data.predicted_expenses}`);
         }
 
-
+        /**
+         * Toggle the visibility of the expenses list.
+         */
         function toggleExpensesList() {
             const expensesList = document.getElementById('expensesList');
             if (expensesList.style.display === 'none') {
