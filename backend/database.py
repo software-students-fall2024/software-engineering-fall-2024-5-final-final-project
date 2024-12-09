@@ -1,8 +1,12 @@
 """
 backend.database
 
-This module defines the Database class for interacting with the MongoDB backend.
-It includes methods for user authentication, budget management, and expense tracking.
+This module defines the Database class for managing interactions with a MongoDB backend.
+It includes functionality for:
+- User authentication
+- Budget management
+- Expense tracking
+- Spending analysis
 """
 
 from typing import List, Optional
@@ -20,7 +24,7 @@ import numpy as np
 @dataclass
 class Expense:
     """
-    Represents a financial expense.
+    Represents an individual financial expense with relevant attributes.
     """
 
     amount: float
@@ -36,7 +40,8 @@ class Expense:
 
 class Database:
     """
-    Handles all interactions with the MongoDB database for the finance application.
+    Provides methods to interact with the MongoDB database for the finance application.
+    Handles user-related operations, budget management, and expense tracking.
     """
 
     def __init__(self, uri: str = None):
@@ -188,7 +193,8 @@ class User(UserMixin):
 
 class MLModel:
     """
-    ML Model to analyze predict spending habits
+    Provides a simple machine learning model to analyze and predict spending habits.
+    Uses a linear regression model to find patterns in monthly spending and make predictions for future.
     """
 
     def __init__(self):
@@ -200,6 +206,9 @@ class MLModel:
     def train(self, months, expenses):
         """
         Reshape data for training (sklearn expects 2D array for X)
+        Args:
+            months (List[int]): A list of months (numerical representation)
+            expenses (List[float]): A list of total expenses for each month
         """
         x = np.array(months).reshape(-1, 1)
         y = np.array(expenses)
@@ -207,7 +216,11 @@ class MLModel:
 
     def predict_next_month(self, current_month):
         """
-        Predict for the next month
+        Predict for the next month using the trained linear regression model
+        Args:
+            current_month (int): The numerical representation of the current month
+        Returns:
+            float: The predicted expense value for the next month.
         """
         next_month = np.array([[current_month + 1]])
         return self.model.predict(next_month)[0]

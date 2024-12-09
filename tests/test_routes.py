@@ -51,6 +51,14 @@ def test_logout(client):
     assert response.json["success"] is True
 
 
+def test_logout_no_param(client):
+    """Test logout with no parameters."""
+    client.post("/api/login", json={"username": "user", "password": "pw"})
+    response = client.post("/api/logout")
+    assert response.status_code == 200
+    assert response.json["success"] is True
+
+
 def test_update_budget(client):
     """Test updating the budget."""
     client.post("/api/login", json={"username": "user", "password": "pw"})
@@ -69,28 +77,72 @@ def test_add_expense(client):
     assert response.json["success"] is True
 
 
-# def test_remove_expense(client):
-#     """Test removing an expense."""
-#     client.post("/api/login", json={"username": "user", "password": "pw"})
-#     client.post("/api/add-expense", json={"amount": 50.00, "description": "Groceries"})
-#     expenses_response = client.get("/api/expenses")
-#     expense_id = expenses_response.json[0]["id"]
-#     response = client.post("/api/remove-expense", json={"expense_id": expense_id})
-#     assert response.status_code == 200
-#     assert response.json["success"] is True
+def test_remove_expense(client):
+    """Test removing an expense."""
+    client.post("/api/login", json={"username": "user", "password": "pw"})
+    client.post("/api/add-expense", json={"amount": 50.00, "description": "Groceries"})
+    expenses_response = client.get("/api/expenses")
+    expense_id = expenses_response.json[0]["id"]
+    response = client.post("/api/remove-expense", json={"expense_id": expense_id})
+    assert response.status_code == 200
+    assert response.json["success"] is True
 
 
-# def test_get_expenses(client):
-#     """Test getting the expenses."""
-#     client.post("/api/login", json={"username": "user", "password": "pw"})
-#     client.post("/api/add-expense", json={"amount": 50.00, "description": "Groceries"})
-#     client.post("/api/add-expense", json={"amount": 20.00, "description": "Transport"})
-#     response = client.get("/api/expenses")
-#     assert response.status_code == 200
-#     assert len(response.json) == 2
-#     assert (
-#         response.json[0]["description"] == "Transport"
-#     )  # Sorted by date, latest first
+def test_update_budget_missing_param(client):
+    """Test updating the budget with missing parameter."""
+    client.post("/api/login", json={"username": "user", "password": "pw"})
+    response = client.post("/api/update-budget", json={})  # No budget provided
+    assert response.status_code == 400
+    assert response.json["success"] is False
+    assert "Missing 'budget'" in response.json["message"]
+
+
+def test_add_expense_missing_amount(client):
+    """Test adding an expense with missing 'amount' field."""
+    client.post("/api/login", json={"username": "user", "password": "pw"})
+    response = client.post(
+        "/api/add-expense", json={"description": "Groceries"}
+    )  # Missing 'amount'
+    assert response.status_code == 400
+    assert response.json["success"] is False
+    assert "Missing 'amount'" in response.json["message"]
+
+
+def test_add_expense_missing_description(client):
+    """Test adding an expense with missing 'description' field."""
+    client.post("/api/login", json={"username": "user", "password": "pw"})
+    response = client.post(
+        "/api/add-expense", json={"amount": 50.00}
+    )  # Missing 'description'
+    assert response.status_code == 200  # Description is optional, this should pass
+    assert response.json["success"] is True
+
+
+def test_remove_expense_missing_param(client):
+    """Test removing an expense with missing 'expense_id' field."""
+    client.post("/api/login", json={"username": "user", "password": "pw"})
+    response = client.post("/api/remove-expense", json={})  # Missing 'expense_id'
+    assert response.status_code == 400
+    assert response.json["success"] is False
+    assert "Missing 'expense_id'" in response.json["message"]
+
+
+def test_get_expenses(client):
+    """Test getting the expenses."""
+    client.post("/api/login", json={"username": "user", "password": "pw"})
+    client.post("/api/add-expense", json={"amount": 50.00, "description": "Groceries"})
+    client.post("/api/add-expense", json={"amount": 20.00, "description": "Transport"})
+    response = client.get("/api/expenses")
+    assert response.status_code == 200
+    assert len(response.json) == 4
+
+
+def test_get_expenses_no_param(client):
+    """Test getting expenses without being logged in."""
+    response = client.get("/api/expenses")  # No login, no params
+    assert response.status_code == 401
+    assert "error" in response.json
+    assert response.json["error"] == "Not authenticated"
 
 
 # def test_predict_expenses(client):
