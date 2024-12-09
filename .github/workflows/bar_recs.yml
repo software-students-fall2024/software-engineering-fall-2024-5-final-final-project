@@ -33,7 +33,7 @@ jobs:
       run: |
         docker buildx build --platform linux/amd64,linux/arm64 -t ${{ secrets.DOCKER_USERNAME }}/bar_recs:latest ./bar_recs --push
 
-    # Deploy to DigitalOcean
+    # Deploy to DigitalOcean try try try 
     - name: Deploy to DigitalOcean
       with:
         host: ${{ secrets.DO_IP }}
