@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <header>
+        <!-- Logo and Site Title -->
+        <img src="{{ url_for('static', filename='images/movie-logo.png') }}" alt="Movie 4 You-vie Logo">
+        <h1>Movie 4 You-vie!</h1>
+        <a href="/profile" style="color: white; text-decoration: none;">Your Profile</a>
+    </header>
+
+    <div class="main-backdrop"></div>
+
+    <main>
+        <div class="content">
+            <h1>Today's Recommended Movie</h1>
+            <img class="poster" src="{{ selectedMovie[0] }}" alt="{{ selectedMovie[1] }}" style="max-width: 200px; height: 300px;">
+            <p>{{ selectedMovie[1] }}</p>
+    
+            <!-- Form with checkbox to mark as watched -->
+            <form method="POST" action="/setwatched">
+                <input type="checkbox" name="hasWatched" value="true" id="watchedCheckbox">
+                <label for="watchedCheckbox">Mark as Watched</label>
+                <input type="hidden" name="movieId" value="{{ movieId }}">
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2024 Movie 4 You-vie!. All rights reserved.</p>
+    </footer>
+{% endblock %}
