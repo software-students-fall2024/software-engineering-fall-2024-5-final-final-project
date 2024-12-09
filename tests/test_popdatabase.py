@@ -3,7 +3,7 @@ import pytest
 from unittest.mock import patch, MagicMock
 from pymongo import MongoClient
 
-#temps with weather
+
 categories = {
     "cold": {"min": -10, "max": 0},
     "cool": {"min": 1, "max": 15},

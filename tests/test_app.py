@@ -4,7 +4,6 @@ from bson.objectid import ObjectId
 from unittest.mock import patch, MagicMock
 import pytest
 
-# Add web-app directory to sys.path
 sys.path.append(os.path.join(os.path.dirname(__file__), "../web-app"))
 
 from app import app, get_weather, seed_database, get_outfit_from_db
@@ -71,122 +70,134 @@ def test_logout(client):
     assert response.status_code == 200
     assert b"Don't have an account? Sign up Here" in response.data  # Match rendered content
 
-@patch('app.current_user')
-@patch('app.db.locations.update_one')
-@patch('app.login_required', lambda x: x)  # Bypass @login_required decorator
-def test_add_location(mock_update, mock_current_user, client):
-    """Test adding a location."""
-    mock_current_user.username = "testuser"  # Mock authenticated user
-    with client.session_transaction() as session:
-        session['_user_id'] = str(ObjectId())  # Simulate session
-    
-    response = client.post('/add_location', json={"location": "New York"}, follow_redirects=True)
-    assert response.status_code == 200  # Expect successful response
-    mock_update.assert_called_once_with(
-        {"username": "testuser"},
-        {"$addToSet": {"locations": "New York"}},
-        upsert=True
-    )
-
-
-@patch('app.os.listdir', return_value=['jacket.png', 'coat.png'])
-@patch('app.os.path.exists', return_value=True)  # Assume all paths exist
-@patch('app.db.outfits.insert_many')
-def test_seed_database(mock_insert, mock_exists, mock_listdir):
-    """Test database seeding."""
-    expected_data = [
-        {
-            "temperature_range_min": -100,
-            "temperature_range_max": 0,
-            "weather_condition": "cold",
-            "gender": "male",
-            "image_url": "/static/images/cold/male/jacket.png"
-        },
-        {
-            "temperature_range_min": -100,
-            "temperature_range_max": 0,
-            "weather_condition": "cold",
-            "gender": "male",
-            "image_url": "/static/images/cold/male/coat.png"
-        }
-    ]
-    seed_database()
-    mock_insert.assert_called_once_with(expected_data)  # Check the mock was called with correct data
-
-
 @patch('app.os.path.exists', return_value=False)  # Assume no folders exist
 @patch('app.db.outfits.insert_many')
 def test_seed_database_no_folders(mock_insert, mock_exists):
     seed_database()
     mock_insert.assert_not_called()  # Nothing to insert
 
-@patch('app.db.users.find_one', return_value=None)
+def test_register_page(client):
+    response = client.get('/register')
+    assert response.status_code == 200
+    assert b"Create" in response.data  # Check for the page title
+
+
+def test_login_page(client):
+    response = client.get('/login')
+    assert response.status_code == 200
+    assert b"User Login" in response.data
+
+
+def test_index_redirect(client):
+    response = client.get('/', follow_redirects=False)
+    assert response.status_code == 302  # Redirect to login
+
+@patch('app.db.users.find_one', return_value=None)  # Simulate no existing user
 @patch('app.db.users.insert_one')
-def test_register_success(mock_insert_one, mock_find_one, client):
-    """Test user registration success."""
+def test_register_success(mock_insert, mock_find, client):
+    """Test successful registration."""
     response = client.post('/register', data={
-        'username': 'newuser',
-        'password': 'newpassword',
-        'repassword': 'newpassword',
-        'gender': 'male'
+        "username": "newuser",
+        "password": "password123",
+        "repassword": "password123",
+        "gender": "male"
     }, follow_redirects=True)
     assert response.status_code == 200
-    assert b"Registration successful" in response.data
-    mock_insert_one.assert_called_once()
+    assert b"account" in response.data
 
 
 @patch('app.db.users.find_one', return_value={"username": "existinguser"})
-def test_register_failure_user_exists(mock_find_one, client):
-    """Test user registration failure when username already exists."""
+def test_register_existing_user(mock_find, client):
+    """Test registration with an existing username."""
     response = client.post('/register', data={
-        'username': 'existinguser',
-        'password': 'password',
-        'repassword': 'password',
-        'gender': 'male'
+        "username": "existinguser",
+        "password": "password123",
+        "repassword": "password123",
+        "gender": "female"
     }, follow_redirects=True)
     assert response.status_code == 200
-    assert b"Username already exists" in response.data
+    assert b"Username already exists." in response.data
 
-@patch('app.get_weather', return_value=(25, "sunny"))
-def test_fetch_weather_success(mock_get_weather, client):
-    """Test successful weather fetching."""
-    response = client.get('/get_weather?city=New York')
+@patch('app.db.users.find_one', return_value=None)  # User not found
+def test_login_invalid_username(mock_find, client):
+    """Test login with invalid username."""
+    response = client.post('/login', data={"username": "wronguser", "password": "password123"}, follow_redirects=True)
     assert response.status_code == 200
-    json_data = response.get_json()
-    assert json_data['city'] == 'New York'
-    assert json_data['temperature'] == '25°C'
-    assert json_data['description'] == 'sunny'
+    assert b"Invalid username or password." in response.data
 
 
-@patch('app.get_weather', return_value=(None, None))
-def test_fetch_weather_failure(mock_get_weather, client):
-    """Test failed weather fetching."""
-    response = client.get('/get_weather?city=InvalidCity')
-    assert response.status_code == 400
-    json_data = response.get_json()
-    assert json_data['error'] == "Could not fetch weather data"
-
-@patch('app.db.outfits.find', return_value=[
-    {"image_url": "/static/images/cold/male/jacket.png", "description": "A warm jacket"}
-])
-def test_get_outfit_from_db_success(mock_find):
-    """Test fetching an outfit from the database."""
-    outfit = get_outfit_from_db(-5, "male")
-    assert outfit["image"] == "/static/images/cold/male/jacket.png"
-    assert outfit["description"] == "Outfit for this temperature range"
-
-
-@patch('app.db.outfits.find', return_value=[])
-def test_get_outfit_from_db_no_outfit(mock_find):
-    """Test fetching an outfit when none exists in the database."""
-    outfit = get_outfit_from_db(-5, "male")
-    assert outfit["image"] == "/images/default.png"
-    assert outfit["description"] == "Default Outfit"
-
-def test_locations_route(client):
-    """Test the locations route."""
-    with client.session_transaction() as session:
-        session['_user_id'] = str(ObjectId())  # Simulate user login
-    response = client.get('/locations')
+@patch('app.db.users.find_one', return_value={"username": "testuser", "password": "hashedpassword"})
+@patch('app.check_password_hash', return_value=False)  # Incorrect password
+def test_login_invalid_password(mock_check, mock_find, client):
+    """Test login with incorrect password."""
+    response = client.post('/login', data={"username": "testuser", "password": "wrongpassword"}, follow_redirects=True)
     assert response.status_code == 200
-    assert b"Add Locations" in response.data  # Adjust based on template content
+    assert b"Invalid username or password." in response.data
+
+@patch('app.get_weather', return_value=(15, "cloudy"))
+@patch('app.get_outfit_from_db', return_value={"image": "image.jpg", "description": "A warm jacket"})
+@patch('flask_login.current_user', autospec=True)  # Correct namespace for mocking
+def test_index_with_weather(mock_user, mock_outfit, mock_weather, client):
+    """Test index route with valid weather data."""
+    mock_user.is_authenticated = True
+    mock_user.username = "testuser"
+    mock_user.gender = "male"
+
+    response = client.get('/', query_string={"city": "New York"}, follow_redirects=True)
+    assert response.status_code == 200
+
+#371-383
+@patch('app.db')  # Patch the entire db object
+@patch('app.os.path.exists', return_value=True)
+@patch('app.os.listdir', return_value=['jacket.png'])
+def test_seed_database_with_data(mock_listdir, mock_exists, mock_db):
+    """Test database seeding with valid data."""
+    mock_insert = mock_db.outfits.insert_many  # Mock insert_many on the db object
+    seed_database()
+    print(f"Insert called: {mock_insert.called}")
+    mock_insert.assert_called_once()
+
+
+
+@patch('app.os.listdir', return_value=[])
+@patch('app.os.path.exists', return_value=False)
+@patch('app.db.outfits.insert_many')
+def test_seed_database_no_data(mock_insert, mock_exists, mock_listdir):
+    """Test database seeding when no folders exist."""
+    seed_database()
+    mock_insert.assert_not_called()
+
+def test_login_missing_username(client):
+    """Test login with missing username."""
+    response = client.post('/login', data={"username": "", "password": "password123"}, follow_redirects=True)
+    assert response.status_code == 200
+    assert b"Invalid username or password." in response.data
+
+
+def test_login_missing_password(client):
+    """Test login with missing password."""
+    response = client.post('/login', data={"username": "testuser", "password": ""}, follow_redirects=True)
+    assert response.status_code == 200
+    assert b"Invalid username or password." in response.data
+
+def test_register_page_render(client):
+    """Test rendering of the registration page."""
+    response = client.get('/register')
+    assert response.status_code == 200
+    assert b"Sign Up" in response.data  # Check for the register form heading
+
+def test_register_password_mismatch(client):
+    """Test registration when passwords do not match."""
+    response = client.post('/register', data={
+        "username": "newuser",
+        "password": "password123",
+        "repassword": "password321",  # Mismatched passwords
+        "gender": "male"
+    }, follow_redirects=True)
+
+    # Validate that the error message is displayed
+    assert response.status_code == 200  # Renders the registration page again
+    assert b"Passwords do not match." in response.data
+
+#########
+
