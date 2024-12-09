@@ -386,9 +386,9 @@ def edit_profile():
 
         try:
             user_id = ObjectId(current_user.id)
-            old_username = current_user.username  # Access the current username directly
+            old_username = current_user.username
             users_collection.update_one({"_id": user_id}, {"$set": {"username": new_username}})
-
+            db.posts.update_many({"user": old_username}, {"$set": {"user": new_username}})
             if old_username in db.list_collection_names():
                 db[old_username].rename(new_username)
 
