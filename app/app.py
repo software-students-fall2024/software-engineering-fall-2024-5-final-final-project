@@ -2,7 +2,7 @@ from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import LoginManager, UserMixin, login_user
 from flask_login import login_required, logout_user, current_user
-from pymongo import MongoClient
+from pymongo import MongoClient, DESCENDING
 from werkzeug.security import generate_password_hash, check_password_hash
 from bson import ObjectId
 import gridfs
@@ -13,6 +13,7 @@ import secrets
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB max-limit
 
 mongo_uri = os.getenv('MONGO_URI')
 print(mongo_uri)
@@ -60,119 +61,38 @@ def load_user(user_id):
 @app.route("/home")
 @login_required
 def home():
-    """
-    Renders the home page for the logged-in user.
+    raw_posts = posts_collection.find().sort("created_at", DESCENDING)
+    all_posts = []
+    for post in raw_posts:
+        image = fs.get(post["image_id"])
+        image_url = f"/image/{post['image_id']}"
+        
+        all_posts.append({
+            "post_id": str(post["_id"]),
+            "title": post["title"],
+            "image_url": image_url,
+            "author": post.get("user")
+        })
+    return render_template("home.html", posts = all_posts)
 
-    This function fetches the current user's genre statistics and song recommendations
-    based on their preferences.
-
-    Returns:
-        flask.Response: The rendered 'home.html' template with:
-            - genres: A list of dictionaries containing genre statistics, including:
-                - "Name": The genre name.
-                - "Amount": The count of songs in the genre.
-                - "Percentage": The percentage of songs in the genre.
-            - recommendations: A list of dictionaries containing song recommendations, including:
-                - "Title": The song title.
-                - "Artist": The artist's name.
-                - "Genre": The genre of the song.
-    """
-    cur_user = current_user.username
-    cur_user_collection = db[cur_user]
-    genres = get_stats(cur_user_collection)
-    recommendations = get_recommendations(genres)
-    return render_template("home.html", genres=genres, recommendations=recommendations)
-
-
-def get_stats(cur_user_collection):
-    """
-    Computes the genre statistics for a user's song collection.
-
-    Args:
-        cur_user_collection: The MongoDB collection corresponding to the current user,
-        containing their song data.
-
-    Returns:
-        list: A list of dictionaries, where each dictionary represents a genre and contains:
-            - "Name" (str): The genre name.
-            - "Amount" (int): The count of songs in this genre.
-            - "Percentage" (str): The percentage of songs in this genre, formatted as a string
-              with two decimal places.
-    """
-
-    pipeline = [{"$group": {"_id": "$genre", "count": {"$sum": 1}}}]
-    genre_counts = list(cur_user_collection.aggregate(pipeline))
-    total_songs = sum(item["count"] for item in genre_counts)
-
-    result = [
-        {
-            "Name": item["_id"],
-            "Amount": item["count"],
-            "Percentage": f"{(item['count'] / total_songs) * 100:.2f}%",
-        }
-        for item in genre_counts
-    ]
-
-    return result
-
-
-def get_recommendations(genres):
-    """
-    Generates song recommendations based on the user's top genres.
-
-    Args:
-        genres (list): A list of dictionaries, where each dictionary represents
-            a genre and contains:
-            - "Name" (str): The genre name.
-            - "Amount" (int): The count of songs in this genre.
-
-    Returns:
-            - "Title" (str): The title of the song.
-            - "Artist" (str): The artist of the song.
-            - "Genre" (str): The genre of the song.
-    """
-    sorted_genres = sorted(genres, key=lambda x: x["Amount"], reverse=True)
-
-    if len(sorted_genres) == 0:
-        return []
-
-    top_genre = sorted_genres[0]
-    second_genre = sorted_genres[1] if len(sorted_genres) > 1 else None
-
-    total_amount = top_genre["Amount"] + (second_genre["Amount"] if second_genre else 0)
-    top_genre_count = round(5 * (top_genre["Amount"] / total_amount))
-    second_genre_count = 5 - top_genre_count
-
-    recommend_collection = db["recommendations"]
-
-    top_genre_songs = list(
-        recommend_collection.aggregate(
-            [
-                {"$match": {"genre": top_genre["Name"]}},
-                {"$sample": {"size": top_genre_count}},
-            ]
-        )
-    )
-    second_genre_songs = []
-    if second_genre:
-        second_genre_songs = list(
-            recommend_collection.aggregate(
-                [
-                    {"$match": {"genre": second_genre["Name"]}},
-                    {"$sample": {"size": second_genre_count}},
-                ]
-            )
-        )
-
-    combined_songs = top_genre_songs + second_genre_songs
-
-    result = [
-        {"Title": song["title"], "Artist": song["artist"], "Genre": song["genre"]}
-        for song in combined_songs
-    ]
-
-    return result
-
+@app.route("/followed_circle")
+@login_required
+def followed_circle():
+    cur_user = users_collection.find_one({"username": current_user.username})
+    followed_users = cur_user.get("following", [])
+    raw_followed_posts = posts_collection.find({"user": {"$in": followed_users}}).sort("created_at", DESCENDING)
+    followed_posts = []
+    for post in raw_followed_posts:
+        image = fs.get(post["image_id"])
+        image_url = f"/image/{post['image_id']}"
+        
+        followed_posts.append({
+            "post_id": str(post["_id"]),
+            "title": post["title"],
+            "image_url": image_url,
+            "author": post.get("user")
+        })
+    return render_template("followed_circle.html", posts = followed_posts)
 
 @app.route("/addpost", methods=["GET", "POST"])
 @login_required
@@ -183,10 +103,8 @@ def add_post():
         image = request.files["image"]
         
         cur_user = current_user.username
-        cur_user_collection = db[cur_user]
-        
         image_id = fs.put(image.read(), filename=image.filename, content_type=image.content_type)
-        
+        cur_user_collection = db[cur_user]
         post = {
             "user": cur_user,
             "title": title,
@@ -195,15 +113,17 @@ def add_post():
             "views": 0,
             "likes": 0,
             "liked_by": [],
+            "comments": [],  
             "created_at": datetime.utcnow()
         }
         inserted_post = posts_collection.insert_one(post)
-        
+
         cur_user_collection.insert_one({"post_id": inserted_post.inserted_id})
-        
-        return render_template("home.html", message="Post added successfully!")
+
+        return redirect(url_for("home"))
     
     return render_template("addpost.html")
+
 
 
 @app.route("/myInfo", methods=["GET"])
@@ -223,12 +143,11 @@ def display_my_info():
         all_posts.append({
             "post_id": str(post["_id"]),
             "title": post["title"],
-            "content": post["content"],
-            "image_url": image_url,
+	    "image_url": image_url,
             "created_at": post.get("created_at")
         })
 
-    return render_template("myInfo.html", posts=all_posts)
+    return render_template("myInfo.html", posts=all_posts, username=cur_user)
 
 
 @app.route("/image/<image_id>")
@@ -248,6 +167,9 @@ def display_post(post_id):
         {"_id": ObjectId(post_id)}, 
         {"$inc": {"views": 1}}  # increment the views by 1
     )
+
+    # Get all comments
+    comments = post.get("comments", [])
     
     cur_user = current_user.username
     if cur_user in post.get('liked_by', []):
@@ -256,6 +178,7 @@ def display_post(post_id):
         liked = 0
         
     return render_template("post.html", post=post, image_url=image_url, liked=liked)
+
 
 
 @app.route('/like_post/<post_id>', methods=['POST'])
@@ -376,31 +299,194 @@ def ini():
     """
     return redirect(url_for("home"))
 
+@app.route("/profile/<username>", methods=["GET"])
+@login_required
+def user_profile(username):
+    user = users_collection.find_one({"username": username})
+    if not user:
+        flash("User not found.")
+        return redirect(url_for("home"))
 
-def add_recommendations():
+    user_posts = posts_collection.find({"user": username})
+    all_posts = []
+
+    for post in user_posts:
+        image_url = f"/image/{post['image_id']}"
+        all_posts.append({
+            "post_id": str(post["_id"]),
+            "title": post["title"],
+            "content": post["content"],
+            "image_url": image_url,
+            "created_at": post.get("created_at"),
+        })
+
+    is_following = current_user.username in user.get("followers", [])
+    return render_template("profile.html", posts=all_posts, username=username, is_following=is_following)
+
+@app.route("/follow/<username>", methods=["POST"])
+@login_required
+def follow_user(username):
+    user = users_collection.find_one({"username": username})
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    cur_user = current_user.username
+
+    if cur_user in user.get("followers", []):
+        users_collection.update_one({"username": username}, {"$pull": {"followers": cur_user}})
+        users_collection.update_one({"username": cur_user}, {"$pull": {"following": username}})
+        action = "unfollowed"
+    else:
+        users_collection.update_one({"username": username}, {"$addToSet": {"followers": cur_user}})
+        users_collection.update_one({"username": cur_user}, {"$addToSet": {"following": username}})
+        action = "followed"
+    
+
+    updated_user = users_collection.find_one({"username": username})
+    followers_count = len(updated_user.get("followers", []))
+
+    return jsonify({"action": action, "followers_count": followers_count})
+
+@app.route("/posts/<post_id>/comments", methods=["POST"])
+@login_required
+def add_comment(post_id):
+    content = request.form.get("content")
+    if not content.strip():
+        flash("Comment cannot be empty.")
+        return redirect(url_for("display_post", post_id=post_id))
+
+    comment = {
+        "username": current_user.username,
+        "content": content,
+        "created_at": datetime.utcnow()
+    }
+
+    posts_collection.update_one(
+        {"_id": ObjectId(post_id)},
+        {"$push": {"comments": comment}}
+    )
+
+    flash("Comment added successfully!")
+    return redirect(url_for("display_post", post_id=post_id))
+
+
+@app.route("/edit-username", methods=["GET", "POST"])
+@login_required
+def edit_profile():
+    if request.method == "POST":
+        new_username = request.form.get("new_username", "").strip()
+
+        if not new_username or len(new_username) < 3:
+            flash("Username must be at least 3 characters long.")
+            return redirect(url_for("edit_profile"))
+
+        existing_user = users_collection.find_one({"username": new_username})
+        if existing_user:
+            flash("Username already taken. Please choose a different one.")
+            return redirect(url_for("edit_profile"))
+
+        try:
+            user_id = ObjectId(current_user.id)
+            old_username = current_user.username
+            users_collection.update_one({"_id": user_id}, {"$set": {"username": new_username}})
+            db.posts.update_many({"user": old_username}, {"$set": {"user": new_username}})
+            if old_username in db.list_collection_names():
+                db[old_username].rename(new_username)
+
+            current_user.username = new_username
+
+            flash("Your username has been updated successfully!")
+            return redirect(url_for("display_my_info"))
+        except Exception as e:
+            flash(f"An error occurred while updating your username: {e}")
+            return redirect(url_for("edit_profile"))
+
+    return render_template("edit_username.html", username=current_user.username)
+
+@app.route("/chat")
+@login_required
+def chat():
     """
-    Returns:
-        None
-
-    Raises:
-        FileNotFoundError: If the 'songs.txt' file is not found.
-        ValueError: If the content of 'songs.txt' cannot be parsed as a valid Python list.
-        pymongo.errors.PyMongoError: If there are issues with MongoDB operations.
+    Render the chat page with list of users to chat with.
     """
-    recommend_collection = db.recommendations
+    # Get all users except the current user
+    all_users = users_collection.find({"username": {"$ne": current_user.username}})
+    users_list = [user["username"] for user in all_users]
+    return render_template("chat.html", users=users_list)
 
-    with open("songs.txt", "r", encoding="utf-8") as f:
-        file_content = f.read()
+@app.route("/chat/<username>", methods=["GET"])
+@login_required
+def chat_with_user(username):
+    """
+    Render chat page with a specific user
+    """
+    # Check if the user exists
+    target_user = users_collection.find_one({"username": username})
+    if not target_user:
+        flash("User not found")
+        return redirect(url_for("chat"))
 
-    songs_dict = ast.literal_eval(file_content)
-    songs = songs_dict if isinstance(songs_dict, list) else []
+    # Retrieve previous messages between current user and target user
+    messages_collection = db.messages
+    messages = messages_collection.find({
+        "$or": [
+            {"sender": current_user.username, "receiver": username},
+            {"sender": username, "receiver": current_user.username}
+        ]
+    }).sort("timestamp", 1)  # Sort messages chronologically
 
-    if recommend_collection.count_documents({}) > 0:
-        recommend_collection.delete_many({})
+    return render_template("chat_window.html", 
+                           target_username=username, 
+                           messages=list(messages),
+                           current_username=current_user.username)
 
-    recommend_collection.insert_many(songs)
+@app.route("/send_message", methods=["POST"])
+@login_required
+def send_message():
+    """
+    Handle sending a message
+    """
+    sender = current_user.username
+    receiver = request.form.get("receiver")
+    message = request.form.get("message")
 
+    if not message or not receiver:
+        return jsonify({"error": "Invalid message or receiver"}), 400
 
+    messages_collection = db.messages
+    message_doc = {
+        "sender": sender,
+        "receiver": receiver,
+        "message": message,
+        "timestamp": datetime.utcnow()
+    }
+
+    messages_collection.insert_one(message_doc)
+    return jsonify({"status": "success"})
+
+@app.route("/get_messages/<username>", methods=["GET"])
+@login_required
+def get_messages(username):
+    """
+    Retrieve messages between current user and specified user
+    """
+    messages_collection = db.messages
+    messages = messages_collection.find({
+        "$or": [
+            {"sender": current_user.username, "receiver": username},
+            {"sender": username, "receiver": current_user.username}
+        ]
+    }).sort("timestamp", 1)
+
+    message_list = []
+    for msg in messages:
+        message_list.append({
+            "sender": msg["sender"],
+            "message": msg["message"],
+            "timestamp": msg["timestamp"].isoformat()
+        })
+
+    return jsonify(message_list)
 
 if __name__ == "__main__":
     # add_recommendations()
