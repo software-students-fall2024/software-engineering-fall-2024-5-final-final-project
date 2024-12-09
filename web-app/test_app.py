@@ -10,8 +10,6 @@ Unit tests for the Flask application defined in `app.py`.
 # pylint web-app/
 # black .
 
-"""Test module for the Flask RPS application"""
-
 import pytest
 from unittest.mock import patch, MagicMock
 
