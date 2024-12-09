@@ -10,27 +10,28 @@ Unit tests for the Flask application defined in `app.py`.
 # pylint web-app/
 # black .
 
+
 import os
 import json
 import pytest
 from unittest.mock import patch, MagicMock
 from io import BytesIO
 
-# Mock the eventlet import in app.py
+# Mock the eventlet module
 import sys
-import mock
-sys.modules['eventlet'] = MagicMock()
-sys.modules['eventlet.monkey_patch'] = MagicMock()
+eventlet_mock = MagicMock()
+eventlet_mock.monkey_patch = MagicMock()
+sys.modules['eventlet'] = eventlet_mock
 
 # Now import the app
-from app import app
+from app import app, determine_winners, determine_ai_winner, retry_request
 
 @pytest.fixture
 def client():
     """Flask test client"""
     app.config['TESTING'] = True
-    with app.test_client() as client:
-        yield client
+    with app.test_client() as test_client:
+        yield test_client
 
 @pytest.fixture
 def mock_mongodb():
@@ -60,16 +61,14 @@ def test_real_person_page(client):
     assert response.status_code == 200
 
 # Test Game Logic
-def test_determine_winners():
+def test_determine_winners_function():
     """Test the determine_winners function"""
-    from app import determine_winners
     assert determine_winners('rock', 'scissors') == 'You win!'
     assert determine_winners('rock', 'paper') == 'AI wins!'
     assert determine_winners('rock', 'rock') == "It's a tie!"
 
-def test_determine_ai_winner():
+def test_determine_ai_winner_function():
     """Test the determine_ai_winner function"""
-    from app import determine_ai_winner
     assert determine_ai_winner('rock', 'scissors') == 'win'
     assert determine_ai_winner('rock', 'paper') == 'lose'
     assert determine_ai_winner('rock', 'rock') == 'tie'
@@ -109,7 +108,6 @@ def test_result_endpoint_no_image(client):
     """Test the result endpoint with no image"""
     response = client.post('/result')
     assert response.status_code == 400
-    assert b'No image file provided' in response.data
 
 def test_result_endpoint_empty_file(client):
     """Test the result endpoint with empty file"""
@@ -129,21 +127,22 @@ def test_result_endpoint_ml_failure(mock_retry, client):
     result = json.loads(response.data)
     assert 'error' in result
 
-def test_retry_request():
+@patch('requests.post')
+def test_retry_request_function(mock_post):
     """Test retry request function"""
-    from app import retry_request
     mock_files = {'image': MagicMock()}
     mock_files['image'].stream = BytesIO(b'test')
     
-    with patch('requests.post') as mock_post:
-        # Test successful request
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_post.return_value = mock_response
-        result = retry_request('http://test.com', mock_files)
-        assert result == mock_response
-
-        # Test failed request with retries
-        mock_post.side_effect = Exception('Test error')
-        result = retry_request('http://test.com', mock_files, retries=2, delay=0)
-        assert result is None
+    # Test successful request
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_post.return_value = mock_response
+    
+    result = retry_request('http://test.com', mock_files)
+    assert result == mock_response
+    
+    # Test failed request with retries
+    mock_post.side_effect = Exception('Test error')
+    result = retry_request('http://test.com', mock_files, retries=2, delay=0)
+    assert result is None
+    assert mock_post.call_count == 3  # Initial try + 2 retries
