@@ -1,7 +1,9 @@
-flask
-flask-login
-python-dotenv
-pymongo
-requests
-werkzeug
+Flask==2.3.3
+flask-login==0.6.2
+python-dotenv==1.0.0
+pymongo==4.5.0
+requests==2.31.0
+Werkzeug==2.3.3
+gunicorn==21.1.0
+pytest==7.4.2
 gunicorn
