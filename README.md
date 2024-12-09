@@ -28,11 +28,16 @@ Outside of MongoDB, this project consists of two main subsystems:
    - Flask-based and for user authentication, financial data management, and machine learning predictions
    - Interacts with a MongoDB database to store user and transaction data
    - Fully containerized with its own `Dockerfile` and an integrated CI/CD pipeline
+   - Custom queries in MongoDB are implemented to fetch and aggregate data efficiently
+   - /health-check: Monitors the health of the backend service
+   - /data-cleanup: Cleans up temporary or unused records periodically (admin-only access)
 
 2. **Frontend**:
    - A Flask app serving a user-friendly interface
    - Proxies API requests to the backend for seamless integration
    - Includes interactive forms and modals for updating budgets and managing expenses
+   - Modals displays detailed breakdowns of expenses by category 
+   - Interactive pie charts powered by Chart.js
 
 ## Setup Instructions
 
@@ -90,6 +95,23 @@ Make sure all steps in Running Project section is completed then the user can lo
 3. You can add expenses and update budgets with the add expense button and update budget button in the app.
 
 4. You can see a list of expenses in the view expense button.
+
+
+## Extended Testing Strategies
+We have implemented comprehensive testing but noted edge cases and advanced scenarios that required more focus:
+
+1. Database Mock Testing:
+
+   Used mongomock to simulate database operations during unit testing.
+   Test cases cover CRUD operations for expenses and user profiles.
+
+2. Performance Edge Cases:
+
+   Stress-tested the backend to handle high volumes of requests. For example, testing scenarios where 1,000+ expense records are processed at once.
+
+3. Authentication Scenarios:
+
+   Includes cases for token expiry, invalid login attempts, and user session management failures.
 
 ## Team members
 
