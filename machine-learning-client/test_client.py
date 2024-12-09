@@ -8,6 +8,7 @@
 # pylint web-app/ machine-learning-client/
 # black .
 
+
 import os
 from unittest.mock import patch, MagicMock
 from io import BytesIO
@@ -169,5 +170,4 @@ def test_predict_missing_confidence(mock_collection, mock_rf_client, flask_clien
     json_data = response.get_json()
     assert json_data["gesture"] == "Rock"
     assert json_data["confidence"] == 0
-
 
