@@ -95,7 +95,7 @@ jobs:
           host: 159.203.137.174
           username: root
           key: ${{ secrets.DO_SSH_KEY }}
-          timeout: 120s
+          timeout: 240s
           script: |
             docker pull nataliovcharov/web-app:latest
             docker-compose -f /root/docker-compose.yml up -d
