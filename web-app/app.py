@@ -5,6 +5,7 @@ import os
 import random
 from dotenv import load_dotenv
 from pymongo import MongoClient, server_api
+from bson.objectid import ObjectId
 import certifi, datetime
 
 
@@ -14,11 +15,12 @@ MONGO_URI = os.getenv('MONGO_URI')
 db_name = os.getenv('MONGO_DBNAME')
 
 class User(UserMixin):
-    def __init__(self, username):
+    def __init__(self, username, id):
         self.username = username
+        self.id = id
 
     def get_id(self):
-        return self.username
+        return self.id
 
 def create_app():
     app = Flask(__name__)
@@ -31,10 +33,10 @@ def create_app():
     login_manager.init_app(app)
 
     @login_manager.user_loader  
-    def load_user(username):
-        user_data = db.users.find_one({"username": username})
+    def load_user(id):
+        user_data = db.users.find_one({"_id": ObjectId(id)})
         if user_data:
-            return User(username=user_data['username'])
+            return User(username=user_data['username'], id=str(user_data['_id']))
         return None
 
     def create_user(username, password):
@@ -79,7 +81,7 @@ def create_app():
         # mongo.db.users.insert_one(user)
 
         # TODO: This will have to change to find the user that is logged in, hardcoded for now to test
-        selected_user = users_collection.find_one({"username":"WilliamTest2"})
+        selected_user = users_collection.find_one({"_id":ObjectId(current_user.id)})
 
         # print("User's date: " + selected_user["daily_movie"]["recommended_date"].strftime("%Y %m %d"))
         # print("Computer's date: " + datetime.datetime.now().strftime("%Y %m %d"))
@@ -98,7 +100,7 @@ def create_app():
         if not is_already_assigned:
             new_movie_id = random_movie_id(selected_user["watched_movies"])
             users_collection.update_one(
-                {"username":"WilliamTest2"},    # TODO: replace username with actual user logged in
+                {"_id":ObjectId(current_user.id)},    # TODO: replace username with actual user logged in
                 { 
                     "$set": {
                         "daily_movie.movie_id": new_movie_id,
@@ -128,7 +130,7 @@ def create_app():
             elif password != confirm_password:
                 error = 'Passwords do not match!'
             else:
-                db.users.insert_one({"username": username, "password": password})
+                users_collection.insert_one(create_user(username, password));
                 return redirect(url_for('login'))
         return render_template('register.html', error=error)
 
@@ -140,7 +142,7 @@ def create_app():
             password = request.form['password']
             user_data = db.users.find_one({"username": username})
             if user_data and user_data["password"] == password:
-                user = User(username=user_data['username'])
+                user = User(username=user_data['username'],id=str(user_data['_id']))
                 login_user(user)
                 return redirect(url_for('profile', user=username))
             else:
