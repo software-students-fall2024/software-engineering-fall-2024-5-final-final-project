@@ -266,10 +266,7 @@ def sort():
 
 
 # --------RECOMMENDATIONS PAGE--------
-import sys
-
-sys.path.append("./recommender")  # parent directory
-from recommender import load_bars, preprocess_bars, compute_sim_matrix, recommend_bars
+from web_app.recommender.recommender import load_bars, preprocess_bars, compute_sim_matrix, recommend_bars
 
 
 @app.route("/recs", methods=["GET", "POST"])
@@ -284,8 +281,7 @@ def recommend():
 
     # Load and preprocess bar data
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    project_root = os.path.dirname(current_dir)
-    bars_json_path = os.path.join(project_root, "recommender", "bars.json")
+    bars_json_path = os.path.join(current_dir, "recommender", "bars.json")
 
     if not os.path.exists(bars_json_path):
         raise FileNotFoundError(f"bars.json file not found at {bars_json_path}")
@@ -361,6 +357,7 @@ def recommend():
                 return redirect(url_for("recommend"))
 
     return render_template("recommend.html", bars=recommendations)
+
 
 
 # --------LOGOUT PAGE--------

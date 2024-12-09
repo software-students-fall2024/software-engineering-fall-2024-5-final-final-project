@@ -1,6 +1,6 @@
 FROM python:3.10
 
-# # Install system dependencies
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
     gcc \
@@ -13,12 +13,19 @@ RUN apt-get update && apt-get install -y \
 # Upgrade pip
 RUN python -m pip install --upgrade pip
 RUN pip uninstall -y flask jinja2 markupsafe werkzeug itsdangerous
-# Rest of your Dockerfile remains the same
-WORKDIR /web-app
-COPY requirements.txt .
-COPY ../recommender /web-app/recommender
 
+# Set working directory
+WORKDIR /web-app
+
+# Copy requirements and install
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy all code, including the `recommender` logic
 COPY . .
+
+# Expose Flask port
 EXPOSE 5000
-CMD ["flask", "run", "--host=0.0.0.0", "--port=5001"]
+
+# Run Flask app
+CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]

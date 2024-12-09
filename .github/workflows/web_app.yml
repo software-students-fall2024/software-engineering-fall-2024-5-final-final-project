@@ -30,7 +30,7 @@ jobs:
 
     - name: Run pylint
       run: |
-        pylint ./web-app/**/*.py || true
+        pylint ./web_app/**/*.py || true
 
     # Set up Docker Buildx
     - name: Set up Docker Buildx
@@ -47,8 +47,8 @@ jobs:
     - name: Build and push Docker image
       run: |
         docker buildx build --platform linux/amd64 \
-          -t ${{ secrets.DOCKER_USERNAME }}/web-app:latest \
-          ./web-app --push
+          -t ${{ secrets.DOCKER_USERNAME }}/web_app:latest \
+          ./web_app --push
 
     # Deploy to DigitalOcean
     - name: Deploy to DigitalOcean
@@ -58,7 +58,7 @@ jobs:
         username: root
         key: ${{ secrets.DO_SSH_KEY }}
         script: |
-          docker pull ${{ secrets.DOCKER_USERNAME }}/web-app:latest
+          docker pull ${{ secrets.DOCKER_USERNAME }}/web_app:latest
           docker stop webapp || true
           docker rm webapp || true
-          docker run -d --name webapp -p 5001:5001 ${{ secrets.DOCKER_USERNAME }}/web-app:latest
+          docker run -d --name webapp -p 5001:5001 ${{ secrets.DOCKER_USERNAME }}/web_app:latest

@@ -2,7 +2,7 @@ version: '3'
 
 services:
   web-app:
-    image: emilyhuang19/web-app:latest
+    image: emilyhuang19/web_app:latest
     container_name: web-app
     restart: always
     ports:
