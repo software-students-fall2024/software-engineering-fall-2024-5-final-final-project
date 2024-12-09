@@ -72,8 +72,8 @@ jobs:
       - name: Deploy to DigitalOcean Droplet
         uses: appleboy/ssh-action@v0.1.6
         with:
-          host: ${{ secrets.DO_SERVER_IP }}
-          username: ${{ secrets.DO_USER }}
+          host: 159.203.137.174
+          username: root
           key: ${{ secrets.DO_PRIVATE_KEY }}
           script: |
             docker pull ${{ secrets.DOCKER_USERNAME }}/web-app:latest
