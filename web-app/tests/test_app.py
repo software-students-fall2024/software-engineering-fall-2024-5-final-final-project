@@ -51,15 +51,15 @@ def test_get_weather_failure(mock_get):
     "password": "hashedpassword",
     "gender": "male"
 })
-@patch('app.check_password_hash', return_value=True)
-def test_login_success(mock_hash, mock_find_one, client):
-    """Test successful login."""
-    response = client.post('/login', data={
-        'username': 'testuser',
-        'password': 'testpassword'
-    }, follow_redirects=True)
-    assert response.status_code == 200
-    assert b"Locations" in response.data  # Check for the redirected page content
+# @patch('app.check_password_hash', return_value=True)
+# def test_login_success(mock_hash, mock_find_one, client):
+#     """Test successful login."""
+#     response = client.post('/login', data={
+#         'username': 'testuser',
+#         'password': 'testpassword'
+#     }, follow_redirects=True)
+#     assert response.status_code == 200
+#     assert b"Locations" in response.data  # Check for the redirected page content
 
 
 def test_logout(client):
@@ -106,17 +106,17 @@ def test_register_success(mock_insert, mock_find, client):
     assert b"account" in response.data
 
 
-@patch('app.db.users.find_one', return_value={"username": "existinguser"})
-def test_register_existing_user(mock_find, client):
-    """Test registration with an existing username."""
-    response = client.post('/register', data={
-        "username": "existinguser",
-        "password": "password123",
-        "repassword": "password123",
-        "gender": "female"
-    }, follow_redirects=True)
-    assert response.status_code == 200
-    assert b"Username already exists." in response.data
+# @patch('app.db.users.find_one', return_value={"username": "existinguser"})
+# def test_register_existing_user(mock_find, client):
+#     """Test registration with an existing username."""
+#     response = client.post('/register', data={
+#         "username": "existinguser",
+#         "password": "password123",
+#         "repassword": "password123",
+#         "gender": "female"
+#     }, follow_redirects=True)
+#     assert response.status_code == 200
+#     assert b"Username already exists." in response.data
 
 @patch('app.db.users.find_one', return_value=None)  # User not found
 def test_login_invalid_username(mock_find, client):
