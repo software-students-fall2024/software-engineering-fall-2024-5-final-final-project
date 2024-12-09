@@ -56,15 +56,14 @@ def proxy_to_backend(path):
             content_type=resp.headers.get("content-type", "application/json"),
         )
 
-        # Correctly forward all Set-Cookie headers
         for key, value in resp.headers.items():
             if key.lower() == "set-cookie":
                 response.headers.add("Set-Cookie", value)
 
         return response
     except requests.exceptions.RequestException as e:
-        # Log the exception for debugging purposes
-        app.logger.error(f"Request to backend failed: {e}")
+        # Log the exception for debugging purposes using lazy formatting
+        app.logger.error("Request to backend failed: %s", e)
         return {"error": "Failed to connect to the backend server."}, 500
 
 
