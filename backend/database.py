@@ -64,6 +64,26 @@ class Database:
                 }
             )
 
+    def create_user(self, username: str, password: str) -> bool:
+        """
+        Create a new user with the given username and password.
+        Returns True if the user is created successfully, or False if the user already exists.
+        """
+        existing_user = self.db.users.find_one({"username": username})
+        if existing_user:
+            return False  # User already exists
+
+        hashed_password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+        self.db.users.insert_one(
+            {
+                "username": username,
+                "password": hashed_password,
+                "budget": 0.0,
+                "total_expenses": 0.0,
+            }
+        )
+        return True
+
     def get_user_data(self, username: str) -> dict:
         """
         Retrieve data for a specific user.
@@ -153,7 +173,7 @@ class User(UserMixin):
         self.password = user_data["password"]
 
     def get_id(self):
-        """Return the user id as a string."""
+        """Return the ID."""
         return self.id
 
     @property
