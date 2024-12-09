@@ -110,13 +110,14 @@ def create_app():
                 }
             )
             selected_movie = g.all_movies[new_movie_id] # uses newly generated movie id
+            movie_id = new_movie_id
 
         # if move has been assigned
         else:
             selected_movie = g.all_movies[user_movie_id] # uses existing movie id found in user doc in db
-
-        return render_template("index.html", selectedMovie=selected_movie)
-
+            movie_id = user_movie_id
+        return render_template("index.html", selectedMovie=selected_movie, movieId=movie_id)
+    
     @app.route('/register', methods=['GET', 'POST'])
     def register():
         error = None
