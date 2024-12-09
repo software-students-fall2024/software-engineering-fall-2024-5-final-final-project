@@ -2,6 +2,16 @@
 
 An exercise to put to practice software development teamwork, subsystem communication, containers, deployment, and CI/CD pipelines. See [instructions](./instructions.md) for details.
 
+# Team Members
+
+[Jun Li](https://github.com/jljune9li )
+
+[Daniel Brito](https://github.com/danny031103 )
+
+[Natalie Ovcarov](https://github.com/nataliovcharov)
+
+[Alvaro Martinez](https://github.com/AlvaroMartinezM)
+
 # Product Vision Statement
 WEARther is a web-based application that combines weather data and curated outfit recommendations to provide a seamless user experience. 
 
@@ -16,16 +26,6 @@ WEARther is a web-based application that combines weather data and curated outfi
 - Outfit suggestions based on gender and temperature ranges
 - Fully responsive user interface
 - Dockerized architecture for seamless deployment
-
-# Team Members
-
-[Jun Li](https://github.com/jljune9li )
-
-[Daniel Brito](https://github.com/danny031103 )
-
-[Natalie Ovcarov](https://github.com/nataliovcharov)
-
-[Alvaro Martinez](https://github.com/AlvaroMartinezM)
 
 ---
 
