@@ -22,6 +22,7 @@ class Expense:
     """
     Represents a financial expense.
     """
+
     amount: float
     description: str
     date: datetime
@@ -73,12 +74,14 @@ class Database:
             return False  # User already exists
 
         hashed_password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
-        self.db.users.insert_one({
-            "username": username,
-            "password": hashed_password,
-            "budget": 0.0,
-            "total_expenses": 0.0
-        })
+        self.db.users.insert_one(
+            {
+                "username": username,
+                "password": hashed_password,
+                "budget": 0.0,
+                "total_expenses": 0.0
+            }
+        )
         return True
 
     def get_user_data(self, username: str) -> dict:
@@ -172,6 +175,14 @@ class User(UserMixin):
     def get_id(self):
         """Return the ID."""
         return self.id
+    
+    @property
+    def is_authenticated(self):
+        return True
+
+    @property
+    def is_active(self):
+        return True
 
 
 class MLModel:

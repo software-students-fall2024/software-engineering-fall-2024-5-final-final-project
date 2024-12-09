@@ -65,7 +65,9 @@ def login():
         logger.info("User %s logged in successfully.", username)
         return jsonify({"success": True}), 200
     else:
-        logger.warning("Failed login attempt for username: %s (wrong password)", username)
+        logger.warning(
+            "Failed login attempt for username: %s (wrong password)", username
+        )
         return jsonify({"success": False, "message": "Invalid credentials"}), 401
 
 
@@ -254,4 +256,3 @@ def predict_expenses():
 
     # Return the prediction result
     return jsonify({"predicted_expenses": round(next_month_prediction, 2)})
-   

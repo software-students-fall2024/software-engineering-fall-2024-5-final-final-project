@@ -11,6 +11,7 @@ app = Flask(__name__, template_folder="templates", static_folder="static")
 app.secret_key = os.environ.get("SECRET_KEY", "your-secret-key-here")
 BACKEND_URL = os.environ.get("BACKEND_URL", "http://backend:5001")
 
+
 @app.route("/")
 def index():
     """
@@ -35,7 +36,7 @@ def signup():
         response = Response(
             resp.content,
             status=resp.status_code,
-            content_type=resp.headers.get("content-type", "application/json")
+            content_type=resp.headers.get("content-type", "application/json"),
         )
 
         if "set-cookie" in resp.headers:
@@ -53,7 +54,9 @@ def proxy_to_backend(path):
     """
     try:
         if request.method == "GET":
-            resp = requests.get(f"{BACKEND_URL}/api/{path}", cookies=request.cookies, timeout=5)
+            resp = requests.get(
+                f"{BACKEND_URL}/api/{path}", cookies=request.cookies, timeout=5
+            )
         else:
             resp = requests.post(
                 f"{BACKEND_URL}/api/{path}",
@@ -73,7 +76,8 @@ def proxy_to_backend(path):
         return response
     except requests.exceptions.RequestException as e:
         return {"error": str(e)}, 500
-    
+
+
 @app.route("/api/logout", methods=["POST"])
 def logout():
     """
@@ -88,7 +92,7 @@ def logout():
         response = Response(
             resp.content,
             status=resp.status_code,
-            content_type=resp.headers.get("content-type", "application/json")
+            content_type=resp.headers.get("content-type", "application/json"),
         )
 
         if "set-cookie" in resp.headers:
@@ -98,7 +102,6 @@ def logout():
     except requests.exceptions.RequestException as e:
         app.logger.error("Request to backend failed: %s", e)
         return {"error": "Failed to connect to the backend server."}, 500
-
 
 
 if __name__ == "__main__":

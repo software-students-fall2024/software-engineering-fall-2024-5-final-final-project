@@ -15,6 +15,7 @@ from backend.database import Database, User
 db = Database()
 login_manager = LoginManager()
 
+
 def create_app():
     """
     Create and configure the Flask application.
@@ -62,12 +63,20 @@ def create_app():
         password = data.get("password")
 
         if not username or not password:
-            return jsonify({"success": False, "message": "Username and password required"}), 400
+            return (
+                jsonify(
+                    {"success": False, "message": "Username and password required"}
+                ), 
+                400,
+            )
 
         # Create a new user in the database
         created = db.create_user(username, password)
         if created:
-            return jsonify({"success": True, "message": "User created successfully"}), 201
+            return (
+                jsonify({"success": True, "message": "User created successfully"}),
+                201,
+            )
         else:
             return jsonify({"success": False, "message": "User already exists"}), 409
 
