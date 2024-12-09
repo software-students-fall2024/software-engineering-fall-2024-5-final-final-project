@@ -162,7 +162,7 @@ function addLocationToList(location) {
     // Save the selected location and navigate to the weather page
     li.onclick = () => {
         localStorage.setItem("selectedLocation", location);
-        window.location.href = `/index?city=${encodeURIComponent(location)}`;
+        window.location.href = `/?city=${encodeURIComponent(location)}`;
     };
 
     list.appendChild(li);
@@ -238,7 +238,7 @@ function goToWeather() {
     const lastLocation = localStorage.getItem("selectedLocation");
 
     if (lastLocation) {
-        window.location.href = `/index?city=${encodeURIComponent(lastLocation)}`;
+        window.location.href = `/?city=${encodeURIComponent(lastLocation)}`;
     } else {        
         window.location.href = "/locations";
     }
