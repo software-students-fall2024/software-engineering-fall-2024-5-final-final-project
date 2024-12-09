@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+pymongo
+pytest
+coverage
+Flask
+pytest-cov
+pytest-flask
+flask-cors
+pydub
+python-dateutil
+python-dotenv
+flask-login
+bcrypt
+scikit-learn
+numpy
