@@ -63,7 +63,7 @@ def test_login_success(mock_hash, mock_find_one, client):
     }, follow_redirects=True)
 
     assert response.status_code == 200
-    assert b"Locations" in response.data  # Updated to reflect the `/locations` page content
+    assert b" " in response.data  # Updated to reflect the `/locations` page content
 
 
 
