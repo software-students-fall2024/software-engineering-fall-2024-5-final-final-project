@@ -49,5 +49,4 @@ def test_get_weather_failure(mock_get):
     "_id": ObjectId(),
     "username": "testuser",
     "password": "hashedpassword",
-    "gender": "male"
-})
+    "gender": "male"})
