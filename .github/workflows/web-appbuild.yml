@@ -77,7 +77,7 @@ jobs:
           key: ${{ secrets.DO_PRIVATE_KEY }}
           script: |
             docker pull jl8059/web-app:latest
-            docker-compose -f /app/docker-compose.yml down || true
-            docker-compose -f /app/docker-compose.yml up --build -d
+            docker-compose -f ~/first-project/web-app/docker-compose.yml down || true
+            docker-compose -f ~/first-project/web-app/docker-compose.yml up --build -d
 
 
