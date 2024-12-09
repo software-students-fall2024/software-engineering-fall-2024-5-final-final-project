@@ -3,6 +3,39 @@ from app import app, db, users_collection, bar_data_collection
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 
+# Add the project root directory to Python path
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, project_root)
+
+# Now import your app
+from app import app, users_collection, bars_collection
+
+
+# Test configuration
+@pytest.fixture
+def client():
+    app.config["TESTING"] = True
+    app.config["SECRET_KEY"] = "test_secret_key"
+
+    app.config['TESTING'] = True
+    app.config['DEBUG'] = False
+    app.config['WTF_CSRF_ENABLED'] = False
+    with app.test_client() as client:
+        with app.app_context():
+            yield client
+
+
+@pytest.fixture
+def logged_in_user(client):
+    # Create a test user
+    username = "testuser"
+    password = "testpassword"
+    hashed_password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+
+    # Insert test user into database
+    user = {"username": username, "password": hashed_password}
+    result = users_collection.insert_one(user)
+    user_id = str(result.inserted_id)
 # Test configuration
 @pytest.fixture
 def client():
