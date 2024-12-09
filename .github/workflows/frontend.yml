@@ -38,8 +38,9 @@ jobs:
       - name: Run Pylint
         run: |
           venv/bin/python -m pylint --ignored-modules=pytest --disable=redefined-outer-name frontend
-          - name: Configure SSH Key
-          run: |
+
+      - name: Configure SSH Key
+        run: |
               mkdir -p ~/.ssh
               echo "-----BEGIN OPENSSH PRIVATE KEY-----
               [ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMu5uDr8e2rY0jV06uJyZ8dToG4gtNFn3OqqwyMWFRRc josephchege@10-17-42-116.dynapool.wireless.nyu.edu]
