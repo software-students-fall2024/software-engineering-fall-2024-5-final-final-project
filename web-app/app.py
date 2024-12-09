@@ -57,34 +57,40 @@ def index():
     # users_collection.insert_one(user);
     # mongo.db.users.insert_one(user)
 
-    selectedUser = users_collection.find_one({"username":"WilliamTest2"})
+    # TODO: This will have to change to find the user that is logged in, hardcoded for now to test
+    selected_user = users_collection.find_one({"username":"WilliamTest2"})
 
-    if selectedUser:
+    # print("User's date: " + selected_user["daily_movie"]["recommended_date"].strftime("%Y %m %d"))
+    # print("Computer's date: " + datetime.datetime.now().strftime("%Y %m %d"))
+    # print("Equal?: "+ str(selected_user["daily_movie"]["recommended_date"] == datetime.datetime.now()))
 
-        # print("User's date: " + selectedUser["daily_movie"]["recommended_date"].strftime("%Y %m %d"))
-        # print("Computer's date: " + datetime.datetime.now().strftime("%Y %m %d"))
-        # print("Equal?: "+ str(selectedUser["daily_movie"]["recommended_date"] == datetime.datetime.now()))
+    # Checks if movie has been assigned for the day if last recommended movie date is same as today
+    user_movie_id = selected_user["daily_movie"]["movie_id"]
+    user_recommended_date = selected_user["daily_movie"]["recommended_date"]
+    
+    is_already_assigned = user_recommended_date.strftime("%Y %m %d") == datetime.datetime.now().strftime("%Y %m %d")
 
-        # Checks if movie has been assigned for the day if last recommended movie date is same as today
-        user_movie_id = selectedUser["daily_movie"]["movie_id"]
-        user_recommended_date = selectedUser["daily_movie"]["recommended_date"]
-        
-        isAlreadyAssigned = user_recommended_date.strftime("%Y %m %d") == datetime.datetime.now().strftime("%Y %m %d")
+    # # For testing: to forcefully update movie even if date hasn't changed
+    # is_already_assigned = False
 
-        # if movie hasn't been assigned for the day, set a new movie id user hasn't seen before
-        if not isAlreadyAssigned:
-            new_movie_id = random_movie_id(selectedUser["watched_movies"])
-            user_movie_id = new_movie_id
-            user_recommended_date = datetime.datetime.now()
+    # if movie hasn't been assigned for the day, set a new movie that user hasn't seen before
+    if not is_already_assigned:
+        new_movie_id = random_movie_id(selected_user["watched_movies"])
+        users_collection.update_one(
+            {"username":"WilliamTest2"},    # TODO: replace username with actual user logged in
+            { 
+                "$set": {
+                    "daily_movie.movie_id": new_movie_id,
+                    "daily_movie.recommended_date": datetime.datetime.now()
+                }
+            }
+        )
+        selected_movie = g.all_movies[new_movie_id] # uses newly generated movie id
 
-        selected_movie = g.all_movies[user_movie_id]
+    # if move has been assigned
+    else:
+        selected_movie = g.all_movies[user_movie_id] # uses existing movie id found in user doc in db
 
-    movie_picked = True
-
-    if not movie_picked:
-        selected_movie = g.all_movies[random.randint(1,1000)]
-    # for row in g.all_movies:
-    #     print(row[1])
     return render_template("index.html", selectedMovie=selected_movie)
 
 if __name__ == '__main__':
