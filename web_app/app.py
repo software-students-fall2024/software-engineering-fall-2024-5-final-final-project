@@ -14,8 +14,7 @@ import os
 import bcrypt
 import pandas as pd
 import json
-
-# --------SETUP FLASK & MONGODB--------
+ 
 from dotenv import load_dotenv
 
 load_dotenv()  # load .env file
@@ -30,41 +29,44 @@ db = client[MONGO_DBNAME]  # access database
 users_collection = db["users"]  # collection of users
 bars_collection = db["bars"]  # collection of bars
 
-
 # --------ACCOUNT PAGE--------
 @app.route("/account")
 def account():
-    return render_template("account.html")  # link to account.html
+    """
+    Render the account page where the user can log in or sign up.
+    """
+    return render_template("account.html")
 
 
-# # --------LOGIN PAGE--------
-
-#     return render_template("login.html") # link to login.html
+# --------LOGIN PAGE--------
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    """
+    Handle user login.
+    - GET: Render the login page.
+    - POST: Authenticate the user.
+    """
     if request.method == "POST":
-        username = request.form["username"].strip()
-        raw_password = request.form["password"].strip()
+        username = request.form["username"].strip()  # Get the username
+        raw_password = request.form["password"].strip()  # Get the password
 
-        # Encode the entered password to bytes
+        # Convert password to bytes
         password_bytes = raw_password.encode("utf-8")
 
         # Find the user in the database
         user = users_collection.find_one({"username": username})
 
         if user and "password" in user:
-            # user["password"] should be the hashed bytes stored at signup
+            # Verify the password using bcrypt
             stored_hashed_password = user["password"]
-
-            # Check the password using bcrypt
             if bcrypt.checkpw(password_bytes, stored_hashed_password):
-                # Password matches, log the user in
+                # Login successful
                 session["user_id"] = str(user["_id"])
                 session["username"] = username
                 session.permanent = False
                 return redirect(url_for("index"))
             else:
-                # Incorrect password
+                # Invalid password
                 flash("Invalid username or password.", "error")
                 return redirect(url_for("login"))
         else:
@@ -72,40 +74,51 @@ def login():
             flash("Invalid username or password.", "error")
             return redirect(url_for("login"))
 
-    # GET request just renders the login template
+    # Render the login template
     return render_template("login.html")
 
 
-
+# --------SIGNUP PAGE--------
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
+    """
+    Handle user registration.
+    - GET: Render the signup page.
+    - POST: Register a new user.
+    """
     if request.method == "POST":
-        username = request.form["username"].strip()
-        raw_password = request.form["password"].strip()
+        username = request.form["username"].strip()  # Get the username
+        raw_password = request.form["password"].strip()  # Get the password
 
-        # Encode the password to bytes
+        # Convert password to bytes
         password_bytes = raw_password.encode("utf-8")
+
         # Check if username already exists
         if users_collection.find_one({"username": username}):
             flash("Username already exists. Please choose a different one.", "error")
             return redirect(url_for("signup"))
 
-        # Hash the password (bcrypt.hashpw returns bytes)
+        # Hash the password and store in the database
         hashed_password = bcrypt.hashpw(password_bytes, bcrypt.gensalt())
         users_collection.insert_one({"username": username, "password": hashed_password})
         flash("Account created successfully. Please log in.", "success")
         return redirect(url_for("login"))
 
+    # Render the signup template
     return render_template("signup.html")
 
 
 # --------HOME PAGE--------
 @app.route("/")
 def index():
+    """
+    Render the home page, showing the user's saved bars.
+    Redirects to the account page if the user is not logged in.
+    """
     if "user_id" not in session:
-        return redirect(url_for("account"))  # direct to login.html
+        return redirect(url_for("account"))
 
-    # get all bars from current user
+    # Fetch all bars saved by the current user
     user_id = session.get("user_id")
     bars = bars_collection.find({"user_id": user_id})
 
@@ -115,8 +128,13 @@ def index():
 # --------ADD PAGE--------
 @app.route("/add", methods=["GET", "POST"])
 def add():
+    """
+    Handle adding a new bar.
+    - GET: Render the add page.
+    - POST: Save the new bar to the database.
+    """
     if request.method == "POST":
-        # get data
+        # Gather form data
         name = request.form.get("name")
         type = request.form.get("type")
         occasion = request.form.get("occasion")
@@ -125,7 +143,7 @@ def add():
         cost = request.form.get("cost")
         status = request.form.get("status")
 
-        # insert new bars into bars_collection
+        # Create a new bar entry
         new_bar = {
             "user_id": session.get("user_id"),
             "name": name,
@@ -136,27 +154,32 @@ def add():
             "cost": cost,
             "status": status,
         }
-        bars_collection.insert_one(new_bar)
-        return redirect(url_for("index"))  # direct to index.html
+        bars_collection.insert_one(new_bar)  # Insert into database
+        return redirect(url_for("index"))
 
-    return render_template("add.html")  # link to add.html
+    return render_template("add.html")
 
 
 # --------EDIT PAGE--------
 @app.route("/edit/<bar_id>", methods=["GET", "POST"])
 def edit(bar_id):
+    """
+    Handle editing an existing bar.
+    - GET: Render the edit page.
+    - POST: Update the bar details in the database.
+    """
     if "user_id" not in session:
-        return redirect(url_for("login"))  # direct to login.html
+        return redirect(url_for("login"))
 
-    # ensure it's current user's bars
+    # Fetch the bar details to be edited
     bar = bars_collection.find_one(
         {"_id": ObjectId(bar_id), "user_id": session.get("user_id")}
     )
     if not bar:
-        return redirect(url_for("index"))  # direct to index.html
+        return redirect(url_for("index"))
 
     if request.method == "POST":
-        # get data
+        # Update the bar details
         name = request.form.get("name")
         type = request.form.get("type")
         occasion = request.form.get("occasion")
@@ -165,7 +188,7 @@ def edit(bar_id):
         cost = request.form.get("cost")
         status = request.form.get("status")
 
-        # update bar
+        # Update the database
         bars_collection.update_one(
             {"_id": ObjectId(bar_id), "user_id": session.get("user_id")},
             {
@@ -180,34 +203,38 @@ def edit(bar_id):
                 }
             },
         )
-        return redirect(url_for("index"))  # direct to home page
+        return redirect(url_for("index"))
 
-    return render_template("edit.html", bar=bar)  # link to html
+    return render_template("edit.html", bar=bar)
 
 
 # --------DELETE PAGE--------
 @app.route("/delete/<bar_id>", methods=["GET", "POST"])
 def delete(bar_id):
+    """
+    Handle deleting a bar.
+    - GET: Confirm deletion.
+    - POST: Delete the bar from the database.
+    """
     if "user_id" not in session:
-        return redirect(url_for("login"))  # direct to login.html
+        return redirect(url_for("login"))
 
-    # ensure it's current user's bar
+    # Fetch the bar to be deleted
     bar = bars_collection.find_one(
         {"_id": ObjectId(bar_id), "user_id": session.get("user_id")}
     )
     if not bar:
-        return redirect(url_for("index"))  # direct to index.html
+        return redirect(url_for("index"))
 
-    # delete bar
+    # Delete the bar
     if request.method == "POST":
         bars_collection.delete_one(
             {"_id": ObjectId(bar_id), "user_id": session.get("user_id")}
         )
-        return redirect(url_for("index"))  # direct to index.html
+        return redirect(url_for("index"))
 
-    return render_template("delete.html", bar=bar)  # link to delete.html
-
-
+    return render_template("delete.html", bar=bar)
+ 
 # --------SEARCH PAGE--------
 @app.route("/search", methods=["GET", "POST"])
 def search():
