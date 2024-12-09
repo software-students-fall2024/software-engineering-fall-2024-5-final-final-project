@@ -3,8 +3,8 @@ This module sets up a Flask application to handle routes and connect to MongoDB.
 It uses environment variables for configuration.
 """
 
-import os  # Standard library imports
-from dotenv import load_dotenv  # For loading environment variables
+import os  
+from dotenv import load_dotenv  
 import subprocess
 import uuid
 from datetime import datetime
@@ -43,7 +43,7 @@ db = cxn[os.getenv("MONGO_DBNAME")]
 app.secret_key = os.getenv("SECRET_KEY", "supersecretkey123")
 
 
-# User Class
+
 class User(UserMixin):
     """
     User class that extends UserMixin for Flask-Login.
@@ -70,8 +70,7 @@ class User(UserMixin):
         self.password = password
         self.gender  = gender
 
-##########################################
-# LOGIN MANAGER
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
@@ -99,7 +98,6 @@ def load_user(user_id):
     return None
 
 
-# REGISTER
 @app.route("/register", methods=["GET", "POST"])
 def register():
     """
@@ -127,11 +125,10 @@ def register():
             flash("Username already exists.")
             return redirect(url_for("register"))
 
-        # Insert new user into the database with gender
         db.users.insert_one({
             "username": username,
             "password": hashed_password,
-            "gender": gender  # Save the gender
+            "gender": gender  
         })
 
         flash("Registration successful. Please log in.")
@@ -140,7 +137,7 @@ def register():
     return render_template("register.html")
 
 
-# LOGIN
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     """
@@ -163,18 +160,17 @@ def login():
                 user_id=str(user_data["_id"]),
                 username=user_data["username"],
                 password=user_data["password"],
-                gender=user_data["gender"]  # Add this line
+                gender=user_data["gender"]  
             )
             login_user(user)
             flash("Login successful!")
             return redirect(url_for("index"))
         flash("Invalid username or password.")
         return redirect(url_for("login"))
-    # Explicitly return a rendered template for GET requests
     return render_template("login.html")
 
 
-# LOGOUT
+
 @app.route("/logout")
 @login_required
 def logout():
@@ -209,7 +205,6 @@ def index():
         else:
             category = "hot"
 
-        # Pass the background image URL for the category
         
         background_image = f"/static/background_images/{category}.jpg"
 
@@ -235,7 +230,6 @@ def index():
             username=current_user.username
         )
       
-# Function to get weather data
 def get_weather(city_name, api_key):
     url = f"http://api.openweathermap.org/data/2.5/weather?q={city_name}&appid={api_key}&units=metric"
     response = requests.get(url)
@@ -247,13 +241,11 @@ def get_weather(city_name, api_key):
     else:
         return None, None
 
-# API key for OpenWeatherMap
 API_KEY = os.getenv("OPENWEATHER_API_KEY")
 
-# Flask route to fetch weather data
 @app.route('/get_weather', methods=['GET'])
 def fetch_weather():
-    city = request.args.get('city', 'New York')  # Default city is New York
+    city = request.args.get('city', 'New York')  
     temperature, description = get_weather(city, API_KEY)
     if temperature is not None:
         return jsonify({
@@ -278,7 +270,7 @@ def seed_database():
 
     genders = ["male", "female"]
     images_folder = "./static/images"
-    genders = ["female", "male"]  # Include genders here
+    genders = ["female", "male"]  
     outfit_data = []
 
     for category, temp_range in categories.items():
@@ -294,8 +286,8 @@ def seed_database():
                         "temperature_range_min": temp_range["min"],
                         "temperature_range_max": temp_range["max"],
                         "weather_condition": category,
-                        "gender": gender,  # Store gender information
-                        "image_url": f"/static/images/{category}/{gender}/{image}"  # Construct gender-specific URL
+                        "gender": gender,  
+                        "image_url": f"/static/images/{category}/{gender}/{image}"  
                     })
             else:
                 print(f"Folder for category '{category}' and gender '{gender}' does not exist. Skipping...")
@@ -307,7 +299,6 @@ def seed_database():
         print("No outfit data was inserted. Check your folder structure.")
 
 def get_outfit_from_db(temp, gender):
-    # Query for matching temperature range and gender
     outfit = db.outfits.find_one({
         "temperature_range_min": {"$lte": int(temp)},
         "temperature_range_max": {"$gte": int(temp)},
@@ -323,6 +314,7 @@ def get_outfit_from_db(temp, gender):
             "image": "/images/default.png",
             "description": "Default Outfit"
         }
+
     
 # Add location to MongoDB
 @app.route('/add_location', methods=['POST'])
@@ -355,7 +347,35 @@ def get_locations():
 def locations():
     return render_template("locations.html")
 
+@app.route('/get_weather_data', methods=['POST'])
+@login_required
+def get_weather_data():
+    data = request.json
+    city = data.get("city", "New York")
+    temperature, description = get_weather(city, API_KEY)
 
+    if temperature is not None:
+        temperature = int(temperature)
+        outfit = get_outfit_from_db(temperature, current_user.gender)
+        category = (
+            "cold" if temperature <= 0 else
+            "cool" if 1 <= temperature <= 15 else
+            "warm" if 16 <= temperature <= 25 else "hot"
+        )
+
+        background_image = f"/static/background_images/{category}.jpg"
+
+        return jsonify({
+            "city": city,
+            "temperature": f"{temperature}°C",
+            "description": description,
+            "outfit_image": outfit["image"],
+            "outfit_description": outfit["description"],
+            "background_image": background_image,
+            "username": current_user.username
+        })
+
+    return jsonify({"error": "Could not fetch weather data"}), 400
 
 # Run the app
 if __name__ == "__main__":
