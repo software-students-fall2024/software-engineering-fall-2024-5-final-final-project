@@ -1,3 +1,8 @@
+"""
+This module initializes the Flask app and sets up configurations,
+such as the CORS and login manager.
+"""
+
 from flask import Flask
 from flask_login import LoginManager
 from flask_cors import CORS
@@ -6,6 +11,11 @@ login_manager = LoginManager()
 
 
 def create_app():
+    """
+    Create and configure the Flask application.
+    Returns:
+        Flask app instance.
+    """
     app = Flask(__name__)
     app.secret_key = "your-secret-key-here"
 
@@ -23,7 +33,7 @@ def create_app():
 
     login_manager.init_app(app)
 
-    from backend.routes import routes
+    from backend.routes import routes  # pylint: disable=import-outside-toplevel
 
     app.register_blueprint(routes)
 

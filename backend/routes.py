@@ -1,15 +1,17 @@
+"""
+backend.routes
+
+This module defines the API routes for user authentication and financial management.
+It handles login, logout, budget updates, expense tracking, and data retrieval.
+"""
+
 from flask import Blueprint, jsonify, request, session
 from flask_cors import CORS
-from flask_login import login_user, logout_user, login_required, current_user
-import bcrypt
-import logging
-from backend.database import Database, MLModel, User
-from backend.auth import db
+from backend.database import Database  # pylint: disable=import-error
+from backend.blueprints import routes
 
-logging.basicConfig(level=logging.INFO)
-
-routes = Blueprint("routes", __name__)
 CORS(routes, supports_credentials=True)
+db = Database()
 
 
 @routes.route("/")
@@ -18,46 +20,35 @@ def index():
     return jsonify({"status": "ok"}), 200
 
 
-@routes.route("/api/login", methods=["POST"])
+@routes.route("/login", methods=["POST"])
 def login():
+    """
+    Handle user login by validating credentials.
+    """
     data = request.json
-    user_data = db.get_user_data(data["username"])
-
-    if user_data and bcrypt.checkpw(
-        data["password"].encode("utf-8"), user_data["password"]
-    ):
-        user = User(user_data)
-        login_user(user)
-        logging.info(f"User {user.username} logged in successfully.")
+    if data["username"] == "user" and data["password"] == "pw":
+        session["username"] = "user"
         return jsonify({"success": True})
-
-    logging.warning(f"Failed login attempt for username: {data['username']}")
-    return jsonify({"success": False}), 401
+    return jsonify({"success": False, "message": "Invalid credentials"}), 401
 
 
-@routes.route("/api/logout", methods=["POST"])
-@login_required
+@routes.route("/logout", methods=["POST"])
 def logout():
     """
-    Handle user logout.
+    Handle user logout by clearing the session.
     """
-    username = current_user.username
-    logout_user()
-    response = jsonify({"success": True, "message": "Logged out successfully"})
-    # Delete the 'session' cookie
-    response.delete_cookie("session", path="/")
-    logging.info(f"User {username} logged out successfully.")
-    return response
+    session.pop("username", None)
+    return jsonify({"success": True})
 
 
-@routes.route("/api/user-data")
-@login_required
+@routes.route("/user-data")
 def get_user_data():
-    """Retrieve user-specific financial data."""
-    if not current_user.is_authenticated:
+    """
+    Retrieve user-specific financial data.
+    """
+    if "username" not in session:
         return jsonify({"error": "Not authenticated"}), 401
-
-    user_data = db.get_user_data(current_user.username)
+    user_data = db.get_user_data(session["username"])
     return jsonify(
         {
             "budget": user_data["budget"],
@@ -67,46 +58,50 @@ def get_user_data():
     )
 
 
-@routes.route("/api/update-budget", methods=["POST"])
-@login_required
+@routes.route("/update-budget", methods=["POST"])
 def update_budget():
     """
     Update the user's budget.
     """
+    if "username" not in session:
+        return jsonify({"error": "Not authenticated"}), 401
     data = request.json
-    db.update_budget(current_user.username, float(data["budget"]))
+    db.update_budget(session["username"], float(data["budget"]))
     return jsonify({"success": True})
 
 
-@routes.route("/api/add-expense", methods=["POST"])
-@login_required
+@routes.route("/add-expense", methods=["POST"])
 def add_expense():
     """
     Add a new expense for the user.
     """
+    if "username" not in session:
+        return jsonify({"error": "Not authenticated"}), 401
     data = request.json
-    db.add_expense(current_user.username, float(data["amount"]), data["description"])
+    db.add_expense(session["username"], float(data["amount"]), data["description"])
     return jsonify({"success": True})
 
 
-@routes.route("/api/remove-expense", methods=["POST"])
-@login_required
+@routes.route("/remove-expense", methods=["POST"])
 def remove_expense():
     """
     Remove an existing expense for the user.
     """
+    if "username" not in session:
+        return jsonify({"error": "Not authenticated"}), 401
     data = request.json
-    success = db.remove_expense(current_user.username, data["expense_id"])
+    success = db.remove_expense(session["username"], data["expense_id"])
     return jsonify({"success": success})
 
 
-@routes.route("/api/expenses")
-@login_required
+@routes.route("/expenses")
 def get_expenses():
     """
     Retrieve all expenses for the authenticated user.
     """
-    expenses = db.get_expenses(current_user.username)
+    if "username" not in session:
+        return jsonify({"error": "Not authenticated"}), 401
+    expenses = db.get_expenses(session["username"])
     return jsonify(
         [
             {
@@ -118,27 +113,3 @@ def get_expenses():
             for exp in expenses
         ]
     )
-
-
-@routes.route("/api/predict-expenses", methods=["GET"])
-@login_required
-def predict_expenses():
-    """
-    Predict next month's expenses based on historical data.
-    """
-    # Fetch all user's current expenses
-    expenses = db.get_expenses(current_user.username)
-
-    if not expenses or all(exp.amount <= 0 for exp in expenses):
-        return jsonify({"error": "No valid expense data available for prediction"}), 400
-
-    # Get the data for training
-    months = [expense.date.month for expense in expenses]
-    totals = [expense.amount for expense in expenses]
-
-    # Train the model and make predictions
-    ml_model = MLModel()
-    ml_model.train(months, totals)
-    next_month_prediction = ml_model.predict_next_month(max(months))
-
-    return jsonify({"predicted_expenses": round(next_month_prediction, 2)})
