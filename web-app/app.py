@@ -113,6 +113,7 @@ def setWatched():
                 "date_watched": datetime.datetime.now()
             }
         )
+
         users_collection.update_one(
             {"_id": user["_id"]},
             {"$push": {"watched_movies": movie_id}}
@@ -123,8 +124,13 @@ def setWatched():
             "movie_id": movie_id
         })
 
+        users_collection.update_one(
+            {"_id": user["_id"]},
+            {"$pop": {"watched_movies": 1}}
+        )
+
     # Return to the homepage or wherever you need to redirect after processing
-    return redirect(url_for("index", selectedMovie=g.all_movies[movie_id], movieId=movie_id))
+    return redirect(url_for("index"))
 
 @app.route('/watchlist')
 def watchlist():
