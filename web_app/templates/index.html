@@ -1,0 +1,82 @@
+<!-- HOME PAGE -->
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Home-Brewed</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+        <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    </head>
+
+    <body>
+        <!-- BLUE HEADING SECTION -->
+        <header class="header">
+            <a href="#home" class="webName"><i class='bx bx-drink' id="logo"></i><i>Home-Brewed</i></a>
+            <i class="bx bx-menu" id="menu-icon"></i> <!-- Menu icon -->
+
+            <!-- Logout button -->
+            <div class="logout-button"><a href="{{ url_for('logout') }}">Logout</a></div>
+            
+            <!-- Navbar content -->
+            <nav class="navbar">
+                <a href="{{ url_for('index') }}" class="active">Home</a> <!-- current page -->
+                <a href="{{ url_for('add') }}">Add</a>
+                <a href="{{ url_for('index') }}">Edit/Delete</a> <!-- link to Edit/Delete -->
+                <a href="{{ url_for('search') }}">Search</a>
+                <a href="{{ url_for('sort') }}">Sort</a>
+                <a href="{{ url_for('recommend') }}">Recs</a>
+            </nav>
+        </header>
+
+        <!-- HOME PAGE -->
+        <h2>Let's get drinking, {{ username }}!</h2>
+        <p>旦_(･o･)</p>
+        
+        <!-- Dashboard of user's applications -->
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Action</th> <!-- For Edit/Delete -->
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Occasion</th>
+                        <th>Area</th>
+                        <th>Reservation</th>
+                        <th>Cost</th>
+                        <th>Visited?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bar in bars %}
+                    <tr>
+                        <!-- Edit/Delete -->
+                        <td class="action-cell">
+                            <select onchange="handleAction(this, '{{ bar._id }}')"> <!-- script.js function -->
+                                <option value="" disabled selected>--Choose--</option>
+                                <option value="add">Add</option>
+                                <option value="edit">Edit</option>
+                                <option value="delete">Delete</option>
+                            </select>
+                        </td>              
+
+                        <td>{{ bar.name }}</td>
+                        <td>{{ bar.type }}</td>
+                        <td>{{ bar.occasion }}</td>
+                        <td>{{ bar.area }}</td>
+                        <td>{{ bar.reservation }}</td>
+                        <td>{{ bar.cost }}</td>
+                        <td>{{ bar.status }}</td>
+                    </tr>
+                    {% else %}
+                        <td colspan="8" style="text-align: center;">
+                            <a href="{{ url_for('add') }}" class="add-bar-button">Add a Bar!</a>
+                        </td>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+    </body>
+</html>

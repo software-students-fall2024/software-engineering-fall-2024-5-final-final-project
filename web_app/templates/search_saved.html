@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Saved Bars</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar" id="navbar">
+        <ul class="nav-links" id="nav-links">
+            <!-- Home Link -->
+            <li>
+                <a href="{{ url_for('dashboard', username=session.get('username', '')) }}">Home</a>
+            </li>
+            <!-- Find a Bar Link -->
+            <li>
+                <a href="{{ url_for('findbar') }}">Find a Bar</a>
+            </li>
+            <!-- Saved Bars Link -->
+            <li>
+                <a href="{{ url_for('savedbar', username=session.get('username', '')) }}">Saved Bars</a>
+            </li>
+            <li><a href="{{ url_for('search_saved', username=session['username']) }}" class="active">Search Saved</a></li>
+            <!-- Logout Link -->
+            <li>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            </li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <h2 class="text-center">Search Your Saved Bars</h2>
+
+        <!-- Search Form -->
+        <form action="{{ url_for('search_saved') }}" method="POST" class="form">
+            <div class="form-group">
+                <label for="search_query">Search Query</label>
+                <input type="text" id="search_query" name="search_query" placeholder="Enter bar name or location" required>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn">Search</button>
+            </div>
+        </form>
+
+        <!-- Error Message -->
+        {% if error %}
+            <p class="alert alert-error">{{ error }}</p>
+        {% endif %}
+
+        <!-- Search Results -->
+        {% if search_results is not none %}
+            <div class="results">
+                <h3>Results for "{{ search_query }}":</h3>
+                {% if search_results %}
+                    <ul class="result-list">
+                        {% for bar in search_results %}
+                            <li class="result-item">
+                                <strong>{{ bar.name }}</strong> - {{ bar.location }}
+                                <p>{{ bar.description }}</p>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="no-results">No bars found matching your query.</p>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

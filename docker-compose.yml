@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  web_app:
+    image: emilyhuang19/web_app:latest
+    container_name: web_app
+    platform: linux/amd64
+
+    restart: always
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+
+  bar_recs:
+    image: emilyhuang19/bar_recs:latest
+    container_name: bar_recs
+    restart: always
+    ports:
+      - "5001:5001"
+    env_file:
+      - .env
+
+networks:
+  app-network:
+    driver: bridge

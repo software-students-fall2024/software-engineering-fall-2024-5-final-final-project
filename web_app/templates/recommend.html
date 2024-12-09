@@ -1,0 +1,63 @@
+<!-- RECOMMENDER PAGE -->
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Home-Brewed</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+        <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    </head>
+
+    <body>
+        <!-- BLUE HEADING SECTION -->
+        <header class="header">
+            <a href="#home" class="webName"><i class='bx bx-drink' id="logo"></i><i>Home-Brewed</i></a>
+            <i class="bx bx-menu" id="menu-icon"></i> <!-- Menu icon -->
+
+            <!-- Logout button -->
+            <div class="logout-button"><a href="{{ url_for('logout') }}">Logout</a></div>
+            
+            <!-- Navbar content -->
+            <nav class="navbar">
+                <a href="{{ url_for('index') }}">Home</a>
+                <a href="{{ url_for('add') }}">Add</a>
+                <a href="{{ url_for('index') }}">Edit/Delete</a> <!-- link to Edit/Delete -->
+                <a href="{{ url_for('search') }}">Search</a>
+                <a href="{{ url_for('sort') }}">Sort</a>
+                <a href="{{ url_for('recommend') }}" class="active">Recs</a> <!-- current page -->
+            </nav>
+        </header>
+
+        <!-- RECOMMEND PAGE -->
+        <h2>Recommended Bars</h2>
+        <p>Based on your preferences, here are some bars you might enjoy:</p>
+
+        <div class="card-container">
+            {% if bars %}
+                {% for bar in bars %}
+                <div class="card">
+                    <h3><i>{{ bar.name }}</i></h3>
+                    <p>Type: {{ bar.type }}</p>
+                    <p>Occasion: {{ bar.occasion }}</p>
+                    <p>Area: {{ bar.area }}</p>
+                    <p>Reservation: {{ bar.reservation }}</p>
+                    <p>Cost: {{ bar.cost }}</p>
+                    <form method="POST" action="{{ url_for('recommend') }}">
+                        <input type="hidden" name="bar_name" value="{{ bar.name }}">
+                        <button type="submit">Add to My List</button>
+                    </form>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div style="text-align: center; margin-top: 20px;">
+                    <p>No bars found for recommendations!</p>
+                    <a href="{{ url_for('add') }}" class="add-bar-button">Add a Bar!</a>
+                </div>
+            {% endif %}
+        </div>
+        
+        </div>
+        <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+    </body>
+</html>
