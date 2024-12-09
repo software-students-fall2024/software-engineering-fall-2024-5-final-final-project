@@ -13,6 +13,7 @@
 - [Thomas Chen](https://github.com/ThomasChen0717)
 - [An Hai](https://github.com/AnHaii)
 - [Annabella Lee](https://github.com/annabellalee0113)
+- [Kevin Zhang](https://github.com/yz7669)
 
 ## Installation
 
