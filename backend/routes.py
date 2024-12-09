@@ -244,4 +244,14 @@ def predict_expenses():
         )
 
     # Train the model and predict
+    try:
+        ml_model = MLModel()
+        ml_model.train(months, totals)
+        next_month_prediction = ml_model.predict_next_month(max(months))
+    except (ValueError, RuntimeError) as e:
+        logger.error("Error during expense prediction: %s", e)
+        return jsonify({"error": "Failed to predict expenses."}), 500
+
+    # Return the prediction result
+    return jsonify({"predicted_expenses": round(next_month_prediction, 2)})
    

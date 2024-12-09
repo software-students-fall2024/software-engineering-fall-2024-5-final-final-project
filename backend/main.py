@@ -4,6 +4,7 @@ backend.main
 This module initializes and runs the Flask application.
 """
 
+from backend import create_app
 import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS

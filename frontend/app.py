@@ -96,7 +96,8 @@ def logout():
 
         return response
     except requests.exceptions.RequestException as e:
-        return {"error": str(e)}, 500
+        app.logger.error("Request to backend failed: %s", e)
+        return {"error": "Failed to connect to the backend server."}, 500
 
 
 
