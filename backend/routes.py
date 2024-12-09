@@ -8,6 +8,7 @@ from datetime import datetime
 
 from flask import Blueprint, jsonify, request, session
 from flask_cors import CORS
+import bcrypt
 
 from backend.database import Database, MLModel
 
@@ -49,13 +50,23 @@ def login():
             400,
         )
 
-    if username == "user" and password == "pw":
-        session["username"] = "user"
-        logger.info("User %s logged in successfully.", username)
-        return jsonify({"success": True})
+    # Retrieve user data from the database
+    user_data = db.get_user_data(username)
+    if not user_data:
+        # User does not exist
+        logger.warning("Failed login attempt for non-existent user: %s", username)
+        return jsonify({"success": False, "message": "Invalid credentials"}), 401
 
-    logger.warning("Failed login attempt for username: %s", username)
-    return jsonify({"success": False, "message": "Invalid credentials"}), 401
+    # Check the password against the hashed password in the database
+    stored_password = user_data["password"]  # This should be a hashed password
+    if bcrypt.checkpw(password.encode("utf-8"), stored_password):
+        # Password is correct
+        session["username"] = username
+        logger.info("User %s logged in successfully.", username)
+        return jsonify({"success": True}), 200
+    else:
+        logger.warning("Failed login attempt for username: %s (wrong password)", username)
+        return jsonify({"success": False, "message": "Invalid credentials"}), 401
 
 
 @routes.route("/api/logout", methods=["POST"])
@@ -194,9 +205,7 @@ def predict_expenses():
     months = []
     totals = []
 
-    # Iterate through each expense to extract month and amount
     for expense in expenses:
-        # Extract and parse the 'date' field
         if "date" in expense:
             date = expense["date"]
             date_obj = None
@@ -220,16 +229,14 @@ def predict_expenses():
                 continue
         else:
             logger.error("Missing 'date' field in expense: %s", expense)
-            continue  # Skip this expense due to missing 'date'
+            continue
 
-        # Extract the 'amount' field
         if "amount" in expense and isinstance(expense["amount"], (int, float)):
             totals.append(expense["amount"])
         else:
             logger.error("Missing or invalid 'amount' field in expense: %s", expense)
-            continue  # Skip this expense due to missing or invalid 'amount'
+            continue
 
-    # Check if we have valid data for prediction
     if not months or not totals:
         return (
             jsonify({"error": "Insufficient valid expense data for prediction."}),
@@ -237,13 +244,4 @@ def predict_expenses():
         )
 
     # Train the model and predict
-    try:
-        ml_model = MLModel()
-        ml_model.train(months, totals)
-        next_month_prediction = ml_model.predict_next_month(max(months))
-    except (ValueError, RuntimeError) as e:
-        logger.error("Error during expense prediction: %s", e)
-        return jsonify({"error": "Failed to predict expenses."}), 500
-
-    # Return the prediction result
-    return jsonify({"predicted_expenses": round(next_month_prediction, 2)})
+   
