@@ -82,7 +82,6 @@ jobs:
 
             # Pull the latest images from Docker Hub
             docker pull jl8059/web-app:latest
-            docker pull jl8059/mongodb:latest
 
             # Restart the containers using docker-compose
             docker-compose down
