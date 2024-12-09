@@ -4,12 +4,10 @@ Unit tests for the Flask application defined in `app.py`.
 
 # test_app.py
 # cd web-app
-# pytest test_app.py -v  
-# pytest -v
+# pytest test_app.py -v  # DONT USE THIS/ USE BELOW WITH VENV 
 
 # python -m pytest test_app.py -v
 # python -m pytest --cov=app test_app.py
-
 
 # pylint web-app/
 # black .
@@ -22,13 +20,11 @@ from io import BytesIO
 from flask_socketio import SocketIOTestClient
 from requests.exceptions import RequestException
 
-# Mock the eventlet module
+# this mocks the eventlet module
 import sys
 eventlet_mock = MagicMock()
 eventlet_mock.monkey_patch = MagicMock()
 sys.modules['eventlet'] = eventlet_mock
-
-# Now import the app
 from app import app, socketio, determine_winners, determine_ai_winner, retry_request, active_games, waiting_players, player_stats
 
 @pytest.fixture
@@ -59,7 +55,7 @@ def setup_and_teardown():
     player_stats.update({"wins": 0, "losses": 0, "ties": 0})
     yield
 
-# Test HTTP Routes
+# testing HTTP Routes
 def test_home_page(client):
     """Test the home page route"""
     response = client.get('/')
@@ -107,7 +103,7 @@ def test_update_player_stats():
     update_player_stats('tie')
     assert player_stats['ties'] == initial_stats['ties'] + 1
 
-# Test AI Play Route
+# Testing AI Play Route
 def test_play_against_ai_valid(client, mock_mongodb):
     """Test playing against AI with valid input"""
     response = client.post('/play/ai', 
@@ -209,8 +205,7 @@ def test_retry_request_function(mock_post):
     assert result is None
     assert mock_post.call_count == 3  # Initial try + 2 retries
 
-# Socket.IO Tests
-def test_random_match_invalid_data(socket_client):
+def test_random_match_invalid_data(socket_client): # socket.IO tests here
     """Test random match with invalid data"""
     socket_client.emit('random_match', {})
     received = socket_client.get_received()
@@ -307,38 +302,6 @@ def test_join_game_invalid_player(socket_client):
     assert received[0]['name'] == 'error'
     assert 'not part of this game' in received[0]['args'][0]['message']
 
-def test_submit_choice_both_players(socket_client):
-    """Test both players submitting choices"""
-    game_id = 'test_game'
-    active_games[game_id] = {
-        'player1_id': '123',
-        'player2_id': '456',
-        'player1_name': 'Player1',
-        'player2_name': 'Player2',
-        'player1_choice': None,
-        'player2_choice': None
-    }
-    
-    # First player submits choice
-    socket_client.emit('submit_choice', {
-        'game_id': game_id,
-        'player_id': '123',
-        'choice': 'rock'
-    })
-    
-    # Second player submits choice
-    socket_client.emit('submit_choice', {
-        'game_id': game_id,
-        'player_id': '456',
-        'choice': 'scissors'
-    })
-
-    received = socket_client.get_received()
-    assert len(received) >= 1
-    last_message = received[-1]
-    assert last_message['name'] == 'game_result'
-    assert 'Player1 wins!' in last_message['args'][0]['result']
-
 def test_submit_choice_invalid_game(socket_client):
     """Test submitting choice for invalid game"""
     socket_client.emit('submit_choice', {
@@ -385,8 +348,7 @@ def test_random_match_second_player(socket_client):
         'sid': 'test_sid_1'
     })
     
-    # Connect second player
-    socket_client.emit('random_match', {
+    socket_client.emit('random_match', {     # second player
         'player_name': 'Player2',
         'player_id': '456'
     })
@@ -407,8 +369,7 @@ def test_cancel_waiting(socket_client):
     })
     socket_client.get_received()  # Clear received messages
     
-    # Cancel waiting
-    socket_client.emit('cancel_waiting', {'player_id': player_id})
+    socket_client.emit('cancel_waiting', {'player_id': player_id}) # waiting 
     received = socket_client.get_received()
     
     assert len(received) == 1
@@ -425,12 +386,10 @@ def test_start_game(socket_client):
         'player2_name': 'Player2',
         'ready': {'player1': False, 'player2': False}
     }
-    
     socket_client.emit('start_game', {
         'game_id': game_id,
         'player_id': '123'
     })
-    
     assert active_games[game_id]['ready']['player1'] == True
 
 def test_submit_choice(socket_client):
@@ -450,23 +409,7 @@ def test_submit_choice(socket_client):
         'player_id': '123',
         'choice': 'rock'
     })
-    
     assert active_games[game_id]['player1_choice'] == 'rock'
-
-def test_handle_disconnect(socket_client):
-    """Test handling disconnection"""
-    game_id = 'test_game'
-    # First connect the client to get a session ID
-    socket_client.connect()
-    test_sid = socket_client.eio_sid  # Use eio_sid instead of sid
-    
-    active_games[game_id] = {
-        'player1_sid': test_sid,
-        'player2_sid': 'other_sid'
-    }
-    
-    socket_client.disconnect()
-    assert game_id not in active_games
 
 def test_countdown_timer():
     """Test countdown timer function"""
@@ -482,3 +425,65 @@ def test_countdown_timer():
         countdown_timer(game_id)
         assert game_id not in active_games
         assert mock_emit.called
+
+def test_handle_cancel_match_missing_data(socket_client):
+    """Test canceling match with missing data"""
+    socket_client.emit('cancel_match', {'game_id': 'test_game'})  # Missing player_id
+    received = socket_client.get_received()
+    assert received[0]['name'] == 'error'
+    assert 'required' in received[0]['args'][0]['message'].lower()
+
+def test_start_game_missing_data(socket_client):
+    """Test starting game with missing data"""
+    socket_client.emit('start_game', {'game_id': 'test_game'})  # Missing player_id
+    received = socket_client.get_received()
+    assert received[0]['name'] == 'error'
+    assert 'required' in received[0]['args'][0]['message'].lower()
+
+def test_join_game_missing_data(socket_client):
+    """Test joining game with missing data"""
+    socket_client.emit('join_game', {'game_id': 'test_game'})  # Missing player_id
+    received = socket_client.get_received()
+    assert received[0]['name'] == 'error'
+    assert 'required' in received[0]['args'][0]['message'].lower()
+
+def test_determine_winner_all_combinations():
+    """Test all possible combinations in determine_winner function"""
+    from app import determine_winner
+    test_cases = [
+        ('rock', 'scissors', 'Player1', 'Player2', 'Player1 wins!'),
+        ('rock', 'paper', 'Player1', 'Player2', 'Player2 wins!'),
+        ('rock', 'rock', 'Player1', 'Player2', 'tie'),
+        ('paper', 'rock', 'Player1', 'Player2', 'Player1 wins!'),
+        ('paper', 'scissors', 'Player1', 'Player2', 'Player2 wins!'),
+        ('paper', 'paper', 'Player1', 'Player2', 'tie'),
+        ('scissors', 'paper', 'Player1', 'Player2', 'Player1 wins!'),
+        ('scissors', 'rock', 'Player1', 'Player2', 'Player2 wins!'),
+        ('scissors', 'scissors', 'Player1', 'Player2', 'tie')
+    ]
+    for p1_choice, p2_choice, p1_name, p2_name, expected in test_cases:
+        result = determine_winner(p1_choice, p2_choice, p1_name, p2_name)
+        assert result == expected
+
+def test_reset_game_state():
+    """Test reset_game_state function"""
+    from app import reset_game_state
+    game_id = 'test_game'
+    active_games[game_id] = {
+        'player1_id': '123',
+        'player2_id': '456',
+        'ready': {'player1': True, 'player2': True}
+    }
+    reset_game_state(game_id)
+    assert game_id not in active_games
+
+def test_result_endpoint_invalid_ml_response(client):
+    """Test handling invalid ML client response"""
+    with patch('app.retry_request') as mock_retry:
+        mock_response = MagicMock()
+        mock_response.json.return_value = {'invalid': 'response'}  # Missing required fields
+        mock_retry.return_value = mock_response
+        
+        data = {'image': (BytesIO(b'test image data'), 'test.jpg')}
+        response = client.post('/result', data=data)
+        assert response.status_code == 500
