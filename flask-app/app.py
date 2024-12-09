@@ -8,6 +8,7 @@ flask-login to initialize user data storage
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 import flask_login
 from flask_login import login_user, logout_user, login_required
+from craps_func import linebet, buybet
 
 # instantiate flask app, create key
 app = Flask(__name__)
