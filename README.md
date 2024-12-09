@@ -30,6 +30,11 @@ WEARther is a web-based application that combines weather data and curated outfi
 ---
 
 ### **Running the Project**
+#### Prerequisites
+Make sure you have Python 3.8 or higher installed:
+```bash
+python3 --version
+```
 1. Clone the repository and go to cloned directory :
     ```bash
     git clone https://github.com/software-students-fall2024/5-final-java_and_the_scripts_1.git
