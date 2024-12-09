@@ -200,5 +200,3 @@ def test_get_weather_failure(mock_get):
     # assert b"Passwords do not match." in response.data
 
 #########
-
-
