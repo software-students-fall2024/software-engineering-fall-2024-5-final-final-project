@@ -3,10 +3,13 @@ This module defines the API routes for user authentication and financial managem
 It handles login, logout, budget updates, expense tracking, and data retrieval.
 """
 
+import logging
+from datetime import datetime
+
 from flask import Blueprint, jsonify, request, session
 from flask_cors import CORS
-from backend.database import Database, MLModel  # Ensure MLModel is imported
-import logging
+
+from backend.database import Database, MLModel
 
 routes = Blueprint("routes", __name__)
 CORS(routes, supports_credentials=True)
@@ -145,13 +148,10 @@ def remove_expense():
             "User %s removed expense with ID %s.", session["username"], expense_id
         )
         return jsonify({"success": True})
-    else:
-        logger.warning(
-            "User %s failed to remove expense with ID %s.",
-            session["username"],
-            expense_id,
-        )
-        return jsonify({"success": False, "message": "Expense not found."}), 404
+    logger.warning(
+        "User %s failed to remove expense with ID %s.", session["username"], expense_id
+    )
+    return jsonify({"success": False, "message": "Expense not found."}), 404
 
 
 @routes.route("/api/expenses")
@@ -201,7 +201,7 @@ def predict_expenses():
             for expense in expenses
             if "amount" in expense and isinstance(expense["amount"], (int, float))
         ]
-    except Exception as e:
+    except (KeyError, TypeError) as e:
         logger.error("Error processing expenses for prediction: %s", e)
         return jsonify({"error": "Error processing expense data."}), 500
 
@@ -216,7 +216,7 @@ def predict_expenses():
         ml_model = MLModel()
         ml_model.train(months, totals)
         next_month_prediction = ml_model.predict_next_month(max(months))
-    except Exception as e:
+    except SomeSpecificException as e:
         logger.error("Error during expense prediction: %s", e)
         return jsonify({"error": "Failed to predict expenses."}), 500
 
