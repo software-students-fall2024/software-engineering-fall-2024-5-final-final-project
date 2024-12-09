@@ -199,6 +199,7 @@ def test_register_password_mismatch(client):
     assert response.status_code == 200  # Renders the registration page again
     assert b"Passwords do not match." in response.data
 
+
 #########
 
 @patch('app.requests.get')
@@ -269,4 +270,3 @@ def test_seed_database_no_data(mock_insert, mock_exists, mock_listdir):
     """Test seeding the database when no data is available."""
     seed_database()
     mock_insert.assert_not_called()
-
