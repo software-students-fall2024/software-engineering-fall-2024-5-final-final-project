@@ -34,7 +34,7 @@ def create_user(username, password):
     return user
 
 def random_movie_id(watched_ids):
-    id = 0;
+    id = 0
     while True:
         id = random.randint(1,1000)
         if id not in watched_ids:
