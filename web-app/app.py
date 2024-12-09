@@ -262,7 +262,6 @@ def get_weather(city_name, api_key):
 
 API_KEY = os.getenv("OPENWEATHER_API_KEY")
 
-
 @app.route('/get_weather', methods=['GET'])
 def fetch_weather():
     city = request.args.get('city', 'New York')  
