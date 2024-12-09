@@ -39,7 +39,25 @@ Home-Brewed is a web application designed to help users manage and explore their
 7. **Personalized Recommendations**
    - Displays a curated list of bars tailored to user preferences, including: Type, Occasion, Area, Reservation status, Cost, Type, Occasion
 
-## CONTAINER IMAGES
+## DockerHub Images
+
+### Web App
+
+[![DockerHub](https://img.shields.io/badge/DockerHub-WebApp-blue?logo=docker)]([https://hub.docker.com/r/emilyhuang19/web_app](https://hub.docker.com/repository/docker/emilyhuang19/web_app/general))
+
+Pull the image:
+
+```
+docker pull emilyhuang19/web_app:latest
+```
+
+### Bar Recs
+[![DockerHub](https://img.shields.io/badge/DockerHub-WebApp-blue?logo=docker)](https://hub.docker.com/repository/docker/emilyhuang19/bar-recs/general)
+
+
+```
+docker pull emilyhuang19/bar-recs:latest
+```
 
 ## SETUP STEPS
 
