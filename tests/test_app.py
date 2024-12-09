@@ -213,12 +213,60 @@ def test_get_weather_missing_api_key(mock_get):
     assert temperature is None
     assert description is None
 
-
-
-
 def test_logout_without_login(client):
     """Test logout route when not logged in."""
     response = client.get('/logout', follow_redirects=True)
     assert response.status_code == 200
     assert b"Don't have an account? Sign up Here" in response.data
+
+#######
+
+
+def test_index_without_authentication(client):
+    """Test accessing the index route without being logged in."""
+    response = client.get('/', follow_redirects=True)
+    assert response.status_code == 200
+    assert b"User Login" in response.data  # Redirects to login page
+
+
+######
+
+
+
+@patch('app.os.listdir', return_value=['invalid.txt', 'image.bmp'])
+@patch('app.os.path.exists', return_value=True)
+@patch('app.db.outfits.insert_many')
+def test_seed_database_with_invalid_files(mock_insert, mock_exists, mock_listdir):
+    """Test seeding the database with invalid file types."""
+    seed_database()
+    mock_insert.assert_not_called()
+
+
+@patch('app.os.listdir', return_value=[])
+@patch('app.os.path.exists', return_value=False)
+@patch('app.db.outfits.insert_many')
+def test_seed_database_no_data(mock_insert, mock_exists, mock_listdir):
+    """Test seeding the database with no folders or images."""
+    seed_database()
+    mock_insert.assert_not_called()
+
+
+######
+
+
+@patch('app.os.listdir', return_value=["invalid.txt"])
+@patch('app.os.path.exists', return_value=True)
+@patch('app.db.outfits.insert_many')
+def test_seed_database_invalid_files(mock_insert, mock_exists, mock_listdir):
+    """Test seeding the database with invalid files."""
+    seed_database()
+    mock_insert.assert_not_called()
+
+@patch('app.os.listdir', return_value=[])
+@patch('app.os.path.exists', return_value=False)
+@patch('app.db.outfits.insert_many')
+def test_seed_database_no_data(mock_insert, mock_exists, mock_listdir):
+    """Test seeding the database when no data is available."""
+    seed_database()
+    mock_insert.assert_not_called()
 
