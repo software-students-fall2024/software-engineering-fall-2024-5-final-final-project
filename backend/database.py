@@ -193,6 +193,7 @@ class User(UserMixin):
 class MLModel:
     """
     Provides a simple machine learning model to analyze and predict spending habits.
+    Uses a linear regression model to find patterns in monthly spending and make predictions for future.
     """
 
     def __init__(self):
@@ -204,6 +205,9 @@ class MLModel:
     def train(self, months, expenses):
         """
         Reshape data for training (sklearn expects 2D array for X)
+        Args:
+            months (List[int]): A list of months (numerical representation)
+            expenses (List[float]): A list of total expenses for each month
         """
         x = np.array(months).reshape(-1, 1)
         y = np.array(expenses)
@@ -211,7 +215,11 @@ class MLModel:
 
     def predict_next_month(self, current_month):
         """
-        Predict for the next month
+        Predict for the next month using the trained linear regression model
+        Args:
+            current_month (int): The numerical representation of the current month
+        Returns:
+            float: The predicted expense value for the next month.
         """
         next_month = np.array([[current_month + 1]])
         return self.model.predict(next_month)[0]
