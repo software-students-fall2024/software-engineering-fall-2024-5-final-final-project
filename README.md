@@ -1,8 +1,8 @@
-[![Web App CI/CD](https://github.com/software-students-fall2024/5-final-finalfour/actions/workflows/web_app.yml/badge.svg)](https://github.com/<your-username>/<your-repo>/actions/workflows/web_app.yml)
+[![Web App CI/CD](https://github.com/software-students-fall2024/5-final-finalfour/actions/workflows/web_app.yml/badge.svg)](https://github.com/software-students-fall2024/5-final-finalfour/actions/workflows/web_app.yml)
 
-[![Bar Recs CI/CD](https://github.com/software-students-fall2024/5-final-finalfour/actions/workflows/bar_recs.yml/badge.svg)](https://github.com/<your-username>/<your-repo>/actions/workflows/bar_recs.yml)
+[![Bar Recs CI/CD](https://github.com/software-students-fall2024/5-final-finalfour/actions/workflows/bar_recs.yml/badge.svg)](https://github.com/software-students-fall2024/5-final-finalfour/actions/workflows/bar_recs.yml)
 
-[![Event Logger CI/CD](https://github.com/software-students-fall2024/5-final-finalfour/actions/workflows/event-logger.yml/badge.svg)](https://github.com/<your-username>/<your-repo>/actions/workflows/event-logger.yml)
+[![Event Logger CI/CD](https://github.com/software-students-fall2024/5-final-finalfour/actions/workflows/event-logger.yml/badge.svg)](https://github.com/software-students-fall2024/5-final-finalfour/actions/workflows/event-logger.yml)
 
 
 # HOME-BREWED: NYC BAR RECOMMENDER SYSTEM
