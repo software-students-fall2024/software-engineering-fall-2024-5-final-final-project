@@ -58,8 +58,9 @@ Outside of MongoDB, this project consists of two main subsystems:
 3. Access the application:
 
 
-## Starter Data
+## Starter Data (Optional)
 
+Starter data can be used in the app if the user wishes.
 To initialize the database with starter data:
 1. Run the backend container and access its shell:
    ```bash
@@ -77,13 +78,18 @@ To initialize the database with starter data:
    db = Database()
    db._ensure_default_user()
    ```
+
 ## Using App
 
-1. The default username and password is 'user' and 'pw' respectively.
+Make sure all steps in Running Project section is completed then the user can log in with the following steps.
 
-2. You can add expenses and update budgets with the add expense button and update budget button in the app.
+1. Go to: http://localhost:5000/ in browser
 
-3. You can see a list of previous expenses in the previous expense button.
+2. The default username and password is 'user' and 'pw' respectively.
+
+3. You can add expenses and update budgets with the add expense button and update budget button in the app.
+
+4. You can see a list of expenses in the view expense button.
 
 ## Team members
 

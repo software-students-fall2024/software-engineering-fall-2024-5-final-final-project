@@ -1,14 +1,15 @@
 """
-Defines routes for the frontend and gives entry point of the Flask application.
+Main frontend app.py
 """
 
 import os
 from flask import Flask, render_template, request, Response
 import requests
 
-app = Flask(__name__, template_folder="templates", static_folder="static")
+app = Flask(__name__)
+app.secret_key = "your-secret-key-here"
 
-app.secret_key = os.environ.get("SECRET_KEY", "your-secret-key-here")
+app.config["SESSION_COOKIE_NAME"] = "frontend_session"
 
 BACKEND_URL = os.environ.get("BACKEND_URL", "http://backend:5001")
 
@@ -16,7 +17,7 @@ BACKEND_URL = os.environ.get("BACKEND_URL", "http://backend:5001")
 @app.route("/")
 def index():
     """
-    Render the home page of the application.
+    Render the main index.html page.
     """
     return render_template("index.html")
 
@@ -27,30 +28,44 @@ def proxy_to_backend(path):
     Proxy API requests to the backend server.
     """
     try:
+        backend_cookies = {}
+        if "session" in request.cookies:
+            backend_cookies["session"] = request.cookies["session"]
+
+        # Forward the request method and data with a timeout
         if request.method == "GET":
             resp = requests.get(
-                f"{BACKEND_URL}/api/{path}", cookies=request.cookies, timeout=5
+                f"{BACKEND_URL}/api/{path}",
+                cookies=backend_cookies,
+                allow_redirects=False,
+                timeout=5,  # Timeout set to 5 seconds
             )
         else:
             resp = requests.post(
                 f"{BACKEND_URL}/api/{path}",
                 json=request.get_json(),
-                cookies=request.cookies,
-                timeout=5,
+                cookies=backend_cookies,
+                allow_redirects=False,
+                timeout=5,  # Timeout set to 5 seconds
             )
+
+        # Create a Flask response object with backend's response content and status
         response = Response(
             resp.content,
             status=resp.status_code,
-            content_type=resp.headers.get("content-type", "application/octet-stream"),
+            content_type=resp.headers.get("content-type", "application/json"),
         )
 
-        if "set-cookie" in resp.headers:
-            response.headers["set-cookie"] = resp.headers["set-cookie"]
+        for key, value in resp.headers.items():
+            if key.lower() == "set-cookie":
+                response.headers.add("Set-Cookie", value)
 
         return response
     except requests.exceptions.RequestException as e:
-        return {"error": str(e)}, 500
+        # Log the exception for debugging purposes using lazy formatting
+        app.logger.error("Request to backend failed: %s", e)
+        return {"error": "Failed to connect to the backend server."}, 500
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000)

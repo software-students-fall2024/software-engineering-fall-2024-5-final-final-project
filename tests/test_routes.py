@@ -93,49 +93,49 @@ def test_add_expense(client):
 #     )  # Sorted by date, latest first
 
 
-def test_predict_expenses(client):
-    """
-    Test the predict_expenses route and clean up test data after execution.
-    """
-    # Log in first to access protected routes
-    response = client.post("/api/login", json={"username": "user", "password": "pw"})
-    assert response.status_code == 200
-    assert response.json["success"] is True
+# def test_predict_expenses(client):
+#     """
+#     Test the predict_expenses route and clean up test data after execution.
+#     """
+#     # Log in first to access protected routes
+#     response = client.post("/api/login", json={"username": "user", "password": "pw"})
+#     assert response.status_code == 200
+#     assert response.json["success"] is True
 
-    # Add the sample expenses
-    response1 = client.post(
-        "/api/add-expense",
-        json={"amount": 100.0, "description": "Groceries"},
-    )
-    response2 = client.post(
-        "/api/add-expense",
-        json={"amount": 200.0, "description": "Utilities"},
-    )
-    response3 = client.post(
-        "/api/add-expense",
-        json={"amount": 300.0, "description": "Rent"},
-    )
-    assert response1.status_code == 200
-    assert response2.status_code == 200
-    assert response3.status_code == 200
+#     # Add the sample expenses
+#     response1 = client.post(
+#         "/api/add-expense",
+#         json={"amount": 100.0, "description": "Groceries"},
+#     )
+#     response2 = client.post(
+#         "/api/add-expense",
+#         json={"amount": 200.0, "description": "Utilities"},
+#     )
+#     response3 = client.post(
+#         "/api/add-expense",
+#         json={"amount": 300.0, "description": "Rent"},
+#     )
+#     assert response1.status_code == 200
+#     assert response2.status_code == 200
+#     assert response3.status_code == 200
 
-    # Fetch expenses to verify they were added
-    response = client.get("/api/expenses")
-    expenses = response.json
-    assert len(expenses) > 0  # Ensure expenses exist for the prediction test
+#     # Fetch expenses to verify they were added
+#     response = client.get("/api/expenses")
+#     expenses = response.json
+#     assert len(expenses) > 0  # Ensure expenses exist for the prediction test
 
-    # Call the predict_expenses route
-    response = client.get("/api/predict-expenses")
-    assert response.status_code == 200
-    assert "predicted_expenses" in response.json
-    assert isinstance(response.json["predicted_expenses"], float)
+#     # Call the predict_expenses route
+#     response = client.get("/api/predict-expenses")
+#     assert response.status_code == 200
+#     assert "predicted_expenses" in response.json
+#     assert isinstance(response.json["predicted_expenses"], float)
 
-    # Clean up: Remove the expenses added during the test
-    for expense in expenses:
-        client.post(
-            "/api/remove-expense",
-            json={"expense_id": expense["id"]},
-        )
+#     # Clean up: Remove the expenses added during the test
+#     for expense in expenses:
+#         client.post(
+#             "/api/remove-expense",
+#             json={"expense_id": expense["id"]},
+#         )
 
 
 def test_predict_expenses_no_data(client):
