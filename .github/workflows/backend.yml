@@ -57,7 +57,7 @@ jobs:
         
       - name: Deploy to DigitalOcean
         run: |
-            ssh -T root@68.183.21.82 << 'EOF'
+            ssh -o StrictHostKeyChecking=no root@68.183.21.82 << 'EOF'
               cd /root/5-final-super-awesome-team-name-2
               git pull origin main
               docker-compose down
