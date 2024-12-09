@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <head>
     <title>User Homepage</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='styles.css') }}">
 </head>
 
 <body>
@@ -12,10 +13,9 @@
     </header>
 
     <div class="button-container">
-        <button>Blackjack</button>
-        <button disabled>Craps</button>
-        <button disabled>Add Balance</button>
-        <button disabled>Help</button>
+        <a href="{{ url_for('craps_home', username=username) }}">
+            <button>Craps</button>
+        </a>
     </div>
 </body>
 </html>
