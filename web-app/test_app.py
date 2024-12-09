@@ -14,7 +14,7 @@ Unit tests for the Flask application defined in `app.py`.
 
 # pylint web-app/
 # pylint web-app/test_app.py
-# pylint web-app/app.py
+# pylint test_app.py
 # black .
 
 import os
