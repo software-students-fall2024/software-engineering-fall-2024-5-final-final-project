@@ -1,4 +1,4 @@
-from flask import Flask, render_template, g, request
+from flask import Flask, render_template, g, request, redirect, url_for
 import csv;
 import os;
 import random;
@@ -87,12 +87,13 @@ def index():
             }
         )
         selected_movie = g.all_movies[new_movie_id] # uses newly generated movie id
+        movie_id = new_movie_id
 
     # if move has been assigned
     else:
         selected_movie = g.all_movies[user_movie_id] # uses existing movie id found in user doc in db
-
-    return render_template("index.html", selectedMovie=selected_movie)
+        movie_id = user_movie_id
+    return render_template("index.html", selectedMovie=selected_movie, movieId=movie_id)
 
 @app.route('/setwatched', methods=["POST"])
 def setWatched():
@@ -119,7 +120,7 @@ def setWatched():
         })
 
     # Return to the homepage or wherever you need to redirect after processing
-    return redirect(url_for("index"))
+    return redirect(url_for("index", selectedMovie=g.all_movies[movie_id], movieId=movie_id))
 
 @app.route('/watchlist')
 def watchlist():

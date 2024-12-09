@@ -20,7 +20,7 @@
             <form method="POST" action="/setwatched">
                 <input type="checkbox" name="hasWatched" value="true" id="watchedCheckbox">
                 <label for="watchedCheckbox">Mark as Watched</label>
-                <input type="hidden" name="movieId" value="{{ selectedMovie[1] }}">
+                <input type="hidden" name="movieId" value="{{ movieId }}">
                 <button type="submit">Submit</button>
             </form>
         </div>
