@@ -43,10 +43,3 @@ def test_get_weather_failure(mock_get):
     temperature, description = get_weather('InvalidCity', 'test_api_key')
     assert temperature is None
     assert description is None
-
-
-@patch('app.db.users.find_one', return_value={
-    "_id": ObjectId(),
-    "username": "testuser",
-    "password": "hashedpassword",
-    "gender": "male"})
