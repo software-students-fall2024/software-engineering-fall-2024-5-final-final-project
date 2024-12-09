@@ -37,7 +37,7 @@ jobs:
     - name: Deploy to DigitalOcean
       with:
         host: ${{ secrets.DO_IP }}
-        user: root
+        username: root
       run: |
         docker pull ${{ secrets.DOCKER_USERNAME }}/bar_recs:latest
         docker stop bar_recs || true

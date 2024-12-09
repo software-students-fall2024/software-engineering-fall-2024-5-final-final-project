@@ -52,7 +52,7 @@ jobs:
     - name: Deploy to DigitalOcean
       with:
         host: ${{ secrets.DO_IP }}
-        user: root
+        username: root
       run: |
         docker pull ${{ secrets.DOCKER_USERNAME }}/web_app:latest
         docker stop web_app || true 
