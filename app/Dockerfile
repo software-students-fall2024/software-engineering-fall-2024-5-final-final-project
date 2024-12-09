@@ -18,4 +18,4 @@ EXPOSE 3000
 
 ENV FLASK_ENV=production
 
-CMD ["python", "app.py"]
+CMD ["python", "app.py", "login.py"]

@@ -1,12 +1,19 @@
 from __init__ import app, db
-from flask import render_template
+from login import init_login, create_login_routes
+from flask import Flask, render_template
+import flask_login
+
+init_login(app)
+create_login_routes(app)
 
 @app.route('/')
+@flask_login.login_required
 def home():
     books = list(db.books.find({}, {"_id": 0, "title": 1, "author": 1, "description": 1}))
     return render_template('home.html', books=books)
 
 @app.route('/user')
+@flask_login.login_required
 def user():
     # HARDCODED! CHANGE LATER
     # WHEN LOGIN/LOGOUT FUNCTION IS ADDED
@@ -33,6 +40,7 @@ def user():
     return render_template('user.html', name=user["name"], inventory=inventory, wishlist=wishlist)
 
 @app.route('/matches')
+@flask_login.login_required
 def matches():
     return render_template('matches.html')
 
