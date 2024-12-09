@@ -160,7 +160,22 @@ def create_app():
     @app.route('/profile/<user>')
     @login_required
     def profile(user):
-        return render_template("profile.html", user=user)
+        user = users_collection.find_one({"username": "WilliamTest2"})
+        
+        # Get the watched movies for the user
+        watched_movies_ids = [
+            rating["movie_id"] for rating in ratings_collection.find({"user": user["_id"]})
+        ]
+        
+        # Fetch movie details for the watched movies
+        watched_movies = [g.all_movies[movie_id] for movie_id in watched_movies_ids]
+
+        # Render the profile template with user and watched movies data
+        return render_template(
+            "profile.html",
+            user=user["username"],
+            watchedMovies=watched_movies
+        )
 
     @app.route('/setwatched', methods=["POST"])
     def setWatched():
@@ -198,18 +213,6 @@ def create_app():
 
         # Return to the homepage or wherever you need to redirect after processing
         return redirect(url_for("index"))
-
-    @app.route('/watchlist')
-    def watchlist():
-        selected_user = users_collection.find_one({"_id":ObjectId(current_user.id)})
-        watched_movies = []
-
-        # Fetch watched movies based on the user's watched_movies list
-        for movie_id in selected_user.get("watched_movies", []):
-            watched_movie = g.all_movies[movie_id]
-            watched_movies.append(watched_movie)
-
-        return render_template("watchlist.html", watchedMovies=watched_movies)
 
     if __name__ == '__main__':
         FLASK_PORT = os.getenv("FLASK_PORT", "3000")
