@@ -32,10 +32,8 @@ def create_app():
     def load_user(user_id):
         """
         Load a user from the database by their unique user ID.
-        
         Args:
             user_id (str): The unique identifier for a user.
-        
         Returns:
             User: The user object if found, otherwise None.
         """
