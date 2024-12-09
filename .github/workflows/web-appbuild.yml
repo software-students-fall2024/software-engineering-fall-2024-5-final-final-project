@@ -59,14 +59,14 @@ jobs:
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          username: jl8059@nyu.edu
+          password: qq883697776
 
       # Build and push Docker image
       - name: Build and push Web App Docker image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/web-app:latest -f ./web-app/Dockerfile ./web-app
-          docker push ${{ secrets.DOCKER_USERNAME }}/web-app:latest
+          docker build -t jl8059@nyu.edu/web-app:latest -f ./web-app/Dockerfile ./web-app
+          docker push jl8059@nyu.edu/web-app:latest
 
       # Deploy to DigitalOcean Droplet
       - name: Deploy to DigitalOcean Droplet
