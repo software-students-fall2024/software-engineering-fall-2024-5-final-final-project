@@ -72,8 +72,7 @@ class Database:
     def create_user(self, username: str, password: str) -> bool:
         """
         Create a new user with the given username and password.
-        Returns True if the user is created successfully, 
-        or False if the user already exists.
+        Returns True if the user is created successfully, or False if the user already exists.
         """
         existing_user = self.db.users.find_one({"username": username})
         if existing_user:
@@ -194,7 +193,8 @@ class User(UserMixin):
 class MLModel:
     """
     Provides a simple machine learning model to analyze and predict spending habits.
-    Uses a linear regression model to find patterns in monthly spending and make predictions for future.
+    Uses a linear regression model to find patterns in monthly spending and 
+    make predictions for future.
     """
 
     def __init__(self):
