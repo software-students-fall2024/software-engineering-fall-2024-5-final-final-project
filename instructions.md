@@ -15,8 +15,8 @@ This is an open-ended exercise for you to show your mastery of software engineer
 - Each custom subsystem must contain unit tests that provide at least 80% code coverage.
 - You are welcome to use computing platforms such as [Raspberry Pi](https://www.raspberrypi.com/) or other embedded or mobile devices you have available, if they make sense for your project.
 
-## Documentation 
-
+## Documentation
+ 
 Replace the contents of the [README.md](./README.md) file with a beautifully-formatted Markdown file including:
 
 - a plain-language **description** of your project, including:
