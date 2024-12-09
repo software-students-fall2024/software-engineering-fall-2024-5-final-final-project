@@ -155,3 +155,73 @@ def test_delete_item(client, mock_db):
     with client.session_transaction() as session:
         flashed_messages = session.get("_flashes", [])
         assert ("message", "Wish deleted successfully!") in flashed_messages
+
+def test_view_claimed_gifts(client, mock_db):
+    """Test viewing claimed gifts."""
+    valid_user_id = str(ObjectId())
+    mock_user = {
+        "_id": ObjectId(valid_user_id), 
+        "username": "testuser",
+        "first-name": "Test",
+        "last-name": "User"
+    }
+    mock_claimed_wishes = [
+        {"name": "Claimed Wish 1", "price": "150"},
+        {"name": "Claimed Wish 2", "price": "250"},
+    ]
+
+    # Mock database responses
+    mock_db.users.find_one.return_value = mock_user
+    mock_db.wishes.find.return_value.sort.return_value = mock_claimed_wishes
+
+    # Simulate a logged-in session
+    with client.session_transaction() as session:
+        session["_user_id"] = valid_user_id
+
+    # Test the claimed gifts route
+    response = client.get(f"/claimed/{mock_user['username']}")
+    assert response.status_code == 200
+    assert b"Claimed Wish 1" in response.data
+    assert b"Claimed Wish 2" in response.data
+
+def test_claim_gift(client, mock_db):
+    """Test claiming a gift."""
+    valid_user_id = str(ObjectId())
+    valid_wish_id = str(ObjectId())
+
+    mock_db.wishes.find_one.return_value = {
+        "_id": valid_wish_id,
+        "name": "Test Wish",
+        "price": "100",
+        "claimed_by": None,
+    }
+
+    mock_db.wishes.update_one.return_value.modified_count = 1
+
+    with client.session_transaction() as session:
+        session["_user_id"] = valid_user_id
+
+    response = client.post(f"/claim/{valid_wish_id}", follow_redirects=True)
+
+    assert response.status_code == 200
+
+    with client.session_transaction() as session:
+        flashed_messages = session.get("_flashes", [])
+        assert ("message", "Gift claimed successfully!") in flashed_messages
+
+def test_view_wishlist(client, mock_db):
+    """Test viewing a user's wishlist."""
+    valid_user_id = str(ObjectId())
+    mock_user = {"_id": valid_user_id, "username": "testuser"}
+    mock_wishes = [
+        {"name": "Wish 1", "price": "100"},
+        {"name": "Wish 2", "price": "200"},
+    ]
+
+    mock_db.users.find_one.return_value = mock_user
+    mock_db.wishes.find.return_value.sort.return_value = mock_wishes
+
+    response = client.get(f"/wishlist/{mock_user['username']}")
+    assert response.status_code == 200
+    assert b"Wish 1" in response.data
+    assert b"Wish 2" in response.data
