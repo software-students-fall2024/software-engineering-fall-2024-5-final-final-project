@@ -30,8 +30,11 @@ jobs:
         run: |
           pip install -r web-app/requirements.txt
 
-      # Run tests
+     # Run tests
       - name: Run Tests
+        env:
+          MONGO_DBNAME: Outfits
+          MONGO_URI: mongodb://localhost:27017
         run: |
           pytest web-app/tests/
 
