@@ -9,6 +9,7 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify
 import flask_login
 from flask_login import login_user, logout_user, login_required
 from craps_func import linebet, buybet
+import db
 
 # instantiate flask app, create key
 app = Flask(__name__)
@@ -19,15 +20,18 @@ login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
 
 # simulate database of users, placeholder until pymongo connection
-users = {'abc': {'password': 'xyz'},
-         'zyx': {'password': 'cba'}}
+db.register_user("abc", "xyz")
+users = db.get_users()
+# users = {}
+# users["abc"] = {"password": "xyz"}
 
-users_balance = {'abc': {'balance': 500},
-                 'zyx': {'balance': 900}}
+users_balance = {'abc': 500,
+                 'zyx': 900}
 
 # create User object
 class User(flask_login.UserMixin):
     pass
+
 
 @login_manager.user_loader
 def user_loader(username):
@@ -75,14 +79,17 @@ def show_login():
 @app.route('/<username>')
 @flask_login.login_required
 def user_home(username):
-    if username in users_balance:
-        user_balance = users_balance[username]['balance']
-        return render_template('user_home.html', username=username, user_balance = user_balance)
+    # if username in users_balance:
+    #     user_balance = users_balance[username]['balance']
+    #     return render_template('user_home.html', username=username, balance = user_balance)
+    user_balance = db.get_bal(username)
+    return render_template('user_home.html', username=username, balance = user_balance)
     
 @app.route("/<username>/craps", methods = ["POST", "GET"])
 @flask_login.login_required
 def craps_home(username):
-    return render_template("craps_home.html", username=username, balance="10000")
+    balance = request.form['balance']
+    return render_template("craps_home.html", username=username, balance=balance)
 
 
 @app.route("/<username>/craps/playline", methods=["POST"])
@@ -92,34 +99,53 @@ def playline(username):
     bet = float(request.form["betamount"])
     balance = float(request.form["balance"])
     rolls, result = linebet(win)
-    return_text= "Here are the rolls:\n"
+    #return_text= "Here are the rolls:\n"
+    return_text = ""
     for r in rolls:
-        return_text+=r + "\n"
+        return_text+=r + "@"
     
+    win = False
     if result == 'w':
         return_text += "You win!"
         balance += bet
+        win = True
     elif result == 'l':
         return_text+= "You lost!"
         balance-=bet 
     else:
         return_text += "It was a tie!"
 
+    db.update_bal(username, balance, win, "craps")
+
     # update database maybe use requests?
     # or maybe make a different .py that will make a request
 
-    return render_template("craps_results.html", username=username, balance=balance)
+    return render_template("craps_results.html", username=username, balance=balance, textResult=return_text)
 
 
 @app.route("/<username>/craps/playbuy", methods=["POST"])
 @flask_login.login_required
 def playbuy(username):
-    balance = 10000
-    return render_template("craps_results.html", username=username, balance=balance)
+    win = True if request.form["bettype"] == 'b' else False
+    bet = float(request.form["betamount"])
+    place = int(request.form["buynum"])
+    balance = float(request.form["balance"])
+    rolls, result, odds = buybet(win, place)
+    return_text= ""
+    win = False
+    for r in rolls:
+        return_text+=r + "@"
+    if result == 'w':
+        return_text += "You win!"
+        balance += bet * odds
+        win = True
+    elif result == 'l':
+        return_text+= "You lost!"
+        balance-=bet 
 
-
-if __name__ == "__main__":
-    app.run(debug=True)
+    db.update_bal(username, balance, win, "craps")
+    
+    return render_template("craps_results.html", username=username, balance=balance, textResult=return_text)
 
 
 @app.route('/logout', methods = ["GET", "POST"])
@@ -131,3 +157,7 @@ def logout():
 @login_manager.unauthorized_handler
 def unauthorized_handler():
     return 'Unauthorized', 401
+
+
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=5000)
