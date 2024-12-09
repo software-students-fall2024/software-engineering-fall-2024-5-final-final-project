@@ -15,7 +15,7 @@ import random
 from flask import Flask, render_template, request, jsonify, make_response
 import requests
 from requests.exceptions import RequestException
-from pymongo import MongoClient 
+from pymongo import MongoClient
 from bson.objectid import ObjectId
 
 # Initialize Flask and Socket.IO
