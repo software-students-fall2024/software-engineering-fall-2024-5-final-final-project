@@ -4,6 +4,29 @@
     <title>Craps Home</title>
 
     <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: rgba(0, 0, 0, 0.607);
+            height: 100vh;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            display: flex;
+        }
+
+        .user-screen {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            display: flex;
+            height: 60%;
+            flex-direction: column;
+            align-items: stretch;
+            flex-wrap: wrap;
+            width: 35%;
+            gap: 15px;
+        }
+
         .hoveritem {position: relative; display: inline-block;}
 
         .hovertext {
@@ -26,65 +49,69 @@
 </head>
 
 <body>
-    <h1 style="align-content: center;text-align: center;">Let's Play Craps!</h1>
-    <h2 style="align-content: center;text-align: center;">Your Balance is: ${{balance}}</h2>
-    <h2 style="align-content: center;text-align: center;">Please Select a Bet Type and Amount:</h2>
-    
-    <form method="POST" action="{{url_for('playline', username=username)}}" style = "text-align: center;align-content: center;">
-        <div>
-            <input type="radio" id="pass" name="bettype" value="p" required/>
-            <label for="pass" style="text-align: center;border: 4px;" class="hoveritem">Pass
-                <span class="hovertext">Bet that either a 7 or 11 will be rolled first, otherwise the first number will be rolled again before a 7.</span>
-            </label> 
-            <input type="radio" id="dontpass" name="bettype" value="d"/>
-            <label for="dontpass" style="text-align: center;" class="hoveritem">Don't Pass
-                    <span class="hovertext">Bet that a 2 or 3 will be the first roll, or that 7 will come before the first roll is rerolled.</span>
-            </label> 
-        </div>
-        <input type="number" style="align-content: center;" id="betamount" name="betamount" placeholder="Enter bet amount" required/>
-        <input type="hidden" name="balance" value="{{balance}}"/>
-        <input type="submit" value = "Place Bet"/>
+    <div class="user-screen">
+        <h1 style="align-content: center;text-align: center;">Let's Play Craps!</h1>
+        <h2 style="align-content: center;text-align: center;">Your Balance is: ${{balance}}</h2>
+        <h2 style="align-content: center;text-align: center;">Please Select a Bet Type and Amount:</h2>
+        
+        <form method="POST" action="{{url_for('playline', username=username)}}" style = "text-align: center;align-content: center;">
+            <div>
+                <input type="radio" id="pass" name="bettype" value="p" required/>
+                <label for="pass" style="text-align: center;border: 4px;" class="hoveritem">Pass
+                    <span class="hovertext">Bet that either a 7 or 11 will be rolled first, otherwise the first number will be rolled again before a 7.</span>
+                </label> 
+                <input type="radio" id="dontpass" name="bettype" value="d"/>
+                <label for="dontpass" style="text-align: center;" class="hoveritem">Don't Pass
+                        <span class="hovertext">Bet that a 2 or 3 will be the first roll, or that 7 will come before the first roll is rerolled.</span>
+                </label> 
+            </div>
+            <input type="number" style="align-content: center;" id="betamount" name="betamount" placeholder="Enter bet amount" required/>
+            <input type="hidden" name="balance" value="{{balance}}"/>
+            <input type="submit" value = "Place Bet"/>
 
-    </form>
+        </form>
 
-    <br>
-    <br>
+        <br>
+        <br>
 
-    <form method="POST" action="{{url_for('playbuy', username=username)}}" style = "text-align: center;align-content: center;">
-        <div style="align-content: center;">
-            <input type="radio" id="buy" name="bettype" value="b" required/>
-            <label for="buy" style="text-align: center;" class="hoveritem">Buy
-                <span class="hovertext">Bet that the chose number will be rolled before a seven.</span>
-            </label> 
-            <input type="radio" id="lay" name="bettype" value="l"/>
-            <label for="lay" style="text-align: center;" class="hoveritem">Lay
-                <span class="hovertext">Bet that the chosen number WON'T be rolled before a seven.</span>
-            </label> 
-        </div>
+        <form method="POST" action="{{url_for('playbuy', username=username)}}" style = "text-align: center;align-content: center;">
+            <div style="align-content: center;">
+                <input type="radio" id="buy" name="bettype" value="b" required/>
+                <label for="buy" style="text-align: center;" class="hoveritem">Buy
+                    <span class="hovertext">Bet that the chose number will be rolled before a seven.</span>
+                </label> 
+                <input type="radio" id="lay" name="bettype" value="l"/>
+                <label for="lay" style="text-align: center;" class="hoveritem">Lay
+                    <span class="hovertext">Bet that the chosen number WON'T be rolled before a seven.</span>
+                </label> 
+            </div>
 
-        <div style="align-content: center;">
-            <input type="radio" id="4buy" name="buynum" value="4" required/>
-            <label for="4buy">4</label>
-            <input type="radio" id="5buy" name="buynum" value="5"/>
-            <label for="5buy">5</label>
-            <input type="radio" id="6buy" name="buynum" value="6"/>
-            <label for="6buy">6</label>
-            <input type="radio" id="8buy" name="buynum" value="8"/>
-            <label for="8buy">8</label>
-            <input type="radio" id="9buy" name="buynum" value="9"/>
-            <label for="9buy">9</label>
-            <input type="radio" id="10buy" name="buynum" value="10"/>
-            <label for="10buy">10</label>
-        </div>
+            <div style="align-content: center;">
+                <input type="radio" id="4buy" name="buynum" value="4" required/>
+                <label for="4buy">4</label>
+                <input type="radio" id="5buy" name="buynum" value="5"/>
+                <label for="5buy">5</label>
+                <input type="radio" id="6buy" name="buynum" value="6"/>
+                <label for="6buy">6</label>
+                <input type="radio" id="8buy" name="buynum" value="8"/>
+                <label for="8buy">8</label>
+                <input type="radio" id="9buy" name="buynum" value="9"/>
+                <label for="9buy">9</label>
+                <input type="radio" id="10buy" name="buynum" value="10"/>
+                <label for="10buy">10</label>
+            </div>
 
-        <input type="number" style="align-content: center;" id="betamount" name="betamount" placeholder="Enter bet amount" required/>
+            <input type="number" style="align-content: center;" id="betamount" name="betamount" placeholder="Enter bet amount" required/>
 
-        <input type="hidden" name="balance" value="{{balance}}"/>
+            <input type="hidden" name="balance" value="{{balance}}"/>
 
-        <input type="submit" value = "Place Bet"/>
+            <input type="submit" value = "Place Bet"/>
 
 
-    </form>
+        </form>
+    </div>
+
+
 </body>
 
 <script>

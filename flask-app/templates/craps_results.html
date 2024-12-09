@@ -2,9 +2,35 @@
 
 <head>
     <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: rgba(0, 0, 0, 0.607);
+            height: 150vh;
+            align-items: center;
+            justify-content: center;
+            display: flex;
+            margin: 0;
+        }
+
+        .user-screen {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            display: flex;
+            height: 60%;
+            flex-direction: column;
+            align-items: stretch;
+            flex-wrap: wrap;
+            width: 35%;
+            gap: 15px;
+        }
+
         .container {
             text-align: center;
             align-content: center;
+            flex-direction: column;
+            display: flex;
+            gap: 20px;
         }
 
         .leftdice{
@@ -21,27 +47,28 @@
         }
     </style>
 
-    
 </head>
 
 <body>
-    <h1 style="text-align: center;align-content: center;">
-        Results!
-    </h1>
+    <div class = "user-screen">
+        <h1 style="text-align: center;align-content: center;">
+            Results!
+        </h1>
 
-    <h3 style="text-align: center;align-content: center;">
-        Here are the results:
-    </h3>
+        <h3 style="text-align: center;align-content: center;">
+            Here are the results:
+        </h3>
 
-    <div class="container" id="dicecont">
+        <div class="container" id="dicecont">
+        </div>
+
+        <h3 style="align-content: center;text-align: center;">Your New Balance is: ${{balance}}</h3>
+
+        <form style="align-content: center;text-align: center;" method="POST" action="{{url_for('craps_home', username=username)}}">
+            <input type="hidden" value={{balance}} name="balance"/>
+            <input type="submit" value="Go Back"/>
+        </form>
     </div>
-
-    <h3 style="align-content: center;text-align: center;">Your New Balance is: ${{balance}}</h3>
-
-    <form style="align-content: center;text-align: center;" method="POST" action="{{url_for('craps_home', username=username)}}">
-        <input type="hidden" value={{balance}} name="balance"/>
-        <input type="submit" value="Go Back"/>
-    </form>
 </body>
 
 
