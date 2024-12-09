@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Movie 4 You-vie!{% endblock %}</title>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/">home</a>
+            {% if current_user.is_authenticated %}
+                |
+                <a href="{{ url_for('profile', user=current_user.username) }}">My Profile</a>
+                |
+                <a href="{{ url_for('logout') }}">logout</a>
+            {% else %}
+                |
+                <a href="/login">login/register</a>
+            {% endif %}
+        </nav>
+    </header>
+    <main>
+        {% block content %}
+
+        {% endblock %}
+    </main>
+    <footer>
+        <p>&copy; 2024 Movie 4 You-vie!. All rights reserved.</p>
+    </footer>
+</body>
+</html>

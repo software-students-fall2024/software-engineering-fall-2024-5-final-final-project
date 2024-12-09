@@ -1,8 +1,8 @@
-from flask import Flask, render_template, g, request
-import csv;
-import os;
-import random;
+from flask import Flask, render_template, g, request, redirect, url_for
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user, UserMixin
+import csv
 import os
+import random
 from dotenv import load_dotenv
 from pymongo import MongoClient, server_api
 import certifi, datetime
@@ -13,79 +13,154 @@ load_dotenv()
 MONGO_URI = os.getenv('MONGO_URI')
 db_name = os.getenv('MONGO_DBNAME')
 
-app = Flask(__name__)
+class User(UserMixin):
+    def __init__(self, username):
+        self.username = username
 
-app.config["MONGO_URI"] = MONGO_URI
-client = MongoClient(MONGO_URI, tlsCAFile=certifi.where(), server_api=server_api.ServerApi('1'))
-db = client[db_name]
-users_collection = db.users
-# mongo = PyMongo(app)
+    def get_id(self):
+        return self.username
 
-def create_user(username, password):
-    user = {
-        "username": username,
-        "password": password,  # Maybe hash this?
-        "daily_movie":{
-            "movie_id": random.randint(1,1000),
-            "recommended_date": datetime.datetime.now()
-        },
-        "watched_movies": []
-    }
-    return user
+def create_app():
+    app = Flask(__name__)
+    app.secret_key = os.urandom(24)
+    app.config["MONGO_URI"] = MONGO_URI
+    client = MongoClient(MONGO_URI, tlsCAFile=certifi.where(), server_api=server_api.ServerApi('1'))
+    db = client["movie_db"]
+    users_collection = db.users
+    login_manager = LoginManager()
+    login_manager.init_app(app)
 
-def random_movie_id(watched_ids):
-    id = 0;
-    while True:
-        id = random.randint(1,1000)
-        if id not in watched_ids:
-            break
-    return id
+    @login_manager.user_loader  
+    def load_user(username):
+        user_data = db.users.find_one({"username": username})
+        if user_data:
+            return User(username=user_data['username'])
+        return None
 
-# Runs before requests - reads csv file and puts each row into all_movies variable
-@app.before_request
-def read_movies():
-    g.all_movies = []
-    with open(os.path.join(os.path.dirname(__file__), 'input/imdb_top_1000.csv'), 'r') as file:
-       csv_reader = csv.reader(file)
-       for row in csv_reader:
-          g.all_movies.append(row)
+    def create_user(username, password):
+        user = {
+            "username": username,
+            "password": password,  # Maybe hash this?
+            "daily_movie":{
+                "movie_id": random.randint(1,1000),
+                "recommended_date": datetime.datetime.now()
+            },
+            "watched_movies": []
+        }
+        return user
 
-@app.route('/')
-def index():
+    def random_movie_id(watched_ids):
+        id = 0
+        while True:
+            id = random.randint(1,1000)
+            if id not in watched_ids:
+                break
+        return id
 
-    # user = create_user('WilliamTest2','unhashedpass')
-    # users_collection.insert_one(user);
-    # mongo.db.users.insert_one(user)
+    @app.before_request
+    def read_movies():
+        g.all_movies = []
+        try:
+            with open(os.path.join(os.path.dirname(__file__), 'input/imdb_top_1000.csv'), 'r') as file:
+                csv_reader = csv.reader(file)
+                for row in csv_reader:
+                    g.all_movies.append(row)
+        except FileNotFoundError:
+            g.all_movies = []
+            print("Error: CSV file not found.")
+        except Exception as e:
+            print(f"Error reading CSV file: {e}")
 
-    selectedUser = users_collection.find_one({"username":"WilliamTest2"})
+    @app.route('/')
+    def index():
 
-    if selectedUser:
+        # user = create_user('WilliamTest2','unhashedpass')
+        # users_collection.insert_one(user);
+        # mongo.db.users.insert_one(user)
 
-        # print("User's date: " + selectedUser["daily_movie"]["recommended_date"].strftime("%Y %m %d"))
+        # TODO: This will have to change to find the user that is logged in, hardcoded for now to test
+        selected_user = users_collection.find_one({"username":"WilliamTest2"})
+
+        # print("User's date: " + selected_user["daily_movie"]["recommended_date"].strftime("%Y %m %d"))
         # print("Computer's date: " + datetime.datetime.now().strftime("%Y %m %d"))
-        # print("Equal?: "+ str(selectedUser["daily_movie"]["recommended_date"] == datetime.datetime.now()))
+        # print("Equal?: "+ str(selected_user["daily_movie"]["recommended_date"] == datetime.datetime.now()))
 
         # Checks if movie has been assigned for the day if last recommended movie date is same as today
-        user_movie_id = selectedUser["daily_movie"]["movie_id"]
-        user_recommended_date = selectedUser["daily_movie"]["recommended_date"]
+        user_movie_id = selected_user["daily_movie"]["movie_id"]
+        user_recommended_date = selected_user["daily_movie"]["recommended_date"]
         
-        isAlreadyAssigned = user_recommended_date.strftime("%Y %m %d") == datetime.datetime.now().strftime("%Y %m %d")
+        is_already_assigned = user_recommended_date.strftime("%Y %m %d") == datetime.datetime.now().strftime("%Y %m %d")
 
-        # if movie hasn't been assigned for the day, set a new movie id user hasn't seen before
-        if not isAlreadyAssigned:
-            new_movie_id = random_movie_id(selectedUser["watched_movies"])
-            user_movie_id = new_movie_id
-            user_recommended_date = datetime.datetime.now()
+        # # For testing: to forcefully update movie even if date hasn't changed
+        # is_already_assigned = False
 
-        selected_movie = g.all_movies[user_movie_id]
+        # if movie hasn't been assigned for the day, set a new movie that user hasn't seen before
+        if not is_already_assigned:
+            new_movie_id = random_movie_id(selected_user["watched_movies"])
+            users_collection.update_one(
+                {"username":"WilliamTest2"},    # TODO: replace username with actual user logged in
+                { 
+                    "$set": {
+                        "daily_movie.movie_id": new_movie_id,
+                        "daily_movie.recommended_date": datetime.datetime.now()
+                    }
+                }
+            )
+            selected_movie = g.all_movies[new_movie_id] # uses newly generated movie id
 
-    movie_picked = True
+        # if move has been assigned
+        else:
+            selected_movie = g.all_movies[user_movie_id] # uses existing movie id found in user doc in db
 
-    if not movie_picked:
-        selected_movie = g.all_movies[random.randint(1,1000)]
-    # for row in g.all_movies:
-    #     print(row[1])
-    return render_template("index.html", selectedMovie=selected_movie)
+        return render_template("index.html", selectedMovie=selected_movie)
+
+    @app.route('/register', methods=['GET', 'POST'])
+    def register():
+        error = None
+        if request.method == 'POST':
+            username = request.form['username']
+            password = request.form.get('password')
+            confirm_password = request.form.get('confirm_password')
+            if not username or not password or not confirm_password:
+                error = 'Username and password are required!'
+            elif db.users.find_one({"username": username}):
+                error = 'Username already exists. Choose another one.'
+            elif password != confirm_password:
+                error = 'Passwords do not match!'
+            else:
+                db.users.insert_one({"username": username, "password": password})
+                return redirect(url_for('login'))
+        return render_template('register.html', error=error)
+
+    @app.route('/login', methods=['GET', 'POST'])
+    def login():
+        error = None
+        if request.method == 'POST':
+            username = request.form['username']
+            password = request.form['password']
+            user_data = db.users.find_one({"username": username})
+            if user_data and user_data["password"] == password:
+                user = User(username=user_data['username'])
+                login_user(user)
+                return redirect(url_for('profile', user=username))
+            else:
+                error = "Invalid username or password."
+        return render_template('login.html', error=error)
+
+    @app.route('/logout')
+    @login_required
+    def logout():
+        logout_user()
+        return redirect(url_for('login'))
+
+    @app.route('/profile/<user>')
+    @login_required
+    def profile(user):
+        return render_template("profile.html", user=user)
+
+    return app
 
 if __name__ == '__main__':
+    FLASK_PORT = os.getenv("FLASK_PORT", "3000")
+    app = create_app()
     app.run(host="0.0.0.0", port=3000)
