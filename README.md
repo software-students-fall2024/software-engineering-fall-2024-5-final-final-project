@@ -46,6 +46,11 @@ WEARther is a web-based application that combines weather data and curated outfi
 4. Access the web app:
   - Open your browser and navigate to ` http://localhost:5002`.
 
+5. Shut down the Docker containers
+    ```bash
+    docker-compose down
+    ```
+
 ---
 
 ### **Accessing the App**
