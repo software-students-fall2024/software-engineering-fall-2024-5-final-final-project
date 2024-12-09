@@ -77,6 +77,9 @@ jobs:
           key: ${{ secrets.DO_PRIVATE_KEY }}
           script: |
             docker pull jl8059/web-app:latest
+            docker stop flask-app || true
+            docker rm flask-app || true
+            docker rm -f mongodb
             docker-compose -f project/docker-compose.yml down || true
             docker-compose -f project/docker-compose.yml up --build -d
 
