@@ -103,7 +103,7 @@ def add_post():
         
         cur_user = current_user.username
         image_id = fs.put(image.read(), filename=image.filename, content_type=image.content_type)
-
+        cur_user_collection = db[cur_user]
         post = {
             "user": cur_user,
             "title": title,
@@ -115,8 +115,10 @@ def add_post():
             "comments": [],  
             "created_at": datetime.utcnow()
         }
+        inserted_post = posts_collection.insert_one(post)
 
-        posts_collection.insert_one(post)
+        cur_user_collection.insert_one({"post_id": inserted_post.inserted_id})
+
         return redirect(url_for("home"))
     
     return render_template("addpost.html")
