@@ -21,18 +21,14 @@ from dotenv import load_dotenv
 load_dotenv()  # load .env file
 app = Flask(__name__)
 app.secret_key = "this_is_my_random_secret_key_987654321"
-MONGO_URI = "mongodb+srv://eh96:finalfour123@bars.ygsrg.mongodb.net/finalfour?tlsAllowInvalidCertificates=true"
-MONGO_DBNAME = os.getenv("MONGO_DBNAME", "default_db_name")
+MONGO_URI = os.getenv("MONGO_URI", "mongodb+srv://eh96:finalfour123@bars.ygsrg.mongodb.net/finalfour?tlsAllowInvalidCertificates=true")
+MONGO_DBNAME = os.getenv("MONGO_DBNAME", "finalfour")
 
 # Connect to MongoDB
-try:
-    client = MongoClient(MONGO_URI)  # create MongoDB client
-    db = client[MONGO_DBNAME]  # access database
-    users_collection = db["users"]  # collection of users
-    bars_collection = db["bars"]  # collection of bars
-except Exception as e:
-    print(f"Error connecting to MongoDB: {e}")
-    raise
+client = MongoClient(MONGO_URI)  # create MongoDB client
+db = client[MONGO_DBNAME]  # access database
+users_collection = db["users"]  # collection of users
+bars_collection = db["bars"]  # collection of bars
 
 
 # --------ACCOUNT PAGE--------
@@ -42,22 +38,6 @@ def account():
 
 
 # # --------LOGIN PAGE--------
-# @app.route("/login", methods=["GET", "POST"])
-# def login():
-#     if request.method == "POST":
-#         # get data
-#         username = request.form.get("username")
-#         password = request.form.get("password").encode("utf-8")
-
-#         # authenticate user
-#         user = users_collection.find_one({"username": username})
-
-#         if user and user["password"] == password:
-#             session["user_id"] = str(user["_id"])   # set session user_id
-#             session["username"] = user["username"]  # set session username
-#             return redirect(url_for("index"))       # direct to index.html
-#         else: return redirect(url_for("login"))
-
 
 #     return render_template("login.html") # link to login.html
 @app.route("/login", methods=["GET", "POST"])
@@ -71,7 +51,7 @@ def login():
             session["user_id"] = str(user["_id"])
             session["username"] = username
             session.permanent = False
-            return redirect(url_for("index"))
+            return redirect(url_for("dashboard"))
         else:
             flash("Invalid username or password.", "error")
             return redirect(url_for("login"))
@@ -83,20 +63,19 @@ def login():
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "POST":
-        # get data
-        username = request.form.get("username")
-        password = request.form.get("password")
+        username = request.form["username"]
+        password = request.form["password"].encode("utf-8")
 
-        # check if user exists
-        existing_user = users_collection.find_one({"username": username})
-        if existing_user:
+        if users_collection.find_one({"username": username}):
+            flash("Username already exists. Please choose a different one.", "error")
             return redirect(url_for("signup"))
 
-        # insert new user into users collection
-        users_collection.insert_one({"username": username, "password": password})
-        return redirect(url_for("login"))  # direct to login.html
+        hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
+        users_collection.insert_one({"username": username, "password": hashed_password})
+        flash("Account created successfully. Please log in.", "success")
+        return redirect(url_for("login"))
 
-    return render_template("signup.html")  # link to signup.html
+    return render_template("signup.html")
 
 
 # --------HOME PAGE--------

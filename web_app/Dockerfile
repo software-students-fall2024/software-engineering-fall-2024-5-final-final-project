@@ -1,31 +1,29 @@
-FROM python:3.10
+FROM python:3.10-slim
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     gcc \
-    g++ \
-    gfortran \
     libopenblas-dev \
     liblapack-dev \
-    python3-dev
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Upgrade pip
-RUN python -m pip install --upgrade pip
-RUN pip uninstall -y flask jinja2 markupsafe werkzeug itsdangerous
+RUN python -m pip install --no-cache-dir --upgrade pip
 
 # Set working directory
 WORKDIR /web-app
 
-# Copy requirements and install
+# Copy requirements and install dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy all code, including the `recommender` logic
+# Copy the rest of the application code
 COPY . .
 
 # Expose Flask port
 EXPOSE 5000
 
-# Run Flask app
+# Command to run the Flask app
 CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
