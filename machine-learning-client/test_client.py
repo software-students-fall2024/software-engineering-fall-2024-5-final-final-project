@@ -8,6 +8,7 @@
 # # python -m pytest --cov=client test_client.py
 
 # pylint web-app/ machine-learning-client/
+# pylint machine-learning-client/
 # black .
 
 import os
@@ -18,7 +19,9 @@ import pytest
 from pymongo.errors import PyMongoError
 from requests.exceptions import RequestException
 
-sys.modules["inference_sdk"] = MagicMock() # NEED!!! to mock the inference_sdk module before any local imports 
+sys.modules[
+    "inference_sdk"
+] = MagicMock()  # NEED!!! to mock the inference_sdk module before any local imports
 from client import app  # pylint: disable=wrong-import-position
 
 
