@@ -24,7 +24,7 @@
             border-radius: 15px;
             margin: auto;
             max-width: 500px;
-            color: black; /* Dark text for better readability on light background */
+            color: black; 
             }
 
         h1 {
@@ -68,7 +68,7 @@
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        /* Hover effect only */
+        
         .bottom-nav a:hover {
             background-color: #555;
             border-radius: 5px;
@@ -83,7 +83,7 @@
             padding: 10px;
             font-size: 1.2em;
             color: black;
-            background-color: rgba(255, 255, 255, 0.6); /* Transparent background */
+            background-color: rgba(255, 255, 255, 0.6); 
             border-radius: 10px;
         }
 
@@ -96,19 +96,19 @@
             border: none;
             border-radius: 15px;
             font-size: 1rem;
-            background: rgba(100, 149, 237); /* Light blue background */
+            background: rgba(100, 149, 237); 
             color: white;
             cursor: pointer;
             transition: background 0.3s ease, box-shadow 0.2s ease;
         }
 
         #logout-btn:hover {
-            background: rgba(30, 144, 255, 1); /* Brighter blue on hover */
+            background: rgba(30, 144, 255, 1);
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
         } 
 
         #toggle-btn {
-            background-color: rgba(100, 149, 237); /* Light blue background */
+            background-color: rgba(100, 149, 237); 
             border: none;
             padding: 10px 20px;
             border-radius: 15px;
@@ -120,7 +120,7 @@
         }
 
         #toggle-btn:hover {
-            background: rgba(30, 144, 255, 1); /* Brighter blue on hover */
+            background: rgba(30, 144, 255, 1);
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
         }
 
@@ -170,13 +170,13 @@
             const toggleButton = document.getElementById("toggle-btn");
 
             if (isCelsius) {
-                // Convert to Fahrenheit
+                
                 const temperatureF = (temperatureC * 9/5) + 32;
                 temperatureElement.textContent = temperatureF.toFixed(1);
                 unitElement.textContent = "F";
                 toggleButton.textContent = "Change to °C";
             } else {
-                // Convert to Celsius
+                
                 temperatureElement.textContent = temperatureC.toFixed(1);
                 unitElement.textContent = "C";
                 toggleButton.textContent = "Change to °F";

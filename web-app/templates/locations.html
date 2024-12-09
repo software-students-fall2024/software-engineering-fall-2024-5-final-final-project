@@ -137,20 +137,20 @@ li:hover {
     <div class="content">
         <h1 style="font-family: 'Satisfy', 'cursive'; color: #2C3E50;">Your Locations</h1>
         
-        <!-- Search form -->
+        
         <form id="location-form">
             <input type="text" id="location-input" placeholder="Enter a location" required>
             <button type="submit">Add Location</button>
         </form>
     
-        <!-- Locations List -->
+        
         <ul id="locations-list">
-            <!-- Will be populated dynamically -->
+            
         </ul>
     </div>
     
     <script>
- // Add location to the list
+ 
 function addLocationToList(location) {
     const list = document.getElementById("locations-list");
     const li = document.createElement("li");
@@ -160,7 +160,7 @@ function addLocationToList(location) {
     li.setAttribute("data-location", location);
 
     
-    // Save the selected location and navigate to the weather page
+    
     li.onclick = () => {
         localStorage.setItem("selectedLocation", location);
         window.location.href = `/?city=${encodeURIComponent(location)}`;
@@ -169,7 +169,7 @@ function addLocationToList(location) {
     list.appendChild(li);
 }
 
-// Fetch and update weather data dynamically
+
 async function fetchWeather(location) {
     try {
         const response = await fetch("/get_weather_data", {
@@ -185,10 +185,10 @@ async function fetchWeather(location) {
             return;
         }
 
-        // Store the selected location in localStorage
+        
         localStorage.setItem("selectedLocation", location);
 
-        // Update weather section dynamically
+        
         document.querySelector(".content h1").textContent = "Your Locations";
         document.querySelector("#outfit-suggestions").innerHTML = `
             <p><strong>Location:</strong> ${data.city}</p>
@@ -205,7 +205,7 @@ async function fetchWeather(location) {
 }
 
 
-// Handle form submission
+
 document.getElementById("location-form").addEventListener("submit", async (e) => {
     e.preventDefault();
     const location = document.getElementById("location-input").value.trim();
@@ -227,14 +227,14 @@ document.getElementById("location-form").addEventListener("submit", async (e) =>
     }
 });
 
-// Fetch saved locations on page load
+
 window.onload = async () => {
     const response = await fetch("/get_locations");
     const locations = await response.json();
     locations.forEach((loc) => addLocationToList(loc));
 };
 
-// Handle Weather button click
+
 function goToWeather() {
     const lastLocation = localStorage.getItem("selectedLocation");
 
