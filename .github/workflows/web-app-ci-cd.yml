@@ -78,6 +78,16 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan 159.203.137.174 >> ~/.ssh/known_hosts
       
+
+     -  name: Copy docker-compose.yml
+        uses: appleboy/scp-action@v0.1.1
+        with:
+          host: 159.203.137.174
+          username: root
+          key: ${{ secrets.DO_SSH_KEY }}
+          source: ./docker-compose.yml
+          target: /root/docker-compose.yml
+      
       # Deploy to the Digital Ocean Droplet
       - name: Deploy to Digital Ocean
         uses: appleboy/ssh-action@v0.1.10
