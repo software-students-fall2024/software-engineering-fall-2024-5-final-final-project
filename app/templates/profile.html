@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% block head %}
-    <title> My Info </title>
+    <title>{{ username }}'s Profile</title>
     <style>
-	.user-info {
+        .user-info {
             text-align: center;
             margin: 20px 0;
         }
@@ -25,7 +25,7 @@
             margin: 20px 0;
         }
 
-        .buttons a {
+        .buttons button, .buttons a {
             text-decoration: none;
             color: white;
             background-color: #333;
@@ -33,9 +33,11 @@
             border-radius: 5px;
             font-size: 16px;
             font-weight: bold;
+            border: none; /* For buttons */
+            cursor: pointer;
         }
 
-        .buttons a:hover {
+        .buttons button:hover, .buttons a:hover {
             background-color: #555;
         }
 
@@ -81,26 +83,6 @@
             display: block;
         }
 
-
-        .settings-button {
-            text-align: center;
-            margin-top: 30px;
-        }
-
-        .settings-button a {
-            text-decoration: none;
-            color: white;
-            background-color: #ff4c4c;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        .settings-button a:hover {
-            background-color: #e04343;
-        }       
-        
         @media (max-width: 900px) {
             .post {
                 flex: 0 0 calc(50% - 20px);
@@ -121,13 +103,21 @@
     <div class="user-info">
         <h2>{{ username }}</h2>
         <div class="buttons">
-            <a href="/edit-username">Edit Profile</a>
+            <!-- Follow/Unfollow Button -->
+            <button id="follow-btn" data-username="{{ username }}">
+                {% if is_following %}
+                    Unfollow
+                {% else %}
+                    Follow
+                {% endif %}
+            </button>
+            <!-- Chat Button -->
             <a href="/chat">Chat</a>
         </div>
     </div>
 
 	<div class="my-posts-header">
-        <h1>My Posts</h1>
+        <h1>{{ username }}'s Posts</h1>
         <hr>
     </div>
 
@@ -143,7 +133,22 @@
         {% endfor %}
     </div>
 
-    <div class="settings-button">
-        <a href="/logout">Log Out</a>
-    </div>
+    <script>
+        // Follow/Unfollow Button Logic
+        document.getElementById("follow-btn").addEventListener("click", function () {
+            const username = this.getAttribute("data-username");
+
+            fetch(`/follow/${username}`, { method: "POST" })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.action === "followed") {
+                        this.textContent = "Unfollow";
+                    } else if (data.action === "unfollowed") {
+                        this.textContent = "Follow";
+                    }
+                })
+                .catch(error => console.error("Error:", error));
+        });
+    </script>
 {% endblock %}
+

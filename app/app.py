@@ -347,6 +347,7 @@ def follow_user(username):
 
     return jsonify({"action": action, "followers_count": followers_count})
 
+
 @app.route("/posts/<post_id>/comments", methods=["POST"])
 @login_required
 def add_comment(post_id):
@@ -463,6 +464,7 @@ def send_message():
 
     messages_collection.insert_one(message_doc)
     return jsonify({"status": "success"})
+
 
 @app.route("/get_messages/<username>", methods=["GET"])
 @login_required

@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block head %}
-    <title> Pet Circle </title>
+    <title> Followed Circle </title>
     <style>
         .circular-button {
             width: 100px;
@@ -34,7 +34,7 @@
         .switch-buttons a {
             text-decoration: none;
             color: white;
-            background-color: #FAD5A5;
+            background-color: #f7dc6f;
             padding: 10px 20px;
             margin: 0 10px;
             border-radius: 5px;
@@ -43,13 +43,13 @@
         }
 
         .switch-buttons a.active {
-            background-color: #f7dc6f;
+            background-color: #FAD5A5;
             font-weight: bold;
             cursor: default;
         }
 
         .switch-buttons a:hover:not(.active) {
-            background-color: #f7dc6f;
+            background-color: #FAD5A5;
         }
 
         .posts {
@@ -99,8 +99,8 @@
 
 {% block container %}
     <div class="switch-buttons">
-        <a href="/" class="active">Discovery</a>
-        <a href="/followed_circle">Followed</a>
+        <a href="/home">Discovery</a>
+        <a href="/" class = "active">Followed</a>
     </div>
 
     <div class="posts">
@@ -117,4 +117,3 @@
 
     <button class="circular-button" onclick="window.location.href='/addpost'">+</button>
 {% endblock %}
-
