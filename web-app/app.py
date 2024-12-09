@@ -196,7 +196,7 @@ def logout():
     flash("You have been logged out.")
     return redirect(url_for("login"))
 
-@app.route('/index', methods=['GET'])
+@app.route('/', methods=['GET'])
 @login_required
 def index():
     seed_database()
