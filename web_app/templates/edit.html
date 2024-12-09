@@ -37,7 +37,6 @@
                 <div class="form-group">
                     <label for="type">Type</label>
                     <select id="type" name="type" required>
-                        <option value="">--Choose--</option>
                         <option value="Cocktail" {% if bar.type == 'cocktail' %}selected{% endif %}>Cocktail</option>
                         <option value="Wine" {% if bar.type == 'wine' %}selected{% endif %}>Wine</option>
                         <option value="Speakeasy" {% if bar.type == 'speakeasy' %}selected{% endif %}>Speakeasy</option>
@@ -53,7 +52,6 @@
                 <div class="form-group">
                     <label for="occasion">Occasion</label>
                     <select id="occasion" name="occasion" required>
-                        <option value="">--Choose--</option>
                         <option value="Casual" {% if bar.occasion == 'cocktail' %}selected{% endif %}>Casual</option>
                         <option value="Formal" {% if bar.occasion == 'formal' %}selected{% endif %}>Formal</option>
                         <option value="Happy Hour" {% if bar.occasion == 'happyhour' %}selected{% endif %}>Happy Hour</option>
@@ -67,7 +65,6 @@
                 <div class="form-group">
                     <label for="area">Area</label>
                     <select id="area" name="area" required>
-                        <option value="">--Choose--</option>
                         <option value="FiDi" {% if bar.area == 'FiDi' %}selected{% endif %}>FiDi</option>
                         <option value="East Village" {% if bar.area == 'East Village' %}selected{% endif %}>East Village</option>
                         <option value="Greenwich Village" {% if bar.area == 'Greenwich Village' %}selected{% endif %}>Greenwich</option>
@@ -86,7 +83,6 @@
                 <div class="form-group">
                     <label for="reservation">Reservation</label>
                     <select id="reservation" name="reservation" required>
-                        <option value="">--Choose--</option>
                         <option value="Yes" {% if bar.reservation == 'yes' %}selected{% endif %}>Yes</option>
                         <option value="No" {% if bar.reservation == 'no' %}selected{% endif %}>No</option>
                     </select><br><br>
@@ -96,7 +92,6 @@
                 <div class="form-group">
                     <label for="cost">Cost</label>
                     <select id="cost" name="cost" required>
-                        <option value="">--Choose--</option>
                         <option value="$" {% if bar.cost == '$' %}selected{% endif %}>$</option>
                         <option value="$$" {% if bar.cost == '$$' %}selected{% endif %}>$$</option>
                         <option value="$$$" {% if bar.cost == '$$$' %}selected{% endif %}>$$$</option>
@@ -108,7 +103,6 @@
                 <div class="form-group">
                     <label for="status">Visited?</label>
                     <select id="status" name="status" required>
-                        <option value="">--Choose--</option>
                         <option value="Yes" {% if bar.status == 'yes' %}selected{% endif %}>Yes</option>
                         <option value="No" {% if bar.status == 'no' %}selected{% endif %}>No</option>
                     </select><br><br>
