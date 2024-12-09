@@ -50,6 +50,7 @@ jobs:
 
     # Deploy to DigitalOcean
     - name: Deploy to DigitalOcean
+      uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.DO_IP }}
         username: root
