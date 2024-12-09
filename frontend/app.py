@@ -38,7 +38,7 @@ def proxy_to_backend(path):
                 f"{BACKEND_URL}/api/{path}",
                 cookies=backend_cookies,
                 allow_redirects=False,
-                timeout=5  # Timeout set to 5 seconds
+                timeout=5,  # Timeout set to 5 seconds
             )
         else:
             resp = requests.post(
@@ -46,7 +46,7 @@ def proxy_to_backend(path):
                 json=request.get_json(),
                 cookies=backend_cookies,
                 allow_redirects=False,
-                timeout=5  # Timeout set to 5 seconds
+                timeout=5,  # Timeout set to 5 seconds
             )
 
         # Create a Flask response object with backend's response content and status
