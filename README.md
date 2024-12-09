@@ -35,23 +35,7 @@ WEARther is a web-based application that combines weather data and curated outfi
     git clone https://github.com/software-students-fall2024/5-final-java_and_the_scripts_1.git
     cd 5-final-java_and_the_scripts_1
     ```
-
-### **Configuration**
-2. **Environment Variables**: Create a `.env` file in the project root with the following content:
-    ```env
-    MONGO_DBNAME=Outfits
-    MONGO_URI="mongodb://root:secret@mongodb:27017"
-    FLASK_APP=app.py
-    FLASK_ENV=development
-    FLASK_PORT=5000
-    OPENWEATHER_API_KEY=your_openweather_api_key
-    ```
-
-3. **Import Starter Data**:
-    - The `seed_database()` function in `app.py` automatically populates the database with outfit data when the app runs for the first time.
-
-
-4. Build and start the Docker containers:
+2. Build and start the Docker containers:
     ```bash
     docker compose build
     ```
@@ -59,8 +43,7 @@ WEARther is a web-based application that combines weather data and curated outfi
     ```bash
     docker compose up --build
     ```
-
-5. Access the web app:
+3. Access the web app:
     - Open your browser and navigate to ` http://localhost:5002/login`.
 
 ---
