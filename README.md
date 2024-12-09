@@ -1,5 +1,5 @@
-![web-appbuild](https://github.com/software-students-fall2024/5-final-java_and_the_scripts_1/actions/workflows/web-appbuild/badge.svg)
-![mongodb-ci-cd](https://github.com/software-students-fall2024/5-final-java_and_the_scripts_1/actions/workflows/mongodb-ci-cd/badge.svg)
+![web-app-build](https://github.com/software-students-fall2024/5-final-java_and_the_scripts_1/actions/workflows/web-appbuild.yml/badge.svg)
+![mongodb-ci-cd](https://github.com/software-students-fall2024/5-final-java_and_the_scripts_1/actions/workflows/mongodb-ci-cd.yml/badge.svg)
 # Final Project
 
 An exercise to put to practice software development teamwork, subsystem communication, containers, deployment, and CI/CD pipelines. See [instructions](./instructions.md) for details.
