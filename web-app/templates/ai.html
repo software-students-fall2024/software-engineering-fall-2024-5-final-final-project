@@ -225,6 +225,23 @@
             transform: translateY(-3px);
             box-shadow: 0 8px 15px rgba(0, 0, 0, 0.5);
         }
+
+        .side-image {
+            position: fixed;
+            top: 0;
+            height: 100vh; /* Full viewport height */
+            max-width: 20vw;
+            background-size: cover;
+            z-index: -1;
+        }
+
+        .side-image.left {
+            left: 0;
+        }
+
+        .side-image.right {
+            right: 0;
+        }
     </style>
 </head>
 <body>
@@ -232,6 +249,13 @@
     <div id="slideLeft" class="slide-in"></div>
     <div id="slideRight" class="slide-in">
         <video id="aiVideo" autoplay muted></video>
+    </div>
+
+    <div class="side-image left">
+        <img src="{{ url_for('static', filename='assets/Border.png') }}">
+    </div>
+    <div class="side-image right">
+        <img src="{{ url_for('static', filename='assets/Border.png') }}">
     </div>
 
     <h1>Rock Paper Scissors - Play Against AI</h1>
