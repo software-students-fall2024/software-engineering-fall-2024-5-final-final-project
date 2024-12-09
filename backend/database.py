@@ -35,7 +35,7 @@ class Expense:
 
 
 class Database:
-    """   
+    """
     Provides methods to interact with the MongoDB database for the finance application.
     Handles user-related operations, budget management, and expense tracking.
     """
@@ -188,7 +188,7 @@ class User(UserMixin):
 
 class MLModel:
     """
-    Provides a simple machine learning model to analyze and predict spending habits.   
+    Provides a simple machine learning model to analyze and predict spending habits.
     """
 
     def __init__(self):
