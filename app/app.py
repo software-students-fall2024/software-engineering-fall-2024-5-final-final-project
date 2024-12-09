@@ -298,36 +298,6 @@ def ini():
     """
     return redirect(url_for("home"))
 
-@app.route("/edit-username", methods=["GET", "POST"])
-@login_required
-def edit_profile():
-    if request.method == "POST":
-        new_username = request.form.get("new_username")
-
-        if not new_username or len(new_username.strip()) < 3:
-            flash("Username must be at least 3 characters long.")
-            return redirect(url_for("edit_profile"))
-
-        existing_user = users_collection.find_one({"username": new_username})
-        if existing_user:
-            flash("Username already taken. Please choose a different one.")
-            return redirect(url_for("edit_profile"))
-
-        # Update username in the database
-        old_username = current_user.username
-        users_collection.update_one(
-            {"_id": ObjectId(current_user.id)}, {"$set": {"username": new_username}}
-        )
-
-        # Rename the user's collection in MongoDB
-        db[old_username].rename(new_username)
-
-        current_user.username = new_username
-        flash("Your username has been updated successfully!")
-        return redirect(url_for("display_my_info"))
-
-    return render_template("edit_username.html", username=current_user.username)
-
 @app.route("/profile/<username>", methods=["GET"])
 @login_required
 def user_profile(username):
@@ -397,6 +367,42 @@ def add_comment(post_id):
 
     flash("Comment added successfully!")
     return redirect(url_for("display_post", post_id=post_id))
+
+
+@app.route("/edit-username", methods=["GET", "POST"])
+@login_required
+def edit_profile():
+    if request.method == "POST":
+        new_username = request.form.get("new_username", "").strip()
+
+        if not new_username or len(new_username) < 3:
+            flash("Username must be at least 3 characters long.")
+            return redirect(url_for("edit_profile"))
+
+        existing_user = users_collection.find_one({"username": new_username})
+        if existing_user:
+            flash("Username already taken. Please choose a different one.")
+            return redirect(url_for("edit_profile"))
+
+        try:
+            user_id = ObjectId(current_user.id)
+            old_username = current_user.username  # Access the current username directly
+            users_collection.update_one({"_id": user_id}, {"$set": {"username": new_username}})
+
+            if old_username in db.list_collection_names():
+                db[old_username].rename(new_username)
+
+            current_user.username = new_username
+
+            flash("Your username has been updated successfully!")
+            return redirect(url_for("display_my_info"))
+        except Exception as e:
+            flash(f"An error occurred while updating your username: {e}")
+            return redirect(url_for("edit_profile"))
+
+    return render_template("edit_username.html", username=current_user.username)
+
+
 
 if __name__ == "__main__":
     # add_recommendations()
