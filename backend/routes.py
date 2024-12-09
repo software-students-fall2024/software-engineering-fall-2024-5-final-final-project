@@ -64,9 +64,7 @@ def login():
         session["username"] = username
         logger.info("User %s logged in successfully.", username)
         return jsonify({"success": True}), 200
-    logger.warning(
-        "Failed login attempt for username: %s (wrong password)", username
-    )
+    logger.warning("Failed login attempt for username: %s (wrong password)", username)
     return jsonify({"success": False, "message": "Invalid credentials"}), 401
 
 
