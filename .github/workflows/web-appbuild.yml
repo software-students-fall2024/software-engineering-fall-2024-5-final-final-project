@@ -79,5 +79,5 @@ jobs:
             docker pull ${{ secrets.DOCKER_USERNAME }}/web-app:latest
             docker stop web-app || true
             docker rm web-app || true
-            docker-compose -f ~/web-app/docker-compose.yml down || true
-            docker-compose -f ~/web-app/docker-compose.yml up --build -d
+            docker-compose -f /root/docker-compose.yml down || true
+            docker-compose -f /root/docker-compose.yml up --build -d
