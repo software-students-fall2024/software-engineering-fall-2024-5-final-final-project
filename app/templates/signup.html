@@ -29,14 +29,12 @@
                 <h1> Sign up</h1>
             </div>
             <form action="{{ url_for('signup') }}" method="POST">
+                <label for="name">Name:</label><br>
+                <input type="text" id="name" name="name" placeholder="name" required><br>
                 <label for="email">Email:</label><br>
                 <input type="text" id="email" name="email" placeholder="email" required><br>
                 <label for="password">Password:</label><br>
                 <input type="password" id="password" name="password" placeholder="password" required><br>
-                <label for="password">Confirm Password:</label><br>
-                <input type="password" id="password" name="password" placeholder="password" required><br>
-                <label for="name">Name:</label><br>
-                <input type="text" id="name" name="name" placeholder="name" required><br>
                 <input type="submit" value="Signup">
             </form>
             <p>Have an account? <a href="{{ url_for('login') }}">Login</a></p>
