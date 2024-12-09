@@ -19,6 +19,7 @@ app.config["MONGO_URI"] = MONGO_URI
 client = MongoClient(MONGO_URI, tlsCAFile=certifi.where(), server_api=server_api.ServerApi('1'))
 db = client[db_name]
 users_collection = db.users
+ratings_collection = db.ratings
 # mongo = PyMongo(app)
 
 def create_user(username, password):
@@ -92,6 +93,46 @@ def index():
         selected_movie = g.all_movies[user_movie_id] # uses existing movie id found in user doc in db
 
     return render_template("index.html", selectedMovie=selected_movie)
+
+@app.route('/setwatched', methods=["POST"])
+def setWatched():
+    user = users_collection.find_one({"username":"WilliamTest2"})
+    
+    # Check if the checkbox is checked (it will be 'true' if checked, and 'false' if unchecked)
+    has_watched = request.form.get('hasWatched') == 'true'
+    movie_id = int(request.form['movieId'])
+
+    print(has_watched)
+
+    if has_watched:
+        ratings_collection.insert_one(
+            {
+                "user": user["_id"],
+                "movie_id": movie_id,
+                "date_watched": datetime.datetime.now()
+            }
+        )
+    else:
+        ratings_collection.delete_one({
+            "user": user["_id"],
+            "movie_id": movie_id
+        })
+
+    # Return to the homepage or wherever you need to redirect after processing
+    return redirect(url_for("index"))
+
+@app.route('/watchlist')
+def watchlist():
+    selected_user = users_collection.find_one({"username":"WilliamTest2"})
+    watched_movies = []
+
+    # Fetch watched movies based on the user's watched_movies list
+    for movie_id in selected_user.get("watched_movies", []):
+        watched_movie = g.all_movies[movie_id]
+        watched_movies.append(watched_movie)
+
+    return render_template("watchlist.html", watchedMovies=watched_movies)
+
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=3000)
