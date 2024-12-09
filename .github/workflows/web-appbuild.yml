@@ -54,6 +54,9 @@ jobs:
           MONGO_URI: mongodb://localhost:27017
         run: |
           pytest web-app/tests/
+      # Set up Docker Buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
 
       # Log in to Docker Hub
       - name: Log in to Docker Hub
@@ -61,26 +64,20 @@ jobs:
         with:
           username: jl8059
           password: qq883697776
+      # Build and push the Docker image
+          - name: Build and push Docker image
+            run: |
+              docker buildx build --platform linux/amd64,linux/arm64 -t jl8059/web-app:latest ./web_app --push
 
-      # Build and push Docker image
-      - name: Build and push Web App Docker image
-        run: |
-          docker build -t jl8059/web-app:latest -f ./web-app/Dockerfile ./web-app
-          docker push jl8059/web-app:latest
-
-      # Deploy to DigitalOcean Droplet
-      - name: Deploy to DigitalOcean Droplet
-        uses: appleboy/ssh-action@v0.1.6
-        with:
-          host: 159.203.137.174
-          username: root
-          key: ${{ secrets.DO_PRIVATE_KEY }}
-          script: |
-            docker pull jl8059/web-app:latest
-            docker stop flask-app || true
-            docker rm flask-app || true
-            docker rm -f mongodb
-            docker-compose -f project/docker-compose.yml down || true
-            docker-compose -f project/docker-compose.yml up --build -d
-
-
+          # Deploy to DigitalOcean
+          - name: Deploy to DigitalOcean
+            uses: appleboy/ssh-action@v0.1.1
+            with:
+              host: 159.203.137.174
+              username: root
+              key: ${{ secrets.DO_PRIVATE_KEY }}
+              run: |
+                docker pull jl8059/web-app:latest
+                docker stop web_app || true 
+                docker rm web_app || true
+                docker run -d --name web_app -p 5002:5000 jl8059/web-app:latest
