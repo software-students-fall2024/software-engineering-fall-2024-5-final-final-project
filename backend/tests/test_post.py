@@ -274,3 +274,50 @@ def test_comment_invalid_data(client, auth_token, test_post):
     data = json.loads(response.data)
     assert 'message' in data
 
+
+def test_get_post_with_author(client, auth_token, test_post):
+    """Test getting a post with author information"""
+    response = client.get(f"/api/posts/{test_post}")
+    assert response.status_code == 200
+    data = json.loads(response.data)
+    assert 'data' in data
+    assert 'author_username' in data['data']
+
+
+def test_post_with_tags(client, auth_token):
+    """Test creating a post with tags"""
+    response = client.post(
+        "/api/posts",
+        json={
+            "title": "Test Post with Tags",
+            "content": "Content with tags",
+            "tags": ["test", "tags"]
+        },
+        headers={"Authorization": f"Bearer {auth_token}"}
+    )
+    assert response.status_code == 201
+    data = json.loads(response.data)
+    assert 'message' in data
+
+
+def test_update_post_tags(client, auth_token, test_post):
+    """Test updating post tags"""
+    response = client.put(
+        f"/api/posts/{test_post}",
+        json={
+            "tags": ["updated", "tags"]
+        },
+        headers={"Authorization": f"Bearer {auth_token}"}
+    )
+    assert response.status_code == 200
+    data = json.loads(response.data)
+    assert 'message' in data
+
+
+def test_get_posts_empty_page(client):
+    """Test getting posts when page is empty"""
+    response = client.get("/api/posts?page=999&limit=10")
+    assert response.status_code == 200
+    data = json.loads(response.data)
+    assert 'data' in data
+    assert len(data['data']) == 0
