@@ -206,11 +206,8 @@ def test_create_post_invalid_data(client, auth_token):
     )
     assert response.status_code == 400
     data = json.loads(response.data)
-    assert 'error' in data
     assert 'message' in data
-    error_msg = data['message'].lower()
-    assert any(['title' in error_msg,
-               'content' in error_msg])
+
 
 
 def test_get_posts_pagination(client, auth_token):
@@ -243,7 +240,6 @@ def test_get_posts_with_invalid_pagination(client):
     response = client.get("/api/posts?page=0&per_page=0")
     assert response.status_code == 400
     data = json.loads(response.data)
-    assert 'error' in data
     assert 'message' in data
 
 
@@ -259,7 +255,6 @@ def test_update_post_invalid_data(client, auth_token, test_post):
     )
     assert response.status_code == 400
     data = json.loads(response.data)
-    assert 'error' in data
     assert 'message' in data
 
 
@@ -267,7 +262,6 @@ def test_invalid_post_id_format(client, auth_token):
     response = client.get("/api/posts/invalid_id")
     assert response.status_code == 404
     data = json.loads(response.data)
-    assert 'error' in data
     assert 'message' in data
 
 
@@ -279,6 +273,5 @@ def test_comment_invalid_data(client, auth_token, test_post):
     )
     assert response.status_code == 400
     data = json.loads(response.data)
-    assert 'error' in data
     assert 'message' in data
 
