@@ -1,0 +1,11 @@
+services:
+  app:
+    build:
+      context: ./app
+    volumes:
+      - ./app:/app
+    container_name: app
+    ports:
+      - "5002:5002"
+    environment:
+      - MONGO_URI=mongodb+srv://2236531605wang:EiMcBhDJn0NjOcaE@cluster0.mt65z.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0

@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% block head %}
+    <title> Pet Circle - Create a Post </title>
+    <style>
+        body {
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+    
+        h1 {
+            text-align: center;
+            color: #555;
+            margin-top: 20px;
+            font-size: 2.5em;
+        }
+    
+        form {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+    
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1em;
+            font-weight: bold;
+            color: #444;
+        }
+    
+        textarea,
+        input[type="file"],
+        input[type="submit"] {
+            width: 100%;
+            font-size: 1em;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+    
+        textarea {
+            resize: vertical;
+            height: 100px;
+        }
+    
+        input[type="file"] {
+            padding: 5px;
+        }
+    
+        input[type="submit"] {
+            background-color: #f7dc6f;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+    
+        input[type="submit"]:hover {
+            background-color: #FAD5A5;
+        }
+    
+        @media (max-width: 600px) {
+            form {
+                padding: 15px;
+            }
+    
+            h1 {
+                font-size: 2em;
+            }
+    
+            label {
+                font-size: 0.9em;
+            }
+    
+            textarea,
+            input[type="file"],
+            input[type="submit"] {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block container %}
+    <h1>New Post</h1> 
+    <form action="/addpost" method="POST" enctype="multipart/form-data">
+        <div>
+            <label for="title">Title</label>
+            <textarea name="title" placeholder="Enter Title" id="title" required></textarea>
+        </div>
+        <div>
+            <label for="content">Your Story</label>
+            <textarea name="content" placeholder="Share Your Story" id="content" required></textarea>
+        </div>
+        <div>
+            <label for="image">Share a Pic</label>
+            <input type="file" id="image" name="image" accept="image/*" required>
+        </div>
+        <div>
+            <input type="submit" value="Share" id="shareButton">
+        </div>
+    </form>
+{% endblock %}

@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% block head %}
+    <title> Pet Circle </title>
+    <style>
+        .circular-button {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #f7dc6f;
+            color: white;
+            border: black;
+            display: flex;
+            align-items: center;
+            justify-content: center;    
+            font-size: 60px;
+            cursor: pointer;
+            position: fixed;
+            bottom: 50px;
+            left: 90%;
+            font-family: Arial, sans-serif;
+            transform: translateX(-50%);
+        }
+
+        .circular-button:hover {
+            background-color: #f8d856;
+        }
+
+        .switch-buttons {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .switch-buttons a {
+            text-decoration: none;
+            color: white;
+            background-color: #FAD5A5;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border-radius: 5px;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+        }
+
+        .switch-buttons a.active {
+            background-color: #f7dc6f;
+            font-weight: bold;
+            cursor: default;
+        }
+
+        .switch-buttons a:hover:not(.active) {
+            background-color: #f7dc6f;
+        }
+
+        .posts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 20px;
+            align-items: flex-start;
+        }
+
+        .post {
+            flex: 0 0 calc(33.333% - 20px);
+            max-width: calc(33.333% - 20px);
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            text-align: center;
+        }
+        
+        .post img {
+            width: 100%;
+            height: 500px;         
+            object-fit: cover;
+            display: block;
+        }
+
+        @media (max-width: 900px) {
+            .post {
+                flex: 0 0 calc(50% - 20px);
+                max-width: calc(50% - 20px);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .circular-button {
+                left: 50%;
+            }
+            .post {
+                flex: 0 0 calc(100% - 20px);
+                max-width: calc(100% - 20px);
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block container %}
+    <div class="switch-buttons">
+        <a href="/" class="active">Discovery</a>
+        <a href="/followed_circle">Followed</a>
+    </div>
+
+    <div class="posts">
+        {% for post in posts %}
+        <div class = "post">
+            <a href="/posts/{{ post.post_id }}" style="text-decoration: none; color: black;">
+                    <h2>{{ post.title }}</h2>
+                    <img src="{{ post.image_url }}" alt="Post Image">
+                    <small>{{ post.author }}</small>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <button class="circular-button" onclick="window.location.href='/addpost'">+</button>
+{% endblock %}
+
