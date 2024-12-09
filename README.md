@@ -6,8 +6,10 @@
 1. [Description](#description)
 2. [Configure](#configure)
 3. [Run the app](#run-the-app)
-4. [Container Images](#container-images)
-4. [Team members](#team-members)
+4. [Tests](#testing)
+5. [Container Images](#container-images)
+6. [Digital Ocean Deployment](#deployment)
+7. [Team members](#team-members)
 
 ## Description
 This app allows users to create and share shopping wish lists. It uses Docker and MongoDB, operating in a containerized environment with two subsystems: a database and a custom web-app. It also features deployment and CI/CD pipelines. See [instructions](./instructions.md) for details.
@@ -39,8 +41,21 @@ When finished using the app, stop and remove the containers and previously creat
 docker-compose down
 ```
 
+## Testing
+The web-app subsystem includes unit tests with 80+% code coverage. Run the tests with pytest:
+```
+cd web-app
+pytest --cov=.
+```
+
 ## Container Images
-<!-- links -->
+[Flask Web-App Image](https://hub.docker.com/r/jnahan/happylist)
+[MongoDB Image]()
+<!-- INSERT CONTAINER LINK -->
+
+## Digital Ocean Deployment
+See our web-app deployment using Digital Ocean [HERE]()
+<!-- INSERT DEPLOYMENT LINK -->
 
 ## Team members
 [Haley Hobbs](https://github.com/haleyhobbs) \
