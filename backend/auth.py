@@ -1,11 +1,13 @@
 """
 Authentication related functionality
 """
+
 from backend.database import Database, User
 from backend import login_manager
 from bson import ObjectId
 
 db = Database()
+
 
 @login_manager.user_loader
 def load_user(user_id):

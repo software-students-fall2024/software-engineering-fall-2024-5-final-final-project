@@ -2,6 +2,7 @@
 backend.main
 This module initializes and runs the Flask application.
 """
+
 from backend import create_app
 
 if __name__ == "__main__":
