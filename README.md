@@ -65,7 +65,6 @@ WEARther is a web-based application that combines weather data and curated outfi
   - `locations.html`: Allows users to add and manage locations.
   - `login.html`: User login page.
   - `register.html`: User registration page.
-  - `profile.html`: User profile settings.
 - **`static/`**: Contains static assets like CSS, JavaScript, and images used in the application.
 - **`images/`**: A folder where categorized images for outfits should be stored for database population.
 
