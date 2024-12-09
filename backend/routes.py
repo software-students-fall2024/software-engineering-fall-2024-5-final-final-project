@@ -176,6 +176,7 @@ def get_expenses():
 
 
 @routes.route("/api/predict-expenses", methods=["GET"])
+# pylint: disable=R0912
 def predict_expenses():
     """
     Predict next month's expenses based on historical data.
