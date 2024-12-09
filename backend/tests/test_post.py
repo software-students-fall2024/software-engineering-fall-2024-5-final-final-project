@@ -186,7 +186,7 @@ def test_get_user_posts(client, auth_token, test_post):
 def test_comment_post(client, auth_token, test_post):
     """Test commenting on a post"""
     response = client.post(
-        f"/api/posts/{test_post}",
+        f"/api/posts/{test_post}/comments",
         json={"content": "Test Comment"},
         headers={"Authorization": f"Bearer {auth_token}"},
     )
