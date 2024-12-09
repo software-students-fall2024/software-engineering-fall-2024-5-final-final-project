@@ -1,3 +1,6 @@
+"""
+Main frontend app.py
+"""
 import os
 from flask import Flask, render_template, request, Response
 import requests
