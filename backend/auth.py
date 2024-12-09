@@ -22,7 +22,7 @@ def load_user(user_id):
     try:
         return User(db.get_user_by_id(ObjectId(user_id)))
     except bson_errors.InvalidId as e:
-        logger.error("Invalid user ID format: %s", user_id)
+        logger.error("Invalid user ID format: %s, %s", user_id, e)
     except PyMongoError as e:
         logger.error("Database error while loading user %s: %s", user_id, e)
     return None
