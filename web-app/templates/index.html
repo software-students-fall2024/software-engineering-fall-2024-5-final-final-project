@@ -157,7 +157,7 @@
 
     <div class="bottom-nav">
         <a href="/locations">Locations</a>
-        <a href="/index">Weather</a>
+        <a href="#" onclick="goToWeather()">Weather</a>
     </div>
 
     <script>
@@ -174,12 +174,12 @@
                 const temperatureF = (temperatureC * 9/5) + 32;
                 temperatureElement.textContent = temperatureF.toFixed(1);
                 unitElement.textContent = "F";
-                toggleButton.textContent = "Toggle to °C";
+                toggleButton.textContent = "Change to °C";
             } else {
                 // Convert to Celsius
                 temperatureElement.textContent = temperatureC.toFixed(1);
                 unitElement.textContent = "C";
-                toggleButton.textContent = "Toggle to °F";
+                toggleButton.textContent = "Change to °F";
             }
 
             isCelsius = !isCelsius;

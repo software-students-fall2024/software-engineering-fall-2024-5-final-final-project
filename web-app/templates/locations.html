@@ -5,62 +5,136 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Locations</title>
     <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-        }
+       
+       @import url('https://fonts.googleapis.com/css2?family=Abel&family=Satisfy&display=swap');
 
-        .content {
-            padding: 20px;
-        }
+body {
+    margin: 0;
+    font-family: 'Abel', sans-serif;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(to bottom, #fefefe, #FFFFFF);
+    color: #333;
+}
 
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
+.content {
+    text-align: center;
+    padding: 20px;
+    width: 90%;
+    max-width: 400px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
 
-        li {
-            padding: 10px;
-            margin: 5px 0;
-            background-color: #f4f4f4;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
+h1 {
+    font-size: 2.5em;
+    margin-bottom: 15px;
+    font-family: 'Satisfy', cursive;
+    color: #003366;
+}
 
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background-color: #333;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 10px 0;
-        }
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
 
-        .bottom-nav a {
-            color: white;
-            text-decoration: none;
-            text-align: center;
-            flex-grow: 1;
-            padding: 10px 0;
-        }
+input[type="text"] {
+    width: 90%;
+    padding: 12px;
+    font-size: 1em;
+    border: 2px solid #87CEEB;
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.7);
+    color: #333;
+    text-align: center;
+}
 
-        .bottom-nav a:hover {
-            background-color: #555;
-            border-radius: 5px;
-        }
+input[type="text"]:focus {
+    outline: none;
+    border-color: #4682B4;
+    background: rgba(255, 255, 255, 0.9);
+}
 
-        li.location-item {
-            cursor: pointer; /* Indicates a clickable item */
-        }
+button {
+    background: #87CEEB;
+    color: white;
+    font-size: 1.1em;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 90%;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+}
 
+button:hover {
+    background: #4682B4;
+    transform: scale(1.05);
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+li {
+    background: rgba(255, 255, 255, 0.8);
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 15px;
+    color: #003366;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    text-align: center;
+}
+
+li:hover {
+    background: rgba(135, 206, 235, 0.8);
+}
+
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+}
+
+.bottom-nav a {
+    color: #003366;
+    text-decoration: none;
+    font-size: 1.1em;
+    font-family: 'Abel', sans-serif;
+    padding: 8px 15px;
+    border-radius: 10px;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.bottom-nav a:hover {
+    background: #555;
+    color: white;
+}
+
+.active {
+    background: #4682B4;
+    color: white;
+}
     </style>
 </head>
 <body>
     <div class="content">
-        <h1>Your Locations</h1>
+        <h1 style="font-family: 'Satisfy', 'cursive'; color: #2C3E50;">Your Locations</h1>
         
         <!-- Search form -->
         <form id="location-form">
@@ -84,11 +158,12 @@ function addLocationToList(location) {
     li.className = "location-item";
     li.setAttribute("data-location", location);
 
-    // Ensure clicking the location triggers fetchWeather
-    // li.onclick = () => fetchWeather(location);
+    
+    // Save the selected location and navigate to the weather page
     li.onclick = () => {
-    window.location.href = `/index?city=${encodeURIComponent(location)}`;
-};
+        localStorage.setItem("selectedLocation", location);
+        window.location.href = `/index?city=${encodeURIComponent(location)}`;
+    };
 
     list.appendChild(li);
 }
@@ -113,7 +188,7 @@ async function fetchWeather(location) {
         localStorage.setItem("selectedLocation", location);
 
         // Update weather section dynamically
-        document.querySelector(".content h1").textContent = "Today's Weather & Outfits";
+        document.querySelector(".content h1").textContent = "Your Locations";
         document.querySelector("#outfit-suggestions").innerHTML = `
             <p><strong>Location:</strong> ${data.city}</p>
             <p><strong>Outfit Suggestion:</strong></p>
@@ -158,10 +233,20 @@ window.onload = async () => {
     locations.forEach((loc) => addLocationToList(loc));
 };
 
+// Handle Weather button click
+function goToWeather() {
+    const lastLocation = localStorage.getItem("selectedLocation");
+
+    if (lastLocation) {
+        window.location.href = `/index?city=${encodeURIComponent(lastLocation)}`;
+    } else {        
+        window.location.href = "/locations";
+    }
+}
     </script>
     <div class="bottom-nav">
         <a href="/locations" class="active">Locations</a>
-        <a href="#" onclick="fetchWeather('New York')">Weather</a>
+        <a href="#" onclick="goToWeather()">Weather</a>
     </div>
 </body>
 </html>

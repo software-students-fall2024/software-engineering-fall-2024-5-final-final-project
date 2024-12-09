@@ -42,8 +42,6 @@ cxn = MongoClient(os.getenv("MONGO_URI"))
 db = cxn[os.getenv("MONGO_DBNAME")]
 app.secret_key = os.getenv("SECRET_KEY", "supersecretkey123")
 
-
-
 class User(UserMixin):
     """
     User class that extends UserMixin for Flask-Login.
@@ -70,7 +68,8 @@ class User(UserMixin):
         self.password = password
         self.gender  = gender
 
-
+##########################################
+# LOGIN MANAGER
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
@@ -125,6 +124,7 @@ def register():
             flash("Username already exists.")
             return redirect(url_for("register"))
 
+        # Insert new user into the database with gender
         db.users.insert_one({
             "username": username,
             "password": hashed_password,
@@ -164,13 +164,24 @@ def login():
             )
             login_user(user)
             flash("Login successful!")
-            return redirect(url_for("index"))
+
+            user_locations = db.locations.find_one({"username": username})
+
+            if not user_locations or not user_locations.get("locations"):
+                flash("Please add a location to continue.")
+                return redirect(url_for("locations"))
+
+            # If locations exist, load the first location
+            first_city = user_locations["locations"][0]
+            return redirect(url_for("index", city=first_city))
+        
         flash("Invalid username or password.")
         return redirect(url_for("login"))
+    # Explicitly return a rendered template for GET requests
     return render_template("login.html")
 
 
-
+# LOGOUT
 @app.route("/logout")
 @login_required
 def logout():
@@ -189,7 +200,11 @@ def logout():
 @login_required
 def index():
     seed_database()
-    city = request.args.get("city", "New York")
+    city = request.args.get("city")
+
+    if not city:
+            return redirect(url_for("locations"))
+
     temperature, description = get_weather(city, API_KEY)
 
     if temperature is not None:
@@ -205,6 +220,7 @@ def index():
         else:
             category = "hot"
 
+        # Pass the background image URL for the category
         
         background_image = f"/static/background_images/{category}.jpg"
 
@@ -230,6 +246,7 @@ def index():
             username=current_user.username
         )
       
+# Function to get weather data
 def get_weather(city_name, api_key):
     url = f"http://api.openweathermap.org/data/2.5/weather?q={city_name}&appid={api_key}&units=metric"
     response = requests.get(url)
@@ -241,11 +258,13 @@ def get_weather(city_name, api_key):
     else:
         return None, None
 
+# API key for OpenWeatherMap
 API_KEY = os.getenv("OPENWEATHER_API_KEY")
 
+# Flask route to fetch weather data
 @app.route('/get_weather', methods=['GET'])
 def fetch_weather():
-    city = request.args.get('city', 'New York')  
+    city = request.args.get('city', 'New York')  # Default city is New York
     temperature, description = get_weather(city, API_KEY)
     if temperature is not None:
         return jsonify({
@@ -270,7 +289,7 @@ def seed_database():
 
     genders = ["male", "female"]
     images_folder = "./static/images"
-    genders = ["female", "male"]  
+    genders = ["female", "male"]  # Include genders here
     outfit_data = []
 
     for category, temp_range in categories.items():
@@ -286,8 +305,8 @@ def seed_database():
                         "temperature_range_min": temp_range["min"],
                         "temperature_range_max": temp_range["max"],
                         "weather_condition": category,
-                        "gender": gender,  
-                        "image_url": f"/static/images/{category}/{gender}/{image}"  
+                        "gender": gender,  # Store gender information
+                        "image_url": f"/static/images/{category}/{gender}/{image}"  # Construct gender-specific URL
                     })
             else:
                 print(f"Folder for category '{category}' and gender '{gender}' does not exist. Skipping...")
@@ -299,6 +318,7 @@ def seed_database():
         print("No outfit data was inserted. Check your folder structure.")
 
 def get_outfit_from_db(temp, gender):
+    # Query for matching temperature range and gender
     outfit = db.outfits.find_one({
         "temperature_range_min": {"$lte": int(temp)},
         "temperature_range_max": {"$gte": int(temp)},
@@ -314,7 +334,6 @@ def get_outfit_from_db(temp, gender):
             "image": "/images/default.png",
             "description": "Default Outfit"
         }
-
     
 # Add location to MongoDB
 @app.route('/add_location', methods=['POST'])
@@ -376,6 +395,7 @@ def get_weather_data():
         })
 
     return jsonify({"error": "Could not fetch weather data"}), 400
+
 
 # Run the app
 if __name__ == "__main__":
