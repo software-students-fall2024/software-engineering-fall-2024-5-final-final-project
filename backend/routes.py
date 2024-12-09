@@ -189,22 +189,33 @@ def predict_expenses():
     if not expenses:
         return jsonify({"error": "No valid expense data available for prediction"}), 400
 
-    # Extract months and totals for MLModel
-    try:
-        months = [
-            expense["date"].month
-            for expense in expenses
-            if "date" in expense and isinstance(expense["date"], datetime)
-        ]
-        totals = [
-            expense["amount"]
-            for expense in expenses
-            if "amount" in expense and isinstance(expense["amount"], (int, float))
-        ]
-    except (KeyError, TypeError) as e:
-        logger.error("Error processing expenses for prediction: %s", e)
-        return jsonify({"error": "Error processing expense data."}), 500
+    # Initialize lists to store months and totals
+    months = []
+    totals = []
 
+    # Iterate through each expense to extract month and amount
+    for expense in expenses:
+        # Extract and parse the 'date' field
+        if "date" in expense and isinstance(expense["date"], str):
+            try:
+                # Parse the ISO-formatted date string into a datetime object
+                date_obj = datetime.fromisoformat(expense["date"])
+                months.append(date_obj.month)
+            except ValueError:
+                logger.error("Invalid date format for expense: %s", expense["date"])
+                continue  # Skip this expense due to invalid date format
+        else:
+            logger.error("Missing or invalid 'date' field in expense: %s", expense)
+            continue  # Skip this expense due to missing 'date'
+
+        # Extract the 'amount' field
+        if "amount" in expense and isinstance(expense["amount"], (int, float)):
+            totals.append(expense["amount"])
+        else:
+            logger.error("Missing or invalid 'amount' field in expense: %s", expense)
+            continue  # Skip this expense due to missing 'amount'
+
+    # Check if we have valid data for prediction
     if not months or not totals:
         return (
             jsonify({"error": "Insufficient valid expense data for prediction."}),
@@ -220,4 +231,5 @@ def predict_expenses():
         logger.error("Error during expense prediction: %s", e)
         return jsonify({"error": "Failed to predict expenses."}), 500
 
+    # Return the prediction result
     return jsonify({"predicted_expenses": round(next_month_prediction, 2)})
