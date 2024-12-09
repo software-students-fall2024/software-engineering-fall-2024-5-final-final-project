@@ -53,7 +53,7 @@ jobs:
       with:
         host: ${{ secrets.DO_IP }}
         username: root
-      run: |
+      script: |
         docker pull ${{ secrets.DOCKER_USERNAME }}/web_app:latest
         docker stop web_app || true 
         docker rm web_app || true
