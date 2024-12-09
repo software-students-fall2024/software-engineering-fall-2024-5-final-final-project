@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN python -m pip install --no-cache-dir --upgrade pip
 
 # Set working directory
-WORKDIR /web-app
+WORKDIR /web_app
 
 # Copy requirements and install dependencies
 COPY requirements.txt .

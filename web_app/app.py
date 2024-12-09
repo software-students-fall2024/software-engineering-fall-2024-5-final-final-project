@@ -43,34 +43,55 @@ def account():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"].encode("utf-8")
+        username = request.form["username"].strip()
+        raw_password = request.form["password"].strip()
 
+        # Encode the entered password to bytes
+        password_bytes = raw_password.encode("utf-8")
+
+        # Find the user in the database
         user = users_collection.find_one({"username": username})
-        if user and bcrypt.checkpw(password, user["password"]):
-            session["user_id"] = str(user["_id"])
-            session["username"] = username
-            session.permanent = False
-            return redirect(url_for("dashboard"))
+
+        if user and "password" in user:
+            # user["password"] should be the hashed bytes stored at signup
+            stored_hashed_password = user["password"]
+
+            # Check the password using bcrypt
+            if bcrypt.checkpw(password_bytes, stored_hashed_password):
+                # Password matches, log the user in
+                session["user_id"] = str(user["_id"])
+                session["username"] = username
+                session.permanent = False
+                return redirect(url_for("index"))
+            else:
+                # Incorrect password
+                flash("Invalid username or password.", "error")
+                return redirect(url_for("login"))
         else:
+            # User not found
             flash("Invalid username or password.", "error")
             return redirect(url_for("login"))
 
+    # GET request just renders the login template
     return render_template("login.html")
 
 
-# --------SIGNUP PAGE--------
+
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"].encode("utf-8")
+        username = request.form["username"].strip()
+        raw_password = request.form["password"].strip()
 
+        # Encode the password to bytes
+        password_bytes = raw_password.encode("utf-8")
+        # Check if username already exists
         if users_collection.find_one({"username": username}):
             flash("Username already exists. Please choose a different one.", "error")
             return redirect(url_for("signup"))
 
-        hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
+        # Hash the password (bcrypt.hashpw returns bytes)
+        hashed_password = bcrypt.hashpw(password_bytes, bcrypt.gensalt())
         users_collection.insert_one({"username": username, "password": hashed_password})
         flash("Account created successfully. Please log in.", "success")
         return redirect(url_for("login"))
@@ -350,6 +371,6 @@ def logout():
 if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
-        port=int(os.getenv("FLASK_PORT", 5001)),
+        port=int(os.getenv("FLASK_PORT", 5000)),
         debug=bool(int(os.getenv("FLASK_DEBUG", 1))),
     )

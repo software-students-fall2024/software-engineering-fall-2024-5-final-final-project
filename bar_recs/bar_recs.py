@@ -15,14 +15,13 @@ load_dotenv()
 # Initialize Flask app
 app = Flask(__name__)
 
-# Configuration
-app.config["MONGO_URI"] = os.getenv("MONGO_URI")
-app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
-
+app.config["MONGO_URI"] = os.getenv(
+    "MONGO_URI", "mongodb+srv://eh96:finalfour123@bars.ygsrg.mongodb.net/finalfour?retryWrites=true&w=majority"
+)
+app.config["SECRET_KEY"] = "this_is_my_random_secret_key_987654321"
 # Initialize MongoDB
 mongo = PyMongo(app)
 db = mongo.db
-
 
 def load_ratings_data():
     """
@@ -169,4 +168,4 @@ def recommend(user_id):
 
 # Run the Flask app
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=5001)
