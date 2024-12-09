@@ -10,6 +10,7 @@ import uuid
 from datetime import datetime
 import logging
 import requests
+import random
 
 from flask import (
     Flask,
@@ -319,12 +320,15 @@ def seed_database():
 
 def get_outfit_from_db(temp, gender):
     # Query for matching temperature range and gender
-    outfit = db.outfits.find_one({
+    outfits = list(db.outfits.find({
         "temperature_range_min": {"$lte": int(temp)},
         "temperature_range_max": {"$gte": int(temp)},
         "gender": gender
-    })
-    if outfit:
+    }))
+    
+    if outfits:
+        # Randomly select one outfit from the list
+        outfit = random.choice(outfits)
         return {
             "image": outfit["image_url"],
             "description": f"Outfit for this temperature range"
