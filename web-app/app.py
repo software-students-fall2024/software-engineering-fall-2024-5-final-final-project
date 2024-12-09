@@ -185,11 +185,11 @@ def logout():
     flash("You have been logged out.")
     return redirect(url_for("login"))
 
-@app.route('/')
+@app.route('/index', methods=['GET'])
 @login_required
 def index():
     seed_database()
-    city = "New York"  
+    city = request.args.get("city", "New York")
     temperature, description = get_weather(city, API_KEY)
 
     if temperature is not None:
@@ -315,6 +315,69 @@ def get_outfit_from_db(temp, gender):
             "description": "Default Outfit"
         }
 
+    
+# Add location to MongoDB
+@app.route('/add_location', methods=['POST'])
+@login_required
+def add_location():
+    data = request.json
+    location = data.get("location", "").strip()
+
+    if location:
+        db.locations.update_one(
+            {"username": current_user.username},
+            {"$addToSet": {"locations": location}},
+            upsert=True
+        )
+        return jsonify({"success": True})
+    return jsonify({"success": False}), 400
+
+
+# Fetch locations from MongoDB
+@app.route('/get_locations', methods=['GET'])
+@login_required
+def get_locations():
+    user_locations = db.locations.find_one({"username": current_user.username})
+    if user_locations:
+        return jsonify(user_locations.get("locations", []))
+    return jsonify([])
+
+@app.route('/locations')
+@login_required
+def locations():
+    return render_template("locations.html")
+
+@app.route('/get_weather_data', methods=['POST'])
+@login_required
+def get_weather_data():
+    data = request.json
+    city = data.get("city", "New York")
+    temperature, description = get_weather(city, API_KEY)
+
+    if temperature is not None:
+        temperature = int(temperature)
+        outfit = get_outfit_from_db(temperature, current_user.gender)
+        category = (
+            "cold" if temperature <= 0 else
+            "cool" if 1 <= temperature <= 15 else
+            "warm" if 16 <= temperature <= 25 else "hot"
+        )
+
+        background_image = f"/static/background_images/{category}.jpg"
+
+        return jsonify({
+            "city": city,
+            "temperature": f"{temperature}°C",
+            "description": description,
+            "outfit_image": outfit["image"],
+            "outfit_description": outfit["description"],
+            "background_image": background_image,
+            "username": current_user.username
+        })
+
+    return jsonify({"error": "Could not fetch weather data"}), 400
+
+# Run the app
 if __name__ == "__main__":
     seed_database()
     FLASK_PORT = os.getenv("FLASK_PORT", "5000")
