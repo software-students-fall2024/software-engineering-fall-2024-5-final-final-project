@@ -38,7 +38,9 @@ jobs:
       - name: Run Pylint
         run: |
           venv/bin/python -m pylint --ignored-modules=pytest --disable=redefined-outer-name frontend
-
+      - name: Add Hosts
+        run: |
+            ssh-keyscan -H 68.183.21.82 >> ~/.ssh/known_hosts
       - name: Deploy to DigitalOcean
         run: |
             ssh -T root@68.183.21.82 << 'EOF'

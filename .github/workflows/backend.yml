@@ -43,6 +43,10 @@ jobs:
         run: |
           venv/bin/python -m pytest tests
       
+      - name: Add Hosts
+        run: |
+          ssh-keyscan -H 68.183.21.82 >> ~/.ssh/known_hosts
+
       - name: Deploy to DigitalOcean
         run: |
           ssh -T root@68.183.21.82 << 'EOF'
