@@ -74,14 +74,7 @@ jobs:
       - name: Set up SSH key
         run: |
           mkdir -p ~/.ssh
-          echo "-----BEGIN OPENSSH PRIVATE KEY-----
-b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
-QyNTUxOQAAACA3LFqgiGkYmn+n/e+iEt6x611fsA85MDoH2KxtTX8u9wAAALDIU4PRyFOD
-0QAAAAtzc2gtZWQyNTUxOQAAACA3LFqgiGkYmn+n/e+iEt6x611fsA85MDoH2KxtTX8u9w
-AAAEBiqY+83P68WKl95Sq0rDnZOqFB8nCXYFzWVpa39WhHDDcsWqCIaRiaf6f976IS3rHr
-XV+wDzkwOgfYrG1Nfy73AAAAKG5hdGFsaW92Y2hhcm92QE5hdGFsaXMtTWFjQm9vay1BaX
-IubG9jYWwBAgMEBQ==
------END OPENSSH PRIVATE KEY-----" > ~/.ssh/id_ed25519
+          echo "${{ secrets.DO_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan 159.203.137.174 >> ~/.ssh/known_hosts
       
@@ -92,6 +85,8 @@ IubG9jYWwBAgMEBQ==
           host: 159.203.137.174
           username: root
           key: ${{ secrets.DO_SSH_KEY }}
+	  debug: true
+          timeout: 300
           script: |
             docker pull nataliovcharov/web-app:latest
             docker-compose -f /root/docker-compose.yml up -d
