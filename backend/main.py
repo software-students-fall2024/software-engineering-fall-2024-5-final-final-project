@@ -4,11 +4,11 @@ backend.main
 This module initializes and runs the Flask application.
 """
 
-from backend import create_app
 import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_login import LoginManager
+from backend import create_app
 from backend.routes import routes  # pylint: disable=import-error
 from backend.database import Database, User
 
@@ -77,8 +77,7 @@ def create_app():
                 jsonify({"success": True, "message": "User created successfully"}),
                 201,
             )
-        else:
-            return jsonify({"success": False, "message": "User already exists"}), 409
+        return jsonify({"success": False, "message": "User already exists"}), 409
 
     return app
 

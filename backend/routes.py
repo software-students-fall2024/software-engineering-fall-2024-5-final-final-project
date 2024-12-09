@@ -64,11 +64,10 @@ def login():
         session["username"] = username
         logger.info("User %s logged in successfully.", username)
         return jsonify({"success": True}), 200
-    else:
-        logger.warning(
-            "Failed login attempt for username: %s (wrong password)", username
-        )
-        return jsonify({"success": False, "message": "Invalid credentials"}), 401
+    logger.warning(
+        "Failed login attempt for username: %s (wrong password)", username
+    )
+    return jsonify({"success": False, "message": "Invalid credentials"}), 401
 
 
 @routes.route("/api/logout", methods=["POST"])
