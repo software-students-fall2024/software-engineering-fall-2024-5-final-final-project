@@ -43,9 +43,46 @@ def mock_db(monkeypatch):
 
     return mock_db
 
+@pytest.fixture
+def mock_gridfs(monkeypatch):
+    """
+    Mock the GridFS object using MagicMock.
+    """
+    fs_mock = MagicMock()
+    fs_mock.put.return_value = ObjectId()
+    fs_mock.get.return_value.read.return_value = b"image_data"
+    fs_mock.get.return_value.content_type = "image/png"
+    monkeypatch.setattr("app.fs", fs_mock)
+    return fs_mock
+
 def login(flask_client, username="testuser", user_id=None):
     with flask_client.session_transaction() as sess:
         sess['user_id'] = str(user_id if user_id else ObjectId())
+        
+def register_and_login(flask_client, username="testuser", password="password"):
+    """
+    Helper function to register and log in a user.
+    """
+    # Register the user
+    response = flask_client.post(
+        "/register",
+        data={"username": username, "password1": password, "password2": password},
+        follow_redirects=True
+    )
+    assert response.status_code == 200
+    # Optionally, check for a success message
+    # assert b"Registration successful!" in response.data
+
+    # Log in the user
+    response = flask_client.post(
+        "/login",
+        data={"username": username, "password": password},
+        follow_redirects=True
+    )
+    assert response.status_code == 200
+    # Check if redirected to home page
+    assert b"Home" in response.data or b"Add Post" in response.data
+    return response
 
 def test_register_success(flask_client, mock_db):
     """
@@ -154,3 +191,95 @@ def test_add_post_get(flask_client, mock_db):
     login(flask_client, "testuser")
     response = flask_client.get("/addpost")
     assert b"addpost" in response.data
+
+
+
+def test_like_post(flask_client, mock_db, mock_gridfs):
+    """
+    Test liking a post.
+    """
+    register_and_login(flask_client, username="testuser", password="password")
+
+    post_id = mock_db.posts.insert_one({
+        "user": "testuser",
+        "title": "Likeable Post",
+        "image_id": ObjectId(),
+        "likes": 0,
+        "liked_by": []
+    }).inserted_id
+
+    response = flask_client.post(f"/like_post/{post_id}", follow_redirects=True)
+
+    assert response.status_code == 200, f"Expected 200 OK, got {response.status_code}"
+
+    updated_post = mock_db.posts.find_one({"_id": post_id})
+    assert updated_post is not None, "Post should exist in the database."
+    assert updated_post["likes"] == 1, f"Expected likes to be 1, got {updated_post['likes']}"
+    assert "testuser" in updated_post["liked_by"], "'testuser' should be in 'liked_by' list."
+
+
+def test_follow_user(flask_client, mock_db):
+    """
+    Test following another user.
+    """
+    # Register and log in the user
+    register_and_login(flask_client, username="testuser", password="password")
+
+    # Insert target user into the mocked database
+    mock_db.users.insert_one({"username": "targetuser", "followers": [], "following": [], "password": "hashed"})
+
+    # Send POST request to follow 'targetuser'
+    response = flask_client.post("/follow/targetuser", follow_redirects=True)
+    
+    # Assert that the response status code is 200 OK
+    assert response.status_code == 200
+
+    # Parse the JSON response
+    data = response.get_json()
+    assert data is not None, "Response should contain JSON data."
+
+    # Assert that the action was 'followed'
+    assert data["action"] == "followed"
+
+    # Assert that the followers count is updated
+    assert data["followers_count"] == 1
+
+    # Retrieve the target user from the mocked database
+    target_user = mock_db.users.find_one({"username": "targetuser"})
+    assert target_user is not None, "Target user should exist in the database."
+
+    # Assert that 'testuser' is now in 'targetuser's followers
+    assert "testuser" in target_user["followers"]
+
+
+def test_add_comment(flask_client, mock_db, mock_gridfs):
+    """
+    Test adding a comment to a post.
+    """
+    # Register and log in the user
+    register_and_login(flask_client, username="testuser", password="password")
+
+    # Insert a post into the mocked database with the required 'content' field
+    post_id = mock_db.posts.insert_one({
+        "user": "testuser",
+        "title": "Commentable Post",
+        "content": "This is a commentable post.",  # Added 'content' field
+        "image_id": ObjectId(),
+        "comments": []
+    }).inserted_id
+
+    # Send POST request to add a comment
+    response = flask_client.post(
+        f"/posts/{post_id}/comments",
+        data={"content": "Nice post!"},
+        follow_redirects=True
+    )
+
+    # Assert that the response status code is 200 OK
+    assert response.status_code == 200, f"Expected 200 OK, got {response.status_code}"
+
+    # Retrieve the updated post from the mocked database
+    updated_post = mock_db.posts.find_one({"_id": post_id})
+    assert updated_post is not None, "Post should exist in the database."
+    assert len(updated_post["comments"]) == 1, "Expected one comment after adding."
+    assert updated_post["comments"][0]["content"] == "Nice post!", "Comment content does not match."
