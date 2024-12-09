@@ -9,7 +9,6 @@ import requests
 app = Flask(__name__)
 app.secret_key = "your-secret-key-here"
 
-
 app.config["SESSION_COOKIE_NAME"] = "frontend_session"
 
 BACKEND_URL = os.environ.get("BACKEND_URL", "http://backend:5001")
@@ -17,22 +16,29 @@ BACKEND_URL = os.environ.get("BACKEND_URL", "http://backend:5001")
 
 @app.route("/")
 def index():
+    """
+    Render the main index.html page.
+    """
     return render_template("index.html")
 
 
 @app.route("/api/<path:path>", methods=["GET", "POST"])
 def proxy_to_backend(path):
+    """
+    Proxy API requests to the backend server.
+    """
     try:
         backend_cookies = {}
         if "session" in request.cookies:
             backend_cookies["session"] = request.cookies["session"]
 
-        # Forward the request method and data
+        # Forward the request method and data with a timeout
         if request.method == "GET":
             resp = requests.get(
                 f"{BACKEND_URL}/api/{path}",
                 cookies=backend_cookies,
                 allow_redirects=False,
+                timeout=5  # Timeout set to 5 seconds
             )
         else:
             resp = requests.post(
@@ -40,6 +46,7 @@ def proxy_to_backend(path):
                 json=request.get_json(),
                 cookies=backend_cookies,
                 allow_redirects=False,
+                timeout=5  # Timeout set to 5 seconds
             )
 
         # Create a Flask response object with backend's response content and status
@@ -56,7 +63,9 @@ def proxy_to_backend(path):
 
         return response
     except requests.exceptions.RequestException as e:
-        return {"error": str(e)}, 500
+        # Log the exception for debugging purposes
+        app.logger.error(f"Request to backend failed: {e}")
+        return {"error": "Failed to connect to the backend server."}, 500
 
 
 if __name__ == "__main__":
