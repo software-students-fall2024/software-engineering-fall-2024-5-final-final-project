@@ -113,6 +113,10 @@ def setWatched():
                 "date_watched": datetime.datetime.now()
             }
         )
+        users_collection.update_one(
+            {"_id": user["_id"]},
+            {"$push": {"watched_movies": movie_id}}
+        )
     else:
         ratings_collection.delete_one({
             "user": user["_id"],
