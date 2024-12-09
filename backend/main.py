@@ -19,9 +19,7 @@ login_manager = LoginManager()
 def create_app():
     """
     Create and configure the Flask application.
-
-    This function sets up essential configurations, middleware, 
-    routes, and third-party integrations like CORS and Flask-Login.
+    This function sets up essential configurations, middleware, routes, and third-party integrations like CORS and Flask-Login.
     """
     app = Flask(__name__)
     app.secret_key = os.environ.get("SECRET_KEY", "your-secret-key-here")
