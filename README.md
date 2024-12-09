@@ -52,7 +52,7 @@ docker pull emilyhuang19/web_app:latest
 ```
 
 ### Bar Recs
-[![DockerHub](https://img.shields.io/badge/DockerHub-WebApp-blue?logo=docker)](https://hub.docker.com/repository/docker/emilyhuang19/bar-recs/general)
+[![DockerHub](https://img.shields.io/badge/DockerHub-BarRecs-blue?logo=docker)](https://hub.docker.com/repository/docker/emilyhuang19/bar-recs/general)
 
 
 ```
