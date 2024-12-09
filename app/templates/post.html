@@ -1,150 +1,302 @@
 {% extends 'base.html' %}
 {% block head %}
-    <title> Post Details </title>
-    <style>
-        /* Overall page structure */
-        .post-details {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            font-family: sans-serif;
-            line-height: 1.6;
-            color: #333;
-        }
+<title> Post Details </title>
+<style>
+    .post-details {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        font-family: sans-serif;
+        line-height: 1.6;
+        color: #333;
+    }
 
-        /* Post image */
-        .post-details img {
-            display: block;
-            width: 100%;
-            height: auto;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
+    /* Post image */
+    .post-details img {
+        display: block;
+        width: 100%;
+        height: auto;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
 
-        /* Post title */
-        .post-details h2 {
-            font-size: 2em;
-            margin: 10px 0 15px;
-            font-weight: bold;
-            color: #333;
-        }
+    /* Post title */
+    .post-details h2 {
+        font-size: 2em;
+        margin: 10px 0 15px;
+        font-weight: bold;
+        color: #333;
+    }
 
-        /* Post content */
-        .post-details p {
-            margin-bottom: 15px;
-            font-size: 1em;
-        }
+    /* Post content */
+    .post-details p {
+        margin-bottom: 15px;
+        font-size: 1em;
+    }
 
-        /* Author badge */
+    /* Author badge */
+    .post-author {
+        display: inline-block;
+        padding: 5px 10px;
+        border: 2px solid #ccc;
+        border-radius: 5px;
+        background-color: #fafafa;
+        margin-bottom: 15px;
+        font-size: 0.9em;
+        color: #555;
+        position: relative;
+        left: 70%;
+    }
+
+    /* Timestamp and metadata */
+    .post-details small {
+        display: block;
+        color: #999;
+        margin-bottom: 10px;
+        font-size: 0.85em;
+    }
+
+    /* Views section */
+    .post-details hr {
+        border: none;
+        border-top: 1px solid #eee;
+        margin: 20px 0;
+    }
+
+    .like-button {
+        display: inline-block;
+        border: none;
+        /* Removes the visible box border */
+        background-color: transparent;
+        /* Ensures no box-like background */
+        cursor: pointer;
+        font-size: 1em;
+        color: #333;
+    }
+
+    #views,
+    #likes {
+        width: 20px;
+        height: auto;
+    }
+
+
+    .views-container,
+    .like-button {
+        display: flex;
+        gap: 5px;
+    }
+
+    .views-container p {
+        margin: 0;
+        position: relative;
+        top: -2px;
+        vertical-align: middle;
+    }
+
+    .like-count {
+        margin: 0;
+        position: relative;
+        top: -2px;
+        vertical-align: middle;
+    }
+
+    .comments-section {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .comments-section h3 {
+        font-size: 1.5em;
+        margin-bottom: 15px;
+        color: #333;
+    }
+
+    .comment {
+        margin-bottom: 15px;
+        padding: 10px;
+        background-color: #ffffff;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+    }
+
+    .comment strong {
+        font-size: 1em;
+        color: #333;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .comment small {
+        color: #999;
+        font-size: 0.9em;
+    }
+
+    .comment p {
+        font-size: 1em;
+        line-height: 1.4;
+    }
+
+    .comment-form {
+        margin-top: 20px;
+    }
+
+    .comment-form textarea {
+        width: 100%;
+        max-width: 100%;
+        padding: 10px;
+        font-size: 1em;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        resize: none;
+    }
+
+    .comment-form button {
+        display: inline-block;
+        width: 100%;
+        padding: 10px;
+        font-size: 1em;
+        color: #fff;
+        background-color: #007bff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .comment-form button:hover {
+        background-color: #0056b3;
+    }
+
+    .post-author {
+        display: inline-block;
+        padding: 5px 10px;
+        border: 2px solid #ccc;
+        border-radius: 5px;
+        background-color: #fafafa;
+        font-size: 0.9em;
+        color: #555;
+        position: relative;
+        left: 70%;
+        margin-bottom: 15px;
+    }
+
+    @media screen and (max-width: 768px) {
         .post-author {
-            display: inline-block;
-            padding: 5px 10px;
-            border: 2px solid #ccc;
-            border-radius: 5px;
-            background-color: #fafafa;
-            margin-bottom: 15px;
-            font-size: 0.9em;
-            color: #555;
-            position: relative;
-            left: 70%; /* Remove left offset for cleaner layout */
+            position: static;
+            display: block;
+            text-align: center;
+            margin: 10px auto;
+            font-size: 0.85em;
+            width: fit-content;
+        }
+    }
+
+    @media screen and (max-width: 768px) {
+        .comments-section {
+            padding: 5px;
         }
 
-        /* Timestamp and metadata */
-        .post-details small {
-            display: block;
-            color: #999;
-            margin-bottom: 10px;
+        .comment {
+            padding: 8px;
+        }
+
+        .comment strong {
+            font-size: 0.95em;
+        }
+
+        .comment small {
             font-size: 0.85em;
         }
 
-        /* Views section */
-        .post-details hr {
-            border: none;
-            border-top: 1px solid #eee;
-            margin: 20px 0;
+        .comment p {
+            font-size: 0.9em;
         }
 
-        .like-button {
-            display: inline-block;
-            border: none;  /* Removes the visible box border */
-            background-color: transparent; /* Ensures no box-like background */
-            cursor: pointer;
-            font-size: 1em;
-            color: #333;
+        .comment-form textarea {
+            font-size: 0.9em;
         }
 
-        #views, #likes {
-            width: 20px; 
-            height: auto;
+        .comment-form button {
+            font-size: 0.9em;
         }
-
-
-        .views-container, .like-button {
-            display: flex;
-            gap: 5px;
-        }
-
-        .views-container p {
-            margin: 0;
-            position: relative;
-            top: -2px; 
-            vertical-align: middle;
-        }
-        
-        .like-count {
-            margin: 0;
-            position: relative;
-            top: -2px; 
-            vertical-align: middle;
-        }
-
-    </style>
+    }
+</style>
 {% endblock %}
 
 {% block container %}
-    <div class="post-details">
-        <img src="{{ image_url }}" alt="Post Image" style="max-width: 100%; height: auto;">
-        <h2>{{ post.title }}</h2>
-        <p>{{ post.content }}</p>
-        <p class="post-author">Posted by {{ post.user }}</p>
-        <br>
-        <small>{{ post.created_at }}</small>
-        <hr>
-        <div class="views-container">
-            <img src="{{ url_for('static', filename='images/view.png') }}" alt="Views" id="views">
-            <p> {{ post.views }}</p>
-        </div>
-        <button class="like-button {% if liked == 1 %}liked{% endif %}" data-post-id="{{ post._id }}">
-            <img src="{{ url_for('static', filename='images/heart_filled.png' if liked else 'images/heart.png') }}" alt="Likes" id="likes"> 
-            <p class="like-count">{{ post.likes }}</p>
-        </button>
+<div class="post-details">
+    <img src="{{ image_url }}" alt="Post Image" style="max-width: 100%; height: auto;">
+    <h2>{{ post.title }}</h2>
+    <p>{{ post.content }}</p>
+    <p class="post-author">Posted by {{ post.user }}</p>
+    <br>
+    <small>{{ post.created_at }}</small>
+    <hr>
+    <div class="views-container">
+        <img src="{{ url_for('static', filename='images/view.png') }}" alt="Views" id="views">
+        <p> {{ post.views }}</p>
     </div>
-    <script>
-        document.querySelector('.like-button').addEventListener('click', function() {
-            const postId = this.getAttribute('data-post-id');
-            const likeIcon = this.querySelector('#likes');
+    <button class="like-button {% if liked == 1 %}liked{% endif %}" data-post-id="{{ post._id }}">
+        <img src="{{ url_for('static', filename='images/heart_filled.png' if liked else 'images/heart.png') }}"
+            alt="Likes" id="likes">
+        <p class="like-count">{{ post.likes }}</p>
+    </button>
+</div>
 
-            fetch(`/like_post/${postId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
+<!-- Comments Section -->
+<div class="comments-section">
+    <h3>Comments</h3>
+    <ul>
+        {% for comment in post.comments %}
+        <li class="comment">
+            <strong>{{ comment.username }}</strong>
+            <small>{{ comment.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</small>
+            <p>{{ comment.content }}</p>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <!-- Add Comment Form -->
+    <div class="comment-form">
+        <h4>Add a Comment</h4>
+        <form method="POST" action="{{ url_for('add_comment', post_id=post._id) }}">
+            <textarea name="content" placeholder="Write your comment here..." required></textarea>
+            <button type="submit">Post Comment</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Likes handling
+    document.querySelector('.like-button').addEventListener('click', function () {
+        const postId = this.getAttribute('data-post-id');
+        const likeIcon = this.querySelector('#likes');
+
+        fetch(`/like_post/${postId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
             .then(response => response.json())
             .then(data => {
                 this.querySelector('.like-count').textContent = data.likes;
-    
                 if (data.action === 'added') {
                     this.classList.add('liked');
-                    likeIcon.src = "{{ url_for('static', filename='images/heart_filled.png') }}"; 
+                    likeIcon.src = "{{ url_for('static', filename='images/heart_filled.png') }}";
                 } else if (data.action === 'removed') {
                     this.classList.remove('liked');
-                    likeIcon.src = "{{ url_for('static', filename='images/heart.png') }}"; 
+                    likeIcon.src = "{{ url_for('static', filename='images/heart.png') }}";
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
             });
-        });
-    </script>
+    });
+</script>
 {% endblock %}

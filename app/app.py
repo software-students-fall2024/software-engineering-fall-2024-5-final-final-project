@@ -102,10 +102,8 @@ def add_post():
         image = request.files["image"]
         
         cur_user = current_user.username
-        cur_user_collection = db[cur_user]
-        
         image_id = fs.put(image.read(), filename=image.filename, content_type=image.content_type)
-        
+
         post = {
             "user": cur_user,
             "title": title,
@@ -114,15 +112,15 @@ def add_post():
             "views": 0,
             "likes": 0,
             "liked_by": [],
+            "comments": [],  
             "created_at": datetime.utcnow()
         }
-        inserted_post = posts_collection.insert_one(post)
-        
-        cur_user_collection.insert_one({"post_id": inserted_post.inserted_id})
-        
-        return home()
+
+        posts_collection.insert_one(post)
+        return redirect(url_for("home"))
     
     return render_template("addpost.html")
+
 
 
 @app.route("/myInfo", methods=["GET"])
@@ -166,6 +164,9 @@ def display_post(post_id):
         {"_id": ObjectId(post_id)}, 
         {"$inc": {"views": 1}}  # increment the views by 1
     )
+
+    # Get all comments
+    comments = post.get("comments", [])
     
     cur_user = current_user.username
     if cur_user in post.get('liked_by', []):
@@ -174,6 +175,7 @@ def display_post(post_id):
         liked = 0
         
     return render_template("post.html", post=post, image_url=image_url, liked=liked)
+
 
 
 @app.route('/like_post/<post_id>', methods=['POST'])
@@ -372,6 +374,27 @@ def follow_user(username):
 
     return jsonify({"action": action, "followers_count": followers_count})
 
+@app.route("/posts/<post_id>/comments", methods=["POST"])
+@login_required
+def add_comment(post_id):
+    content = request.form.get("content")
+    if not content.strip():
+        flash("Comment cannot be empty.")
+        return redirect(url_for("display_post", post_id=post_id))
+
+    comment = {
+        "username": current_user.username,
+        "content": content,
+        "created_at": datetime.utcnow()
+    }
+
+    posts_collection.update_one(
+        {"_id": ObjectId(post_id)},
+        {"$push": {"comments": comment}}
+    )
+
+    flash("Comment added successfully!")
+    return redirect(url_for("display_post", post_id=post_id))
 
 if __name__ == "__main__":
     # add_recommendations()
