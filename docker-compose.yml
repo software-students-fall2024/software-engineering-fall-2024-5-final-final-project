@@ -27,5 +27,6 @@ services:
     volumes:
       - ./web-app/images:/app/images 
 
+
 volumes:
   mongodb-data:
