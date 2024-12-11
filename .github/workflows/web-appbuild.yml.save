@@ -94,3 +94,6 @@ jobs:
             docker pull jl8059/web-app:latest
             docker-compose -f docker-compose.yml down || true
             docker-compose -f docker-compose.yml up --build -d
+
+            
+            
