@@ -22,4 +22,8 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 
 
 # Command to run the Flask application
-CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
+# Ensure FLASK_APP is properly set and Python runs the Flask app
+ENV FLASK_APP=app.app:create_app
+
+# Run the Flask app on container start
+CMD ["python", "-m", "flask", "run", "--host=0.0.0.0", "--port=5000"]
