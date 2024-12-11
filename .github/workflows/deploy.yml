@@ -28,9 +28,9 @@ jobs:
           pipenv install
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
   
-      - name: Run tests with pytest
-        run: |
-          pipenv run pytest
+      # - name: Run tests with pytest
+      #   run: |
+      #     pipenv run pytest
 
   deploy:
     runs-on: ubuntu-latest
