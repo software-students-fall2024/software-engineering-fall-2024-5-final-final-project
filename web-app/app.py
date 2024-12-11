@@ -63,7 +63,24 @@ class User(UserMixin):
         self.password = password
         self.gender  = gender
         
-def seed_database():
+
+def create_app():
+    """
+    Create and configure the Flask application.
+    returns: app: the Flask application object
+    """
+    app = Flask(__name__)
+    cxn = MongoClient(os.getenv("MONGO_URI"))
+    db = cxn[os.getenv("MONGO_DBNAME")]
+    
+    app.secret_key = os.getenv("SECRET_KEY", "supersecretkey123")
+    try:
+        cxn.admin.command("ping")
+        print(" *", "Connected to MongoDB!")
+    except Exception as e:
+        print(" * MongoDB connection error:", e) 
+
+    def seed_database():
         """
         Populate the database with outfits based on temperature range, gender, and weather condition.
         """
@@ -103,25 +120,7 @@ def seed_database():
             print(f"Inserted {len(outfit_data)} entries into the database!")
         else:
             print("No outfit data was inserted. Check your folder structure.")
-
-def create_app():
-    """
-    Create and configure the Flask application.
-    returns: app: the Flask application object
-    """
-    app = Flask(__name__)
-    cxn = MongoClient(os.getenv("MONGO_URI"))
-    global db
-    db = cxn[os.getenv("MONGO_DBNAME")]
-    
-    app.secret_key = os.getenv("SECRET_KEY", "supersecretkey123")
-    try:
-        cxn.admin.command("ping")
-        print(" *", "Connected to MongoDB!")
-    except Exception as e:
-        print(" * MongoDB connection error:", e) 
-
-
+    seed_database()
 
     login_manager = LoginManager()
     login_manager.init_app(app)
@@ -429,7 +428,7 @@ def create_app():
         return jsonify({"error": "Could not fetch weather data"}), 400
     return app
 
-seed_database()
+
 app= create_app()
 if __name__ == "__main__":
     
