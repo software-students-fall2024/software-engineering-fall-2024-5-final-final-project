@@ -91,12 +91,9 @@ jobs:
             # Navigate to the deployment directory
             cd /root/project
 
-            
-            git reset --hard
-            git pull origin main
             # Pull the latest images from Docker Hub
             docker pull jl8059/web-app:latest
             docker stop flask-app || true
             docker rm flask-app || true
-            docker-compose -f /root/project/web-app/docker-compose.yml down || true
-            docker-compose -f /root/project/web-app/docker-compose.yml up --build -d
+            docker-compose -f docker-compose.yml down || true
+            docker-compose -f docker-compose.yml up --build -d
