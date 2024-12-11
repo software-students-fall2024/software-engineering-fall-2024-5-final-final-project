@@ -14,7 +14,7 @@ services:
 
   web-app:
     build:
-      context: ./web-app
+      context: .
     environment:
       - MONGO_DBNAME= ${{ secrets.MONGO_DBNAME }}
       - MONGO_URI= ${{ secrets.MONGO_URI }}
