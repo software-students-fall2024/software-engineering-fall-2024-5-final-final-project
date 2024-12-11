@@ -7,6 +7,6 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 
 EXPOSE 5000
 
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "3", "app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "3","--timeout", "160", "app:app", ]
 ##CMD ["python", "web-app/app.py"]
 
