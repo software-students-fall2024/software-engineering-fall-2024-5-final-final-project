@@ -24,10 +24,9 @@ services:
       - "5002:5000"
     depends_on:
       - mongodb
-    # volumes:
-    #   - ./web-app/images:/app/images 
     volumes:
-      - .:/app
+      - ./web-app/images:/app/images 
+
 
 volumes:
   mongodb-data:
