@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   mongodb:
-    image: mongo
+    image: jl8059/mongodb
     container_name: mongodb
     ports:
       - "27017:27017"
@@ -11,6 +11,8 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: secret
     volumes:
       - mongodb-data:/data/db
+    networks:
+      - app-network
 
   web-app:
     build:
@@ -26,7 +28,13 @@ services:
       - mongodb
     volumes:
       - ./web-app/images:/app/images 
+    networks:
+      - app-network
 
 
 volumes:
   mongodb-data:
+
+networks:
+  app-network:
+    driver: bridge
