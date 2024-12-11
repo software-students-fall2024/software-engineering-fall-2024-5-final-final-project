@@ -55,5 +55,5 @@ jobs:
 
       - name: Build Flask App Docker Image
         run: |
-          docker build -t jl8059/web-app:latest ./web_app
+          docker build -t jl8059/web-app:latest ./web-app
           docker push jl8059/web-app:latest
