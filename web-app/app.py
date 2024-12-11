@@ -111,7 +111,9 @@ def create_app():
     """
     app = Flask(__name__)
     cxn = MongoClient(os.getenv("MONGO_URI"))
+    global db
     db = cxn[os.getenv("MONGO_DBNAME")]
+    
     app.secret_key = os.getenv("SECRET_KEY", "supersecretkey123")
     try:
         cxn.admin.command("ping")
