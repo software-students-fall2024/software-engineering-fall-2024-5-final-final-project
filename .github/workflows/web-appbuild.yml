@@ -95,6 +95,6 @@ jobs:
             docker pull jl8059/web-app:latest
             docker stop flask-app || true
             docker rm flask-app || true
-            docker run -d -p 5002:5000 --name web-app jl8059/web-app:latest
-            # docker-compose -f docker-compose.yml down || true
-            # docker-compose -f docker-compose.yml up --build -d
+            #docker run -d -p 5002:5000 --name web-app jl8059/web-app:latest
+            docker-compose -f docker-compose.yml down || true
+            docker-compose -f docker-compose.yml up --build -d
