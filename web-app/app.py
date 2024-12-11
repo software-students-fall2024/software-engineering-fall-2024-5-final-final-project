@@ -429,8 +429,10 @@ def create_app():
         return jsonify({"error": "Could not fetch weather data"}), 400
     return app
 
+seed_database()
+app= create_app()
 if __name__ == "__main__":
-    seed_database()
+    
     FLASK_PORT = os.getenv("FLASK_PORT", "5000")
-    app= create_app()
+    
     app.run(debug=True)
