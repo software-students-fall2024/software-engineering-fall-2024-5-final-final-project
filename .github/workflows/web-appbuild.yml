@@ -86,7 +86,7 @@ jobs:
         uses: appleboy/ssh-action@v0.1.1
         with:
           host: ${{ secrets.DO_HOST}}
-          username: ${{ secrets.MONGO_INITDB_ROOT_USERNAME}}
+          username: root
           key: ${{ secrets.DO_SSH_KEY }}
           script: |
             # Navigate to the deployment directory
