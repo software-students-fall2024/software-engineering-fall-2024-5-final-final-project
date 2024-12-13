@@ -47,6 +47,8 @@ try:
     print(" *", "Connected to MongoDB!")
 except Exception as e:
     print(" * MongoDB connection error:", e) 
+
+    
 class User(UserMixin):
     """
     User class that extends UserMixin for Flask-Login.
