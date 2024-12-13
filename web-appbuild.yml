@@ -31,7 +31,7 @@ jobs:
       # Start MongoDB container
       - name: Start MongoDB Container
         run: |
-          docker run -d --name mongodb -e MONGO_INITDB_DATABASE=Outfits -p 27017:27017 mongo:latest
+          docker run -d --name mongodb -e MONGO_INITDB_DATABASE= ${{ secrets.MONGO_DBNAME }}  -p 27017:27017 mongo:latest
 
       # Wait for MongoDB to be ready
       - name: Wait for MongoDB
@@ -46,23 +46,24 @@ jobs:
           done
           echo "MongoDB failed to start."
           exit 1
+
       #env file
       - name: Create env file
         run: |
           cd ${{ matrix.subdir }}
-          echo "MONGO_DBNAME=${{ secrets.MONGO_DB }}" > .env
+          echo "MONGO_DBNAME=${{ secrets.MONGO_DBNAME }}" > .env
           echo "MONGO_URI=${{ secrets.MONGO_URI }}" >> .env
-          echo "FLASK_APP=app.py" >> .env
-          echo "FLASK_ENV=development" >> .env
-          echo "FLASK_PORT=5000" >> .env
+          echo "FLASK_APP= ${{ secrets.FLASK_APP }}" >> .env
+          echo "FLASK_ENV= ${{ secrets.FLASK_ENV }}" >> .env
+          echo "FLASK_PORT= ${{ secrets.FLASK_PORT" >> .env
           echo "OPENWEATHER_API_KEY=${{ secrets.OPENWEATHER_API_KEY }}" >> .env
 
 
       # Run tests
       - name: Run Tests
         env:
-          MONGO_DBNAME: Outfits
-          MONGO_URI: mongodb://localhost:27017
+          MONGO_DBNAME: ${{ secrets.MONGO_DBNAME }}
+          MONGO_URI: ${{ secrets.MONGO_URI }}
         run: |
           pytest web-app/tests/
       # Set up Docker Buildx
@@ -73,18 +74,18 @@ jobs:
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: jl8059
-          password: qq883697776
+          username: ${{ secrets.DOCKER_USERNAME}}
+          password: ${{ secrets.DOCKER_PASSWORD}}
       # Build and push the Docker image
       - name: Build and push Docker image
         run: |
-          docker buildx build --platform linux/amd64,linux/arm64 -t jl8059/web-app:latest ./web-app --push
+          docker buildx build --platform linux/amd64,linux/arm64 -t ${{ secrets.DOCKER_USERNAME}}/web-app:latest ./web-app --push
 
       # Deploy to DigitalOcean
       - name: Deploy to DigitalOcean
         uses: appleboy/ssh-action@v0.1.1
         with:
-          host: 159.203.137.174
+          host: ${{ secrets.DO_HOST}}
           username: root
           key: ${{ secrets.DO_SSH_KEY }}
           script: |
@@ -92,9 +93,9 @@ jobs:
             cd /root/project
 
             # Pull the latest images from Docker Hub
-            docker pull jl8059/web-app:latest
-            docker stop flask-app || true
-            docker rm flask-app || true
-            #docker run -d -p 5002:5000 --name web-app jl8059/web-app:latest
+            docker pull ${{ secrets.DOCKER_USERNAME}}/web-app:latest
+
+            docker stop web-app || true
+            docker rm web-app || true
             docker-compose -f docker-compose.yml down || true
             docker-compose -f docker-compose.yml up --build -d
